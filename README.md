@@ -1,3 +1,54 @@
+# Terraform Provider WX-One
+
+## Local Development
+
+- run `go env GOBIN`
+- create `.terraformrc` with the following content
+
+```
+provider_installation {
+
+  dev_overrides {
+      "hashicorp.com/edu/wx-one" = "/Users/christian/go/bin" // this is for a mac setup
+  }
+
+  # For all other providers, install them directly from their origin provider
+  # registries as normal. If you omit this, Terraform will _only_ use
+  # the dev_overrides block, and so no other providers will be available.
+  direct {}
+}
+```
+
+- run `go install .` to create a build
+- run `cd examples/provider-install-verification && terraform plan` to check if terraform is able to work with local provider build 
+
+at the moment it should produce the following output and that would mean it works: 
+
+```
+$ terraform plan
+╷
+│ Warning: Provider development overrides are in effect
+│
+│ The following provider development overrides are set in the CLI
+│ configuration:
+│  - hashicorp.com/edu/hashicups in /Users/<Username>/go/bin
+│
+│ The behavior may therefore not match any released version of the provider and
+│ applying changes may cause the state to become incompatible with published
+│ releases.
+╵
+╷
+│ Error: Invalid data source
+│
+│   on main.tf line 11, in data "wxone_coffees" "example":
+│   11: data "wxone_coffees" "example" {}
+│
+│ The provider hashicorp.com/edu/wx-one does not support data source
+│ "wxone_coffees".
+╵
+```
+
+
 # Terraform Provider Scaffolding (Terraform Plugin Framework)
 
 _This template repository is built on the [Terraform Plugin Framework](https://github.com/hashicorp/terraform-plugin-framework). The template repository built on the [Terraform Plugin SDK](https://github.com/hashicorp/terraform-plugin-sdk) can be found at [terraform-provider-scaffolding](https://github.com/hashicorp/terraform-provider-scaffolding). See [Which SDK Should I Use?](https://developer.hashicorp.com/terraform/plugin/framework-benefits) in the Terraform documentation for additional information._
