@@ -1,5 +1,13 @@
 # Terraform Provider WX-One
 
+## References
+
+The project setup was done according to the documentation: 
+
+- https://developer.hashicorp.com/terraform/plugin/framework
+- https://github.com/hashicorp/terraform-provider-scaffolding-framework
+- https://developer.hashicorp.com/terraform/tutorials/providers-plugin-framework
+
 ## Local Development
 
 - run `go env GOBIN`
