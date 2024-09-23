@@ -3,7 +3,9 @@ module terraform-provider-wx-one
 go 1.22.7
 
 require (
+	github.com/Khan/genqlient v0.7.0
 	github.com/go-resty/resty/v2 v2.15.2
+	github.com/google/uuid v1.6.0
 	github.com/hashicorp/terraform-plugin-framework v1.11.0
 	github.com/hashicorp/terraform-plugin-go v0.23.0
 	github.com/hashicorp/terraform-plugin-log v0.9.0
@@ -13,6 +15,9 @@ require (
 require (
 	github.com/ProtonMail/go-crypto v1.1.0-alpha.2 // indirect
 	github.com/agext/levenshtein v1.2.2 // indirect
+	github.com/agnivade/levenshtein v1.1.1 // indirect
+	github.com/alexflint/go-arg v1.4.2 // indirect
+	github.com/alexflint/go-scalar v1.0.0 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/cloudflare/circl v1.3.7 // indirect
 	github.com/fatih/color v1.16.0 // indirect
@@ -47,7 +52,7 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/oklog/run v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
-	github.com/stretchr/testify v1.8.2 // indirect
+	github.com/vektah/gqlparser/v2 v2.5.11 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
@@ -63,4 +68,5 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240227224415-6ceb2ff114de // indirect
 	google.golang.org/grpc v1.63.2 // indirect
 	google.golang.org/protobuf v1.34.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

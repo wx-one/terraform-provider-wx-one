@@ -6,10 +6,12 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/Khan/genqlient/graphql"
 	"github.com/go-resty/resty/v2"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -71,6 +73,20 @@ func (p *wxOneProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp
 			},
 		},
 	}
+}
+
+type roundTripperFunc func(*http.Request) (*http.Response, error)
+
+func (f roundTripperFunc) RoundTrip(req *http.Request) (*http.Response, error) {
+	return f(req)
+}
+
+func setCookiesMiddleware(next http.RoundTripper, cookie string) http.RoundTripper {
+	return roundTripperFunc(func(req *http.Request) (*http.Response, error) {
+		// Add the Cookie header to the request
+		req.Header.Add("Cookie", cookie)
+		return next.RoundTrip(req)
+	})
 }
 
 // Configure prepares a WX-One API client for data sources and resources.
@@ -181,11 +197,11 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 
 	tflog.Debug(ctx, "Creating WX-ONE client")
 
-	client := resty.New()
+	restClient := resty.New()
 
-	client.SetTimeout(10 * time.Second)
+	restClient.SetTimeout(10 * time.Second)
 
-	challengeResponse, err := client.R().SetBody(map[string]string{"username": username}).
+	challengeResponse, err := restClient.R().SetBody(map[string]string{"username": username}).
 		Post(fmt.Sprintf("%s/challenge", host))
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -225,7 +241,7 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 	// Convert the final hash to a hex string
 	hashedPassword := hex.EncodeToString(hash[:])
 
-	loginResponse, err := client.R().SetBody(map[string]string{"username": username, "password": hashedPassword}).
+	loginResponse, err := restClient.R().SetBody(map[string]string{"username": username, "password": hashedPassword}).
 		Post(fmt.Sprintf("%s/login", host))
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -251,9 +267,30 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 
 	// Extract cookies from the response
 	cookies := loginResponse.Header().Get("Set-Cookie")
+	cookieParts := strings.Split(cookies, ";")
+	cookie := cookieParts[0]
 
 	tflog.Info(ctx, "#######", map[string]interface{}{"login": login["auth"].(bool)})
-	tflog.Info(ctx, "#######", map[string]interface{}{"cookies": cookies})
+	tflog.Info(ctx, "#######", map[string]interface{}{"cookie": cookie})
+
+	httpClient := &http.Client{
+		Transport: setCookiesMiddleware(http.DefaultTransport, cookie),
+	}
+
+	grqphqlClient := graphql.NewClient(host+"/graphql", httpClient)
+	meResp, err := me(ctx, grqphqlClient)
+
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to Create WX-ONE API Client",
+			"An unexpected error occurred when creating the WX-ONE API client. "+
+				"If the error is not clear, please contact the provider developers.\n\n"+
+				"WX-ONE Client Error: "+err.Error(),
+		)
+		return
+	}
+
+	tflog.Info(ctx, "#######", map[string]interface{}{"me": meResp.Me.Id})
 
 	// TODO: Authenticate against WX-ONE API
 
