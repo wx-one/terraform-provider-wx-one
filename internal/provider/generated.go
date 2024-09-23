@@ -8,6 +8,71 @@ import (
 	"github.com/Khan/genqlient/graphql"
 )
 
+// __createKeyInput is used internally by genqlient
+type __createKeyInput struct {
+	Name        string `json:"name"`
+	PublicKey   string `json:"publicKey"`
+	ProjectId   string `json:"projectId"`
+	ProjectWide bool   `json:"projectWide"`
+}
+
+// GetName returns __createKeyInput.Name, and is useful for accessing the field via an interface.
+func (v *__createKeyInput) GetName() string { return v.Name }
+
+// GetPublicKey returns __createKeyInput.PublicKey, and is useful for accessing the field via an interface.
+func (v *__createKeyInput) GetPublicKey() string { return v.PublicKey }
+
+// GetProjectId returns __createKeyInput.ProjectId, and is useful for accessing the field via an interface.
+func (v *__createKeyInput) GetProjectId() string { return v.ProjectId }
+
+// GetProjectWide returns __createKeyInput.ProjectWide, and is useful for accessing the field via an interface.
+func (v *__createKeyInput) GetProjectWide() bool { return v.ProjectWide }
+
+// createKeyCreateKeyW1KeyResponse includes the requested fields of the GraphQL type W1KeyResponse.
+// The GraphQL type's documentation follows.
+//
+// Key Response
+type createKeyCreateKeyW1KeyResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err string `json:"err"`
+	// Success Message
+	Msg createKeyCreateKeyW1KeyResponseMsgW1Key `json:"msg"`
+}
+
+// GetCode returns createKeyCreateKeyW1KeyResponse.Code, and is useful for accessing the field via an interface.
+func (v *createKeyCreateKeyW1KeyResponse) GetCode() int { return v.Code }
+
+// GetErr returns createKeyCreateKeyW1KeyResponse.Err, and is useful for accessing the field via an interface.
+func (v *createKeyCreateKeyW1KeyResponse) GetErr() string { return v.Err }
+
+// GetMsg returns createKeyCreateKeyW1KeyResponse.Msg, and is useful for accessing the field via an interface.
+func (v *createKeyCreateKeyW1KeyResponse) GetMsg() createKeyCreateKeyW1KeyResponseMsgW1Key {
+	return v.Msg
+}
+
+// createKeyCreateKeyW1KeyResponseMsgW1Key includes the requested fields of the GraphQL type W1Key.
+// The GraphQL type's documentation follows.
+//
+// SSH Key
+type createKeyCreateKeyW1KeyResponseMsgW1Key struct {
+	// ID
+	Id string `json:"id"`
+}
+
+// GetId returns createKeyCreateKeyW1KeyResponseMsgW1Key.Id, and is useful for accessing the field via an interface.
+func (v *createKeyCreateKeyW1KeyResponseMsgW1Key) GetId() string { return v.Id }
+
+// createKeyResponse is returned by createKey on success.
+type createKeyResponse struct {
+	// Create Key
+	CreateKey createKeyCreateKeyW1KeyResponse `json:"createKey"`
+}
+
+// GetCreateKey returns createKeyResponse.CreateKey, and is useful for accessing the field via an interface.
+func (v *createKeyResponse) GetCreateKey() createKeyCreateKeyW1KeyResponse { return v.CreateKey }
+
 // getDefaultProjectGetDefaultProjectProjectResponse includes the requested fields of the GraphQL type ProjectResponse.
 // The GraphQL type's documentation follows.
 //
@@ -90,6 +155,51 @@ type meResponse struct {
 
 // GetMe returns meResponse.Me, and is useful for accessing the field via an interface.
 func (v *meResponse) GetMe() meMeUser { return v.Me }
+
+// The query or mutation executed by createKey.
+const createKey_Operation = `
+mutation createKey ($name: String!, $publicKey: String!, $projectId: UUID, $projectWide: Boolean) {
+	createKey(name: $name, publicKey: $publicKey, projectId: $projectId, projectWide: $projectWide) {
+		code
+		err
+		msg {
+			id
+		}
+	}
+}
+`
+
+func createKey(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	publicKey string,
+	projectId string,
+	projectWide bool,
+) (*createKeyResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "createKey",
+		Query:  createKey_Operation,
+		Variables: &__createKeyInput{
+			Name:        name,
+			PublicKey:   publicKey,
+			ProjectId:   projectId,
+			ProjectWide: projectWide,
+		},
+	}
+	var err_ error
+
+	var data_ createKeyResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
 
 // The query or mutation executed by getDefaultProject.
 const getDefaultProject_Operation = `

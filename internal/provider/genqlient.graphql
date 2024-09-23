@@ -16,3 +16,23 @@ query getDefaultProject {
 			}
     }
 }
+
+mutation createKey(
+    $name: String!
+    $publicKey: String!
+    $projectId: UUID
+    $projectWide: Boolean
+  ) {
+    createKey(
+      name: $name
+      publicKey: $publicKey
+      projectId: $projectId
+      projectWide: $projectWide
+    ) {
+      code
+      err
+      msg {
+        id
+      }
+    }
+  }
