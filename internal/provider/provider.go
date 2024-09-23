@@ -91,7 +91,7 @@ func setCookiesMiddleware(next http.RoundTripper, cookie string) http.RoundTripp
 
 type WxOneClients struct {
 	httpClient    *resty.Client
-	graphqlClient *graphql.Client
+	graphqlClient graphql.Client
 }
 
 // Configure prepares a WX-One API client for data sources and resources.
@@ -299,19 +299,19 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 
 	wxOneClients := WxOneClients{
 		httpClient:    restClient,
-		graphqlClient: &grqphqlClient,
+		graphqlClient: grqphqlClient,
 	}
 
 	// Make the http and grqphql clients available during DataSource and Resource
 	// type Configure methods.
-	resp.DataSourceData = wxOneClients
-	resp.ResourceData = wxOneClients
+	resp.DataSourceData = &wxOneClients
+	resp.ResourceData = &wxOneClients
 }
 
 // DataSources defines the data sources implemented in the provider.
 func (p *wxOneProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
-		NewCoffeesDataSource,
+		NewProjectDataSource,
 	}
 }
 

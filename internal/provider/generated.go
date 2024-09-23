@@ -6,8 +6,59 @@ import (
 	"context"
 
 	"github.com/Khan/genqlient/graphql"
-	"github.com/google/uuid"
 )
+
+// getDefaultProjectGetDefaultProjectProjectResponse includes the requested fields of the GraphQL type ProjectResponse.
+// The GraphQL type's documentation follows.
+//
+// ProjectResponse
+type getDefaultProjectGetDefaultProjectProjectResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err string `json:"err"`
+	// Success Message
+	Msg getDefaultProjectGetDefaultProjectProjectResponseMsgProject `json:"msg"`
+}
+
+// GetCode returns getDefaultProjectGetDefaultProjectProjectResponse.Code, and is useful for accessing the field via an interface.
+func (v *getDefaultProjectGetDefaultProjectProjectResponse) GetCode() int { return v.Code }
+
+// GetErr returns getDefaultProjectGetDefaultProjectProjectResponse.Err, and is useful for accessing the field via an interface.
+func (v *getDefaultProjectGetDefaultProjectProjectResponse) GetErr() string { return v.Err }
+
+// GetMsg returns getDefaultProjectGetDefaultProjectProjectResponse.Msg, and is useful for accessing the field via an interface.
+func (v *getDefaultProjectGetDefaultProjectProjectResponse) GetMsg() getDefaultProjectGetDefaultProjectProjectResponseMsgProject {
+	return v.Msg
+}
+
+// getDefaultProjectGetDefaultProjectProjectResponseMsgProject includes the requested fields of the GraphQL type Project.
+// The GraphQL type's documentation follows.
+//
+// Project
+type getDefaultProjectGetDefaultProjectProjectResponseMsgProject struct {
+	// ID
+	Id string `json:"id"`
+	// Name
+	Name string `json:"name"`
+}
+
+// GetId returns getDefaultProjectGetDefaultProjectProjectResponseMsgProject.Id, and is useful for accessing the field via an interface.
+func (v *getDefaultProjectGetDefaultProjectProjectResponseMsgProject) GetId() string { return v.Id }
+
+// GetName returns getDefaultProjectGetDefaultProjectProjectResponseMsgProject.Name, and is useful for accessing the field via an interface.
+func (v *getDefaultProjectGetDefaultProjectProjectResponseMsgProject) GetName() string { return v.Name }
+
+// getDefaultProjectResponse is returned by getDefaultProject on success.
+type getDefaultProjectResponse struct {
+	// Get Default Project
+	GetDefaultProject getDefaultProjectGetDefaultProjectProjectResponse `json:"getDefaultProject"`
+}
+
+// GetGetDefaultProject returns getDefaultProjectResponse.GetDefaultProject, and is useful for accessing the field via an interface.
+func (v *getDefaultProjectResponse) GetGetDefaultProject() getDefaultProjectGetDefaultProjectProjectResponse {
+	return v.GetDefaultProject
+}
 
 // meMeUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
@@ -15,7 +66,7 @@ import (
 // User
 type meMeUser struct {
 	// ID
-	Id uuid.UUID `json:"id"`
+	Id string `json:"id"`
 	// Name
 	Username string `json:"username"`
 	// Role
@@ -23,7 +74,7 @@ type meMeUser struct {
 }
 
 // GetId returns meMeUser.Id, and is useful for accessing the field via an interface.
-func (v *meMeUser) GetId() uuid.UUID { return v.Id }
+func (v *meMeUser) GetId() string { return v.Id }
 
 // GetUsername returns meMeUser.Username, and is useful for accessing the field via an interface.
 func (v *meMeUser) GetUsername() string { return v.Username }
@@ -39,6 +90,42 @@ type meResponse struct {
 
 // GetMe returns meResponse.Me, and is useful for accessing the field via an interface.
 func (v *meResponse) GetMe() meMeUser { return v.Me }
+
+// The query or mutation executed by getDefaultProject.
+const getDefaultProject_Operation = `
+query getDefaultProject {
+	getDefaultProject {
+		code
+		err
+		msg {
+			id
+			name
+		}
+	}
+}
+`
+
+func getDefaultProject(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (*getDefaultProjectResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "getDefaultProject",
+		Query:  getDefaultProject_Operation,
+	}
+	var err_ error
+
+	var data_ getDefaultProjectResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
 
 // The query or mutation executed by me.
 const me_Operation = `

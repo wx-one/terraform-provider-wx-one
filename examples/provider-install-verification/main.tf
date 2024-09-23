@@ -9,4 +9,4 @@ terraform {
 provider "wxone" {
 }
 
-data "wxone_coffees" "example" {}
+data "wxone_project" "default" {}

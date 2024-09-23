@@ -5,3 +5,14 @@ query me() {
 		role
 	}
 }
+
+query getDefaultProject {
+  getDefaultProject {
+      code
+      err
+      msg {
+				id
+				name
+			}
+    }
+}

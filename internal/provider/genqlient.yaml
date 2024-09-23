@@ -6,7 +6,7 @@ operations:
 generated: generated.go
 bindings:
   UUID: 
-    type: github.com/google/uuid.UUID 
+    type: string
   Email: 
     type: string
 package: provider
