@@ -89,6 +89,11 @@ func setCookiesMiddleware(next http.RoundTripper, cookie string) http.RoundTripp
 	})
 }
 
+type WxOneClients struct {
+	httpClient    *resty.Client
+	graphqlClient *graphql.Client
+}
+
 // Configure prepares a WX-One API client for data sources and resources.
 func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
 
@@ -198,7 +203,7 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 	tflog.Debug(ctx, "Creating WX-ONE client")
 
 	restClient := resty.New()
-
+	restClient.SetCookieJar(nil)
 	restClient.SetTimeout(10 * time.Second)
 
 	challengeResponse, err := restClient.R().SetBody(map[string]string{"username": username}).
@@ -292,15 +297,15 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 
 	tflog.Info(ctx, "#######", map[string]interface{}{"me": meResp.Me.Id})
 
-	// TODO: Authenticate against WX-ONE API
+	wxOneClients := WxOneClients{
+		httpClient:    restClient,
+		graphqlClient: &grqphqlClient,
+	}
 
-	// Create a new WX-ONE client using the configuration values
-	// client, err := wxOne.NewClient(&host, &username, &password)
-
-	// // Make the HashiCups client available during DataSource and Resource
-	// // type Configure methods.
-	// resp.DataSourceData = client
-	// resp.ResourceData = client
+	// Make the http and grqphql clients available during DataSource and Resource
+	// type Configure methods.
+	resp.DataSourceData = wxOneClients
+	resp.ResourceData = wxOneClients
 }
 
 // DataSources defines the data sources implemented in the provider.
