@@ -30,32 +30,18 @@ provider_installation {
 - run `go install .` to create a build
 - run `cd examples/provider-install-verification && terraform plan` to check if terraform is able to work with local provider build 
 
-at the moment it should produce the following output and that would mean it works: 
+## Add new graphql queries/mutations or update schema
+
+- for schema updates update file `internal/provider/schema.graphql` (it contains `customerSchema.gql` concatenated with `commonSchema.gql`)
+- to add or update queries and mutations add them to the file `internal/provider/genqlient.graphql`
+- to add additional go bindings for types update `internal/provider/genqlient.yaml` (for a complete list of configuration options see https://github.com/Khan/genqlient/blob/main/docs/genqlient.yaml)
+
+after updating run
 
 ```
-$ terraform plan
-╷
-│ Warning: Provider development overrides are in effect
-│
-│ The following provider development overrides are set in the CLI
-│ configuration:
-│  - hashicorp.com/edu/hashicups in /Users/<Username>/go/bin
-│
-│ The behavior may therefore not match any released version of the provider and
-│ applying changes may cause the state to become incompatible with published
-│ releases.
-╵
-╷
-│ Error: Invalid data source
-│
-│   on main.tf line 11, in data "wxone_coffees" "example":
-│   11: data "wxone_coffees" "example" {}
-│
-│ The provider hashicorp.com/edu/wx-one does not support data source
-│ "wxone_coffees".
-╵
+cd internal/provider
+go run github.com/Khan/genqlient
 ```
-
 
 # Terraform Provider Scaffolding (Terraform Plugin Framework)
 
