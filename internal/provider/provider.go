@@ -2,14 +2,22 @@ package provider
 
 import (
 	"context"
+	"crypto/sha512"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
 	"os"
+	"strings"
+	"time"
 
+	"github.com/go-resty/resty/v2"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -166,19 +174,87 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 		return
 	}
 
+	ctx = tflog.SetField(ctx, "wx_one_host", host)
+	ctx = tflog.SetField(ctx, "wx_one_username", username)
+	ctx = tflog.SetField(ctx, "wx_one_password", password)
+	ctx = tflog.MaskFieldValuesWithFieldKeys(ctx, "wx_one_password")
+
+	tflog.Debug(ctx, "Creating WX-ONE client")
+
+	client := resty.New()
+
+	client.SetTimeout(10 * time.Second)
+
+	challengeResponse, err := client.R().SetBody(map[string]string{"username": username}).
+		Post(fmt.Sprintf("%s/challenge", host))
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to Create WX-ONE API Client",
+			"An unexpected error occurred when creating the WX-ONE API client. "+
+				"If the error is not clear, please contact the provider developers.\n\n"+
+				"WX-ONE Client Error: "+err.Error(),
+		)
+		return
+	}
+
+	var challenge map[string]interface{}
+	err = json.Unmarshal(challengeResponse.Body(), &challenge)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to Create WX-ONE API Client",
+			"An unexpected error occurred when creating the WX-ONE API client. "+
+				"If the error is not clear, please contact the provider developers.\n\n"+
+				"WX-ONE Client Error: "+err.Error(),
+		)
+		return
+	}
+
+	initialHashValue := strings.ToUpper(password) + challenge["salt"].(string)
+	hash := sha512.Sum512([]byte(initialHashValue))
+
+	// Define the number of rounds
+	rounds := int(challenge["rounds"].(float64))
+
+	// Perform the hashing multiple rounds
+	for i := 0; i < rounds; i++ {
+		// Concatenate your strings
+		hashValue := challenge["challenge"].(string) + challenge["date"].(string) + "wizardtales.com" + hex.EncodeToString(hash[:])
+		hash = sha512.Sum512([]byte(hashValue))
+	}
+
+	// Convert the final hash to a hex string
+	hashedPassword := hex.EncodeToString(hash[:])
+
+	loginResponse, err := client.R().SetBody(map[string]string{"username": username, "password": hashedPassword}).
+		Post(fmt.Sprintf("%s/login", host))
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to Create WX-ONE API Client",
+			"An unexpected error occurred when creating the WX-ONE API client. "+
+				"If the error is not clear, please contact the provider developers.\n\n"+
+				"WX-ONE Client Error: "+err.Error(),
+		)
+		return
+	}
+
+	var login map[string]interface{}
+	err = json.Unmarshal(loginResponse.Body(), &login)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to Create WX-ONE API Client",
+			"An unexpected error occurred when creating the WX-ONE API client. "+
+				"If the error is not clear, please contact the provider developers.\n\n"+
+				"WX-ONE Client Error: "+err.Error(),
+		)
+		return
+	}
+
+	tflog.Info(ctx, "#######", map[string]interface{}{"login": login["auth"].(bool)})
+
 	// TODO: Authenticate against WX-ONE API
 
 	// Create a new WX-ONE client using the configuration values
 	// client, err := wxOne.NewClient(&host, &username, &password)
-	// if err != nil {
-	// 		resp.Diagnostics.AddError(
-	// 				"Unable to Create WX-ONE API Client",
-	// 				"An unexpected error occurred when creating the WX-ONE API client. "+
-	// 						"If the error is not clear, please contact the provider developers.\n\n"+
-	// 						"WX-ONE Client Error: "+err.Error(),
-	// 		)
-	// 		return
-	// }
 
 	// // Make the HashiCups client available during DataSource and Resource
 	// // type Configure methods.

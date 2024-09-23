@@ -6,6 +6,7 @@ terraform {
   }
 }
 
-provider "wxone" {}
+provider "wxone" {
+}
 
 data "wxone_coffees" "example" {}
