@@ -7,3 +7,5 @@ terraform {
 }
 
 provider "wxone" {}
+
+data "wxone_coffees" "example" {}

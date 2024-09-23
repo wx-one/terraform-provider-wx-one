@@ -43,7 +43,7 @@ type wxOneProvider struct {
 
 // Metadata returns the provider type name.
 func (p *wxOneProvider) Metadata(_ context.Context, _ provider.MetadataRequest, resp *provider.MetadataResponse) {
-	resp.TypeName = "WX-One"
+	resp.TypeName = "wxone"
 	resp.Version = p.version
 }
 
