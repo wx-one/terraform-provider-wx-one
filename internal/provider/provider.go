@@ -249,7 +249,11 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 		return
 	}
 
+	// Extract cookies from the response
+	cookies := loginResponse.Header().Get("Set-Cookie")
+
 	tflog.Info(ctx, "#######", map[string]interface{}{"login": login["auth"].(bool)})
+	tflog.Info(ctx, "#######", map[string]interface{}{"cookies": cookies})
 
 	// TODO: Authenticate against WX-ONE API
 
