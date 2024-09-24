@@ -1,38 +1,64 @@
-query me() {
-	me {
-		id
-		username
-		role
-	}
+query me {
+  me {
+    id
+    username
+    role
+  }
 }
 
 query getDefaultProject {
   getDefaultProject {
-      code
-      err
-      msg {
-				id
-				name
-			}
+    code
+    err
+    msg {
+      id
+      name
     }
+  }
 }
 
 mutation createKey(
-    $name: String!
-    $publicKey: String!
-    $projectId: UUID
-    $projectWide: Boolean
+  $name: String!
+  $publicKey: String!
+  # @genqlient(omitempty: true)
+  $projectId: UUID
+  $projectWide: Boolean
+) {
+  createKey(
+    name: $name
+    publicKey: $publicKey
+    projectId: $projectId
+    projectWide: $projectWide
   ) {
-    createKey(
-      name: $name
-      publicKey: $publicKey
-      projectId: $projectId
-      projectWide: $projectWide
-    ) {
-      code
-      err
-      msg {
-        id
-      }
+    code
+    err
+    msg {
+      id
     }
   }
+}
+
+query getKey(
+  # @genqlient(omitempty: true)
+  $id: UUID
+  # @genqlient(omitempty: true)
+  $name: String
+  # @genqlient(omitempty: true)
+  $projectId: UUID
+  # @genqlient(omitempty: true, pointer: true)
+  $projectWide: Boolean
+) {
+  getKey(
+    id: $id
+    name: $name
+    projectId: $projectId
+    projectWide: $projectWide
+  ) {
+    code
+    err
+    msg {
+      id
+      name
+    }
+  }
+}

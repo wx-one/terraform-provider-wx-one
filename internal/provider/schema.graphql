@@ -1333,6 +1333,17 @@ type Query {
   getImageList("ID of Project" projectId: UUID!): W1ImageListResponse
   "Get Key List"
   getKeyList("ID of Project" projectId: UUID): W1KeyListResponse
+  "Get Key"
+  getKey(
+    "ID" 
+    id: UUID 
+    "ID of Project" 
+    projectId: UUID
+    "Name" 
+    name: String
+    "Project Wide"
+    projectWide: Boolean
+  ): W1KeyResponse
   "Get Default Project"
   getDefaultProject: ProjectResponse
   "Get Projects"

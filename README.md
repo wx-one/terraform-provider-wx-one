@@ -27,6 +27,14 @@ provider_installation {
 }
 ```
 
+### Create a new build and run
+
+```bash
+go install .  # create new build
+cd examples/provider-install-verification # go to terraform example
+WX_ONE_HOST=http://localhost:5000 WX_ONE_USERNAME=christian.wolf@wizardtales.com WX_ONE_PASSWORD=xxx TF_LOG_PROVIDER=DEBUG terraform plan # use your username and password and the correct host to run terraform plan 
+```
+
 - run `go install .` to create a build
 - run `cd examples/provider-install-verification && terraform plan` to check if terraform is able to work with local provider build 
 

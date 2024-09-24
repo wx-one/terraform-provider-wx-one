@@ -7,6 +7,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -27,7 +29,7 @@ type keyResource struct {
 
 // Metadata returns the resource type name.
 func (r *keyResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_order"
+	resp.TypeName = req.ProviderTypeName + "_key"
 }
 
 // Schema defines the schema for the resource.
@@ -38,19 +40,19 @@ func (r *keyResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 				Computed: true,
 			},
 			"name": schema.StringAttribute{
-				Computed: true,
+				Optional: true,
 			},
 			"private_key": schema.StringAttribute{
-				Computed: true,
+				Optional: true,
 			},
 			"public_key": schema.StringAttribute{
-				Computed: true,
+				Optional: true,
 			},
 			"project_wide": schema.BoolAttribute{
-				Computed: true,
+				Optional: true,
 			},
 			"project_id": schema.StringAttribute{
-				Computed: true,
+				Optional: true,
 			},
 		},
 	}
@@ -100,8 +102,8 @@ func (r *keyResource) Create(ctx context.Context, req resource.CreateRequest, re
 	key, err := createKey(ctx, r.wxOneClients.graphqlClient, plan.Name.ValueString(), plan.PublicKey.ValueString(), plan.ProjectId.ValueString(), plan.ProjectWide.ValueBool())
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error creating order",
-			"Could not create order, unexpected error: "+err.Error(),
+			"Error creating key",
+			"Could not create key, unexpected error: "+err.Error(),
 		)
 		return
 	}
@@ -119,6 +121,51 @@ func (r *keyResource) Create(ctx context.Context, req resource.CreateRequest, re
 
 // Read refreshes the Terraform state with the latest data.
 func (r *keyResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	// Get current state
+	var state keyResourceModel
+	diags := req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Get refreshed key value from WX-ONE
+	key, err := getKey(ctx, r.wxOneClients.graphqlClient, state.ID.ValueString(), "", "", (*bool)(nil))
+	if err != nil {
+
+		if errList, ok := err.(gqlerror.List); ok {
+			tflog.Info(ctx, "####### if before parsing")
+
+			gqlerr := &gqlerror.Error{}
+
+			if errList.As(&gqlerr) {
+				tflog.Info(ctx, "####### gqlerror", map[string]interface{}{"gqlerror": gqlerr.Extensions})
+				if errorCode, ok := gqlerr.Extensions["code"].(int); ok {
+					tflog.Info(ctx, "####### if", map[string]interface{}{"error": errorCode})
+				}
+
+			}
+			tflog.Info(ctx, "####### if after parsing")
+
+			// return
+		} else {
+			tflog.Info(ctx, "####### else", map[string]interface{}{"error": err})
+			// Handle cases where the error message is not JSON
+			resp.Diagnostics.AddError(
+				"Error Reading WX-ONE",
+				"Could not read WX-ONE key ID "+state.ID.ValueString()+": "+err.Error(),
+			)
+		}
+	}
+
+	tflog.Info(ctx, "#######", map[string]interface{}{"key": key.GetKey.Code})
+
+	// Set refreshed state
+	diags = resp.State.Set(ctx, state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 }
 
 // Update updates the resource and sets the updated Terraform state on success.

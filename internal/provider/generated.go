@@ -12,7 +12,7 @@ import (
 type __createKeyInput struct {
 	Name        string `json:"name"`
 	PublicKey   string `json:"publicKey"`
-	ProjectId   string `json:"projectId"`
+	ProjectId   string `json:"projectId,omitempty"`
 	ProjectWide bool   `json:"projectWide"`
 }
 
@@ -27,6 +27,26 @@ func (v *__createKeyInput) GetProjectId() string { return v.ProjectId }
 
 // GetProjectWide returns __createKeyInput.ProjectWide, and is useful for accessing the field via an interface.
 func (v *__createKeyInput) GetProjectWide() bool { return v.ProjectWide }
+
+// __getKeyInput is used internally by genqlient
+type __getKeyInput struct {
+	Id          string `json:"id,omitempty"`
+	Name        string `json:"name,omitempty"`
+	ProjectId   string `json:"projectId,omitempty"`
+	ProjectWide *bool  `json:"projectWide,omitempty"`
+}
+
+// GetId returns __getKeyInput.Id, and is useful for accessing the field via an interface.
+func (v *__getKeyInput) GetId() string { return v.Id }
+
+// GetName returns __getKeyInput.Name, and is useful for accessing the field via an interface.
+func (v *__getKeyInput) GetName() string { return v.Name }
+
+// GetProjectId returns __getKeyInput.ProjectId, and is useful for accessing the field via an interface.
+func (v *__getKeyInput) GetProjectId() string { return v.ProjectId }
+
+// GetProjectWide returns __getKeyInput.ProjectWide, and is useful for accessing the field via an interface.
+func (v *__getKeyInput) GetProjectWide() *bool { return v.ProjectWide }
 
 // createKeyCreateKeyW1KeyResponse includes the requested fields of the GraphQL type W1KeyResponse.
 // The GraphQL type's documentation follows.
@@ -124,6 +144,54 @@ type getDefaultProjectResponse struct {
 func (v *getDefaultProjectResponse) GetGetDefaultProject() getDefaultProjectGetDefaultProjectProjectResponse {
 	return v.GetDefaultProject
 }
+
+// getKeyGetKeyW1KeyResponse includes the requested fields of the GraphQL type W1KeyResponse.
+// The GraphQL type's documentation follows.
+//
+// Key Response
+type getKeyGetKeyW1KeyResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err string `json:"err"`
+	// Success Message
+	Msg getKeyGetKeyW1KeyResponseMsgW1Key `json:"msg"`
+}
+
+// GetCode returns getKeyGetKeyW1KeyResponse.Code, and is useful for accessing the field via an interface.
+func (v *getKeyGetKeyW1KeyResponse) GetCode() int { return v.Code }
+
+// GetErr returns getKeyGetKeyW1KeyResponse.Err, and is useful for accessing the field via an interface.
+func (v *getKeyGetKeyW1KeyResponse) GetErr() string { return v.Err }
+
+// GetMsg returns getKeyGetKeyW1KeyResponse.Msg, and is useful for accessing the field via an interface.
+func (v *getKeyGetKeyW1KeyResponse) GetMsg() getKeyGetKeyW1KeyResponseMsgW1Key { return v.Msg }
+
+// getKeyGetKeyW1KeyResponseMsgW1Key includes the requested fields of the GraphQL type W1Key.
+// The GraphQL type's documentation follows.
+//
+// SSH Key
+type getKeyGetKeyW1KeyResponseMsgW1Key struct {
+	// ID
+	Id string `json:"id"`
+	// Name
+	Name string `json:"name"`
+}
+
+// GetId returns getKeyGetKeyW1KeyResponseMsgW1Key.Id, and is useful for accessing the field via an interface.
+func (v *getKeyGetKeyW1KeyResponseMsgW1Key) GetId() string { return v.Id }
+
+// GetName returns getKeyGetKeyW1KeyResponseMsgW1Key.Name, and is useful for accessing the field via an interface.
+func (v *getKeyGetKeyW1KeyResponseMsgW1Key) GetName() string { return v.Name }
+
+// getKeyResponse is returned by getKey on success.
+type getKeyResponse struct {
+	// Get Key
+	GetKey getKeyGetKeyW1KeyResponse `json:"getKey"`
+}
+
+// GetGetKey returns getKeyResponse.GetKey, and is useful for accessing the field via an interface.
+func (v *getKeyResponse) GetGetKey() getKeyGetKeyW1KeyResponse { return v.GetKey }
 
 // meMeUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
@@ -226,6 +294,52 @@ func getDefaultProject(
 	var err_ error
 
 	var data_ getDefaultProjectResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by getKey.
+const getKey_Operation = `
+query getKey ($id: UUID, $name: String, $projectId: UUID, $projectWide: Boolean) {
+	getKey(id: $id, name: $name, projectId: $projectId, projectWide: $projectWide) {
+		code
+		err
+		msg {
+			id
+			name
+		}
+	}
+}
+`
+
+func getKey(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	name string,
+	projectId string,
+	projectWide *bool,
+) (*getKeyResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "getKey",
+		Query:  getKey_Operation,
+		Variables: &__getKeyInput{
+			Id:          id,
+			Name:        name,
+			ProjectId:   projectId,
+			ProjectWide: projectWide,
+		},
+	}
+	var err_ error
+
+	var data_ getKeyResponse
 	resp_ := &graphql.Response{Data: &data_}
 
 	err_ = client_.MakeRequest(
