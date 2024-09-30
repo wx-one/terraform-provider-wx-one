@@ -28,6 +28,18 @@ func (v *__createKeyInput) GetProjectId() string { return v.ProjectId }
 // GetProjectWide returns __createKeyInput.ProjectWide, and is useful for accessing the field via an interface.
 func (v *__createKeyInput) GetProjectWide() bool { return v.ProjectWide }
 
+// __deleteKeyInput is used internally by genqlient
+type __deleteKeyInput struct {
+	Id        string `json:"id"`
+	ProjectId string `json:"projectId,omitempty"`
+}
+
+// GetId returns __deleteKeyInput.Id, and is useful for accessing the field via an interface.
+func (v *__deleteKeyInput) GetId() string { return v.Id }
+
+// GetProjectId returns __deleteKeyInput.ProjectId, and is useful for accessing the field via an interface.
+func (v *__deleteKeyInput) GetProjectId() string { return v.ProjectId }
+
 // __getKeyInput is used internally by genqlient
 type __getKeyInput struct {
 	Id          string `json:"id,omitempty"`
@@ -92,6 +104,37 @@ type createKeyResponse struct {
 
 // GetCreateKey returns createKeyResponse.CreateKey, and is useful for accessing the field via an interface.
 func (v *createKeyResponse) GetCreateKey() createKeyCreateKeyW1KeyResponse { return v.CreateKey }
+
+// deleteKeyDeleteKeyResponse includes the requested fields of the GraphQL type Response.
+// The GraphQL type's documentation follows.
+//
+// Response
+type deleteKeyDeleteKeyResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err string `json:"err"`
+	// Success Message
+	Msg string `json:"msg"`
+}
+
+// GetCode returns deleteKeyDeleteKeyResponse.Code, and is useful for accessing the field via an interface.
+func (v *deleteKeyDeleteKeyResponse) GetCode() int { return v.Code }
+
+// GetErr returns deleteKeyDeleteKeyResponse.Err, and is useful for accessing the field via an interface.
+func (v *deleteKeyDeleteKeyResponse) GetErr() string { return v.Err }
+
+// GetMsg returns deleteKeyDeleteKeyResponse.Msg, and is useful for accessing the field via an interface.
+func (v *deleteKeyDeleteKeyResponse) GetMsg() string { return v.Msg }
+
+// deleteKeyResponse is returned by deleteKey on success.
+type deleteKeyResponse struct {
+	// Delete Key
+	DeleteKey deleteKeyDeleteKeyResponse `json:"deleteKey"`
+}
+
+// GetDeleteKey returns deleteKeyResponse.DeleteKey, and is useful for accessing the field via an interface.
+func (v *deleteKeyResponse) GetDeleteKey() deleteKeyDeleteKeyResponse { return v.DeleteKey }
 
 // getDefaultProjectGetDefaultProjectProjectResponse includes the requested fields of the GraphQL type ProjectResponse.
 // The GraphQL type's documentation follows.
@@ -258,6 +301,45 @@ func createKey(
 	var err_ error
 
 	var data_ createKeyResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by deleteKey.
+const deleteKey_Operation = `
+mutation deleteKey ($id: UUID!, $projectId: UUID) {
+	deleteKey(id: $id, projectId: $projectId) {
+		code
+		err
+		msg
+	}
+}
+`
+
+func deleteKey(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	projectId string,
+) (*deleteKeyResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "deleteKey",
+		Query:  deleteKey_Operation,
+		Variables: &__deleteKeyInput{
+			Id:        id,
+			ProjectId: projectId,
+		},
+	}
+	var err_ error
+
+	var data_ deleteKeyResponse
 	resp_ := &graphql.Response{Data: &data_}
 
 	err_ = client_.MakeRequest(

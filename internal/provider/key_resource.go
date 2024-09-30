@@ -6,8 +6,10 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -39,19 +41,31 @@ func (r *keyResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 				Computed: true,
 			},
 			"name": schema.StringAttribute{
-				Optional: true,
+				Required: true,
 			},
 			"private_key": schema.StringAttribute{
 				Optional: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 			"public_key": schema.StringAttribute{
-				Optional: true,
+				Required: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 			"project_wide": schema.BoolAttribute{
-				Optional: true,
+				Required: true,
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.RequiresReplace(),
+				},
 			},
 			"project_id": schema.StringAttribute{
 				Optional: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 		},
 	}
@@ -97,6 +111,14 @@ func (r *keyResource) Create(ctx context.Context, req resource.CreateRequest, re
 		return
 	}
 
+	if plan.ProjectWide.ValueBool() && plan.ProjectId.IsNull() {
+		resp.Diagnostics.AddError(
+			"Missing Required Attribute",
+			"project id is required when projectwide is set to true.",
+		)
+		return
+	}
+
 	// Create new key
 	key, err := createKey(ctx, r.wxOneClients.graphqlClient, plan.Name.ValueString(), plan.PublicKey.ValueString(), plan.ProjectId.ValueString(), plan.ProjectWide.ValueBool())
 	if err != nil {
@@ -131,36 +153,10 @@ func (r *keyResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 	// Get refreshed key value from WX-ONE
 	_, err := getKey(ctx, r.wxOneClients.graphqlClient, state.ID.ValueString(), "", "", (*bool)(nil))
 	if err != nil {
-		if errList, ok := err.(gqlerror.List); ok {
-			gqlerr := &gqlerror.Error{}
-			if errList.As(&gqlerr) {
-				if errorCode, ok := gqlerr.Extensions["code"].(string); ok {
-					if errorCode == "NOT_FOUND" {
-						resp.State.RemoveResource(ctx)
-						return
-					} else {
-						resp.Diagnostics.AddError(
-							"Error Reading WX-ONE",
-							"Could not read WX-ONE key ID "+state.ID.ValueString()+": "+err.Error(),
-						)
-						return
-					}
-				} else {
-					resp.Diagnostics.AddError(
-						"Error Reading WX-ONE",
-						"Could not read WX-ONE key ID "+state.ID.ValueString()+": "+err.Error(),
-					)
-					return
-				}
-			} else {
-				resp.Diagnostics.AddError(
-					"Error Reading WX-ONE",
-					"Could not read WX-ONE key ID "+state.ID.ValueString()+": "+err.Error(),
-				)
-				return
-			}
+		if isNotFoundError(err) {
+			resp.State.RemoveResource(ctx)
+			return
 		} else {
-			// Handle cases where the error message is not JSON
 			resp.Diagnostics.AddError(
 				"Error Reading WX-ONE",
 				"Could not read WX-ONE key ID "+state.ID.ValueString()+": "+err.Error(),
@@ -183,4 +179,21 @@ func (r *keyResource) Update(ctx context.Context, req resource.UpdateRequest, re
 
 // Delete deletes the resource and removes the Terraform state on success.
 func (r *keyResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	// Retrieve values from state
+	var state keyResourceModel
+	diags := req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Delete existing key
+	_, err := deleteKey(ctx, r.wxOneClients.graphqlClient, state.ID.ValueString(), state.ProjectId.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error Deleting WX-ONE Key",
+			"Could not delete key, unexpected error: "+err.Error(),
+		)
+		return
+	}
 }

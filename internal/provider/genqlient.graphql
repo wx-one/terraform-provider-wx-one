@@ -62,3 +62,15 @@ query getKey(
     }
   }
 }
+
+mutation deleteKey(
+  $id: UUID!, 
+  # @genqlient(omitempty: true)
+  $projectId: UUID
+) {
+	deleteKey(id: $id, projectId: $projectId) {
+		code
+		err
+		msg
+	}
+}
