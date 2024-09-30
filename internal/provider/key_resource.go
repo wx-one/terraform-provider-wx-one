@@ -3,7 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
+	"strings"
 
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
@@ -15,8 +17,9 @@ import (
 
 // Ensure the implementation satisfies the expected interfaces.
 var (
-	_ resource.Resource              = &keyResource{}
-	_ resource.ResourceWithConfigure = &keyResource{}
+	_ resource.Resource                = &keyResource{}
+	_ resource.ResourceWithConfigure   = &keyResource{}
+	_ resource.ResourceWithImportState = &keyResource{}
 )
 
 // NewKeyResource is a helper function to simplify the provider implementation.
@@ -170,6 +173,8 @@ func (r *keyResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 	}
 
 	state.Name = types.StringValue(key.GetKey.Msg.Name)
+	state.ProjectWide = types.BoolValue(key.GetKey.Msg.ProjectWide)
+	state.PublicKey = types.StringValue(key.GetKey.Msg.PublicKey)
 
 	// Set refreshed state
 	diags = resp.State.Set(ctx, state)
@@ -226,4 +231,20 @@ func (r *keyResource) Delete(ctx context.Context, req resource.DeleteRequest, re
 		)
 		return
 	}
+}
+
+func (r *keyResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	idParts := strings.Split(req.ID, ":")
+
+	if len(idParts) != 2 {
+		resp.Diagnostics.AddError(
+			"Invalid import ID",
+			fmt.Sprintf("Expected format 'id:projectId', got '%s'", req.ID),
+		)
+		return
+	}
+
+	// Set each ID to the respective attributes in state
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), idParts[0])...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("project_id"), idParts[1])...)
 }

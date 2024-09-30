@@ -59,6 +59,8 @@ query getKey(
     msg {
       id
       name
+      publicKey
+      projectWide
     }
   }
 }

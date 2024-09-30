@@ -235,6 +235,10 @@ type getKeyGetKeyW1KeyResponseMsgW1Key struct {
 	Id string `json:"id"`
 	// Name
 	Name string `json:"name"`
+	// Public Key
+	PublicKey string `json:"publicKey"`
+	// Can this key be used for the complete project or only the user
+	ProjectWide bool `json:"projectWide"`
 }
 
 // GetId returns getKeyGetKeyW1KeyResponseMsgW1Key.Id, and is useful for accessing the field via an interface.
@@ -242,6 +246,12 @@ func (v *getKeyGetKeyW1KeyResponseMsgW1Key) GetId() string { return v.Id }
 
 // GetName returns getKeyGetKeyW1KeyResponseMsgW1Key.Name, and is useful for accessing the field via an interface.
 func (v *getKeyGetKeyW1KeyResponseMsgW1Key) GetName() string { return v.Name }
+
+// GetPublicKey returns getKeyGetKeyW1KeyResponseMsgW1Key.PublicKey, and is useful for accessing the field via an interface.
+func (v *getKeyGetKeyW1KeyResponseMsgW1Key) GetPublicKey() string { return v.PublicKey }
+
+// GetProjectWide returns getKeyGetKeyW1KeyResponseMsgW1Key.ProjectWide, and is useful for accessing the field via an interface.
+func (v *getKeyGetKeyW1KeyResponseMsgW1Key) GetProjectWide() bool { return v.ProjectWide }
 
 // getKeyResponse is returned by getKey on success.
 type getKeyResponse struct {
@@ -457,6 +467,8 @@ query getKey ($id: UUID, $name: String, $projectId: UUID, $projectWide: Boolean)
 		msg {
 			id
 			name
+			publicKey
+			projectWide
 		}
 	}
 }
