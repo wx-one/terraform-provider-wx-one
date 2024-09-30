@@ -280,9 +280,9 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 	}
 
 	grqphqlClient := graphql.NewClient(host+"/graphql", httpClient)
-	meResp, err := me(ctx, grqphqlClient)
+	_, meErr := me(ctx, grqphqlClient)
 
-	if err != nil || meResp.Me.Id == "" {
+	if meErr != nil {
 		resp.Diagnostics.AddError(
 			"Unable to Create WX-ONE API Client",
 			"An unexpected error occurred when creating the WX-ONE API client. "+

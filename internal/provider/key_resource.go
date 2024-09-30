@@ -7,7 +7,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
@@ -130,35 +129,45 @@ func (r *keyResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 	}
 
 	// Get refreshed key value from WX-ONE
-	key, err := getKey(ctx, r.wxOneClients.graphqlClient, state.ID.ValueString(), "", "", (*bool)(nil))
+	_, err := getKey(ctx, r.wxOneClients.graphqlClient, state.ID.ValueString(), "", "", (*bool)(nil))
 	if err != nil {
-
 		if errList, ok := err.(gqlerror.List); ok {
-			tflog.Info(ctx, "####### if before parsing")
-
 			gqlerr := &gqlerror.Error{}
-
 			if errList.As(&gqlerr) {
-				tflog.Info(ctx, "####### gqlerror", map[string]interface{}{"gqlerror": gqlerr.Extensions})
-				if errorCode, ok := gqlerr.Extensions["code"].(int); ok {
-					tflog.Info(ctx, "####### if", map[string]interface{}{"error": errorCode})
+				if errorCode, ok := gqlerr.Extensions["code"].(string); ok {
+					if errorCode == "NOT_FOUND" {
+						resp.State.RemoveResource(ctx)
+						return
+					} else {
+						resp.Diagnostics.AddError(
+							"Error Reading WX-ONE",
+							"Could not read WX-ONE key ID "+state.ID.ValueString()+": "+err.Error(),
+						)
+						return
+					}
+				} else {
+					resp.Diagnostics.AddError(
+						"Error Reading WX-ONE",
+						"Could not read WX-ONE key ID "+state.ID.ValueString()+": "+err.Error(),
+					)
+					return
 				}
-
+			} else {
+				resp.Diagnostics.AddError(
+					"Error Reading WX-ONE",
+					"Could not read WX-ONE key ID "+state.ID.ValueString()+": "+err.Error(),
+				)
+				return
 			}
-			tflog.Info(ctx, "####### if after parsing")
-
-			// return
 		} else {
-			tflog.Info(ctx, "####### else", map[string]interface{}{"error": err})
 			// Handle cases where the error message is not JSON
 			resp.Diagnostics.AddError(
 				"Error Reading WX-ONE",
 				"Could not read WX-ONE key ID "+state.ID.ValueString()+": "+err.Error(),
 			)
+			return
 		}
 	}
-
-	tflog.Info(ctx, "#######", map[string]interface{}{"key": key.GetKey.Code})
 
 	// Set refreshed state
 	diags = resp.State.Set(ctx, state)
