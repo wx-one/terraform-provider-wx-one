@@ -230,14 +230,14 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 		return
 	}
 
-	initialHashValue := strings.ToUpper(password) + challenge["salt"].(string)
-	hash := sha512.Sum512([]byte(initialHashValue))
+	hashValue := challenge["challenge"].(string) + challenge["date"].(string) + "wizardtales.com" + password
+	hash := sha512.Sum512([]byte(hashValue))
 
 	// Define the number of rounds
 	rounds := int(challenge["rounds"].(float64))
 
 	// Perform the hashing multiple rounds
-	for i := 0; i < rounds; i++ {
+	for i := 1; i < rounds; i++ {
 		// Concatenate your strings
 		hashValue := challenge["challenge"].(string) + challenge["date"].(string) + "wizardtales.com" + hex.EncodeToString(hash[:])
 		hash = sha512.Sum512([]byte(hashValue))
@@ -275,9 +275,6 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 	cookieParts := strings.Split(cookies, ";")
 	cookie := cookieParts[0]
 
-	tflog.Info(ctx, "#######", map[string]interface{}{"login": login["auth"].(bool)})
-	tflog.Info(ctx, "#######", map[string]interface{}{"cookie": cookie})
-
 	httpClient := &http.Client{
 		Transport: setCookiesMiddleware(http.DefaultTransport, cookie),
 	}
@@ -285,7 +282,7 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 	grqphqlClient := graphql.NewClient(host+"/graphql", httpClient)
 	meResp, err := me(ctx, grqphqlClient)
 
-	if err != nil {
+	if err != nil || meResp.Me.Id == "" {
 		resp.Diagnostics.AddError(
 			"Unable to Create WX-ONE API Client",
 			"An unexpected error occurred when creating the WX-ONE API client. "+
@@ -294,8 +291,6 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 		)
 		return
 	}
-
-	tflog.Info(ctx, "#######", map[string]interface{}{"me": meResp.Me.Id})
 
 	wxOneClients := WxOneClients{
 		httpClient:    restClient,
