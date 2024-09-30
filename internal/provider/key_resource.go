@@ -1,3 +1,6 @@
+// Copyright (c) HashiCorp, Inc.
+// SPDX-License-Identifier: MPL-2.0
+
 package provider
 
 import (
@@ -43,7 +46,7 @@ func (r *keyResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *
 		Description: "Manages a key.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description: "ID of key in UUID format.",
+				Description: "ID of the key in UUID format.",
 				Computed:    true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),

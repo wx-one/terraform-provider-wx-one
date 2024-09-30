@@ -1,3 +1,6 @@
+// Copyright (c) HashiCorp, Inc.
+// SPDX-License-Identifier: MPL-2.0
+
 package provider
 
 import (
@@ -54,12 +57,15 @@ func (d *projectDataSource) Metadata(_ context.Context, req datasource.MetadataR
 // Schema defines the schema for the data source.
 func (d *projectDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: "Use this data source to access information about the default project.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Computed: true,
+				Description: "ID of the project in UUID format.",
+				Computed:    true,
 			},
 			"name": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of the default project.",
+				Computed:    true,
 			},
 		},
 	}
