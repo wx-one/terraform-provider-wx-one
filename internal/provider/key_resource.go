@@ -40,36 +40,43 @@ func (r *keyResource) Metadata(_ context.Context, req resource.MetadataRequest, 
 // Schema defines the schema for the resource.
 func (r *keyResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: "Manages a key.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Computed: true,
+				Description: "ID of key in UUID format.",
+				Computed:    true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Description: "Name of the key.",
+				Required:    true,
 			},
 			"private_key": schema.StringAttribute{
-				Optional: true,
+				Description: "The private key of the key.",
+				Optional:    true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
 			"public_key": schema.StringAttribute{
-				Required: true,
+				Description: "The public key of the key.",
+				Required:    true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
 			"project_wide": schema.BoolAttribute{
-				Required: true,
+				Description: "Should the key be used project wide or tied to the user.",
+				Required:    true,
 				PlanModifiers: []planmodifier.Bool{
 					boolplanmodifier.RequiresReplace(),
 				},
 			},
 			"project_id": schema.StringAttribute{
-				Optional: true,
+				Description: "If the key should be used project wide the corresponding project id.",
+				Optional:    true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
