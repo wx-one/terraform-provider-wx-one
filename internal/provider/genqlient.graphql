@@ -74,3 +74,18 @@ mutation deleteKey(
 		msg
 	}
 }
+
+mutation updateKey(
+  $id: UUID!, 
+  # @genqlient(omitempty: true)
+  $projectId: UUID, 
+  $name: String!
+) {
+	updateKey(id: $id, name: $name, projectId: $projectId) {
+		code
+		err
+		msg {
+			id
+		}
+	}
+}

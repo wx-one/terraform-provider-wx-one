@@ -60,6 +60,22 @@ func (v *__getKeyInput) GetProjectId() string { return v.ProjectId }
 // GetProjectWide returns __getKeyInput.ProjectWide, and is useful for accessing the field via an interface.
 func (v *__getKeyInput) GetProjectWide() *bool { return v.ProjectWide }
 
+// __updateKeyInput is used internally by genqlient
+type __updateKeyInput struct {
+	Id        string `json:"id"`
+	ProjectId string `json:"projectId,omitempty"`
+	Name      string `json:"name"`
+}
+
+// GetId returns __updateKeyInput.Id, and is useful for accessing the field via an interface.
+func (v *__updateKeyInput) GetId() string { return v.Id }
+
+// GetProjectId returns __updateKeyInput.ProjectId, and is useful for accessing the field via an interface.
+func (v *__updateKeyInput) GetProjectId() string { return v.ProjectId }
+
+// GetName returns __updateKeyInput.Name, and is useful for accessing the field via an interface.
+func (v *__updateKeyInput) GetName() string { return v.Name }
+
 // createKeyCreateKeyW1KeyResponse includes the requested fields of the GraphQL type W1KeyResponse.
 // The GraphQL type's documentation follows.
 //
@@ -267,6 +283,51 @@ type meResponse struct {
 // GetMe returns meResponse.Me, and is useful for accessing the field via an interface.
 func (v *meResponse) GetMe() meMeUser { return v.Me }
 
+// updateKeyResponse is returned by updateKey on success.
+type updateKeyResponse struct {
+	// Update Key
+	UpdateKey updateKeyUpdateKeyW1KeyResponse `json:"updateKey"`
+}
+
+// GetUpdateKey returns updateKeyResponse.UpdateKey, and is useful for accessing the field via an interface.
+func (v *updateKeyResponse) GetUpdateKey() updateKeyUpdateKeyW1KeyResponse { return v.UpdateKey }
+
+// updateKeyUpdateKeyW1KeyResponse includes the requested fields of the GraphQL type W1KeyResponse.
+// The GraphQL type's documentation follows.
+//
+// Key Response
+type updateKeyUpdateKeyW1KeyResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err string `json:"err"`
+	// Success Message
+	Msg updateKeyUpdateKeyW1KeyResponseMsgW1Key `json:"msg"`
+}
+
+// GetCode returns updateKeyUpdateKeyW1KeyResponse.Code, and is useful for accessing the field via an interface.
+func (v *updateKeyUpdateKeyW1KeyResponse) GetCode() int { return v.Code }
+
+// GetErr returns updateKeyUpdateKeyW1KeyResponse.Err, and is useful for accessing the field via an interface.
+func (v *updateKeyUpdateKeyW1KeyResponse) GetErr() string { return v.Err }
+
+// GetMsg returns updateKeyUpdateKeyW1KeyResponse.Msg, and is useful for accessing the field via an interface.
+func (v *updateKeyUpdateKeyW1KeyResponse) GetMsg() updateKeyUpdateKeyW1KeyResponseMsgW1Key {
+	return v.Msg
+}
+
+// updateKeyUpdateKeyW1KeyResponseMsgW1Key includes the requested fields of the GraphQL type W1Key.
+// The GraphQL type's documentation follows.
+//
+// SSH Key
+type updateKeyUpdateKeyW1KeyResponseMsgW1Key struct {
+	// ID
+	Id string `json:"id"`
+}
+
+// GetId returns updateKeyUpdateKeyW1KeyResponseMsgW1Key.Id, and is useful for accessing the field via an interface.
+func (v *updateKeyUpdateKeyW1KeyResponseMsgW1Key) GetId() string { return v.Id }
+
 // The query or mutation executed by createKey.
 const createKey_Operation = `
 mutation createKey ($name: String!, $publicKey: String!, $projectId: UUID, $projectWide: Boolean) {
@@ -455,6 +516,49 @@ func me(
 	var err_ error
 
 	var data_ meResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by updateKey.
+const updateKey_Operation = `
+mutation updateKey ($id: UUID!, $projectId: UUID, $name: String!) {
+	updateKey(id: $id, name: $name, projectId: $projectId) {
+		code
+		err
+		msg {
+			id
+		}
+	}
+}
+`
+
+func updateKey(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	projectId string,
+	name string,
+) (*updateKeyResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "updateKey",
+		Query:  updateKey_Operation,
+		Variables: &__updateKeyInput{
+			Id:        id,
+			ProjectId: projectId,
+			Name:      name,
+		},
+	}
+	var err_ error
+
+	var data_ updateKeyResponse
 	resp_ := &graphql.Response{Data: &data_}
 
 	err_ = client_.MakeRequest(

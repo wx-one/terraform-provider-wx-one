@@ -1335,11 +1335,11 @@ type Query {
   getKeyList("ID of Project" projectId: UUID): W1KeyListResponse
   "Get Key"
   getKey(
-    "ID" 
-    id: UUID 
-    "ID of Project" 
+    "ID"
+    id: UUID
+    "ID of Project"
     projectId: UUID
-    "Name" 
+    "Name"
     name: String
     "Project Wide"
     projectWide: Boolean
@@ -1448,6 +1448,8 @@ type Mutation {
     "Shoule the key be valid for the complete project or only the user"
     projectWide: Boolean = false
   ): W1KeyResponse
+  "Update Key"
+  updateKey("ID" id: UUID!, "ID of Project" projectId: UUID, "Name" name: String!): W1KeyResponse
   "Delete Key"
   deleteKey("ID" id: UUID!, "ID of Project" projectId: UUID): Response
   "Create Volume"
