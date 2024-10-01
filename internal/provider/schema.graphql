@@ -1299,6 +1299,13 @@ type Query {
     "ID of Project"
     projectId: UUID!
   ): W1NetworkListResponse
+  "Get Network"
+  getNetwork(
+    "ID of Network"
+    id: UUID!
+    "ID of Project"
+    projectId: UUID!
+  ): W1NetworkResponse
   # getSecurityGroupList(page: Int, limit: Int): SecurityGroupListResponse
   "Get Volume List"
   getVolumeList(

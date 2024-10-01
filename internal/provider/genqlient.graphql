@@ -91,3 +91,44 @@ mutation updateKey(
 		}
 	}
 }
+
+mutation createNetwork(
+	$name: String!
+	$availabilityZone: AvailabilityZone
+	$projectId: UUID
+	$subnets: [SubnetInput]!
+) {
+	createNetwork(
+		projectId: $projectId
+		name: $name
+		availabilityZone: $availabilityZone
+		subnets: $subnets
+	) {
+		code
+		err
+		msg {
+			id		
+			name
+			subnets {
+				cidr
+				id
+				name
+			}
+		}
+	}
+}
+
+query getNetwork($id: UUID!, $projectId: UUID!) {
+	getNetwork(id: $id, projectId: $projectId) {
+		code
+		err
+		msg {
+			id
+			name
+			subnets {
+				id
+				name
+			}
+		}
+	}
+}

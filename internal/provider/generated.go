@@ -8,6 +8,41 @@ import (
 	"github.com/Khan/genqlient/graphql"
 )
 
+// Availability Zone
+type AvailabilityZone string
+
+const (
+	// Internal zone for customer workloads
+	AvailabilityZoneWxDus1 AvailabilityZone = "wx_dus_1"
+	// Internal zone for customer workloads
+	AvailabilityZoneWxDus2 AvailabilityZone = "wx_dus_2"
+	// Internal zone for customer workloads
+	AvailabilityZoneWxDus3 AvailabilityZone = "wx_dus_3"
+	// Public zone
+	AvailabilityZoneWxDus AvailabilityZone = "wx_dus"
+	// Unknown zone
+	AvailabilityZoneUnknown AvailabilityZone = "UNKNOWN"
+)
+
+// Subnet Input
+type SubnetInput struct {
+	// Name
+	Name string `json:"name"`
+	// IP Version
+	IpVersion string `json:"ipVersion"`
+	// CIDR
+	Cidr string `json:"cidr"`
+}
+
+// GetName returns SubnetInput.Name, and is useful for accessing the field via an interface.
+func (v *SubnetInput) GetName() string { return v.Name }
+
+// GetIpVersion returns SubnetInput.IpVersion, and is useful for accessing the field via an interface.
+func (v *SubnetInput) GetIpVersion() string { return v.IpVersion }
+
+// GetCidr returns SubnetInput.Cidr, and is useful for accessing the field via an interface.
+func (v *SubnetInput) GetCidr() string { return v.Cidr }
+
 // __createKeyInput is used internally by genqlient
 type __createKeyInput struct {
 	Name        string `json:"name"`
@@ -27,6 +62,26 @@ func (v *__createKeyInput) GetProjectId() string { return v.ProjectId }
 
 // GetProjectWide returns __createKeyInput.ProjectWide, and is useful for accessing the field via an interface.
 func (v *__createKeyInput) GetProjectWide() bool { return v.ProjectWide }
+
+// __createNetworkInput is used internally by genqlient
+type __createNetworkInput struct {
+	Name             string           `json:"name"`
+	AvailabilityZone AvailabilityZone `json:"availabilityZone"`
+	ProjectId        string           `json:"projectId"`
+	Subnets          []SubnetInput    `json:"subnets"`
+}
+
+// GetName returns __createNetworkInput.Name, and is useful for accessing the field via an interface.
+func (v *__createNetworkInput) GetName() string { return v.Name }
+
+// GetAvailabilityZone returns __createNetworkInput.AvailabilityZone, and is useful for accessing the field via an interface.
+func (v *__createNetworkInput) GetAvailabilityZone() AvailabilityZone { return v.AvailabilityZone }
+
+// GetProjectId returns __createNetworkInput.ProjectId, and is useful for accessing the field via an interface.
+func (v *__createNetworkInput) GetProjectId() string { return v.ProjectId }
+
+// GetSubnets returns __createNetworkInput.Subnets, and is useful for accessing the field via an interface.
+func (v *__createNetworkInput) GetSubnets() []SubnetInput { return v.Subnets }
 
 // __deleteKeyInput is used internally by genqlient
 type __deleteKeyInput struct {
@@ -59,6 +114,18 @@ func (v *__getKeyInput) GetProjectId() string { return v.ProjectId }
 
 // GetProjectWide returns __getKeyInput.ProjectWide, and is useful for accessing the field via an interface.
 func (v *__getKeyInput) GetProjectWide() *bool { return v.ProjectWide }
+
+// __getNetworkInput is used internally by genqlient
+type __getNetworkInput struct {
+	Id        string `json:"id"`
+	ProjectId string `json:"projectId"`
+}
+
+// GetId returns __getNetworkInput.Id, and is useful for accessing the field via an interface.
+func (v *__getNetworkInput) GetId() string { return v.Id }
+
+// GetProjectId returns __getNetworkInput.ProjectId, and is useful for accessing the field via an interface.
+func (v *__getNetworkInput) GetProjectId() string { return v.ProjectId }
 
 // __updateKeyInput is used internally by genqlient
 type __updateKeyInput struct {
@@ -120,6 +187,93 @@ type createKeyResponse struct {
 
 // GetCreateKey returns createKeyResponse.CreateKey, and is useful for accessing the field via an interface.
 func (v *createKeyResponse) GetCreateKey() createKeyCreateKeyW1KeyResponse { return v.CreateKey }
+
+// createNetworkCreateNetworkW1NetworkResponse includes the requested fields of the GraphQL type W1NetworkResponse.
+// The GraphQL type's documentation follows.
+//
+// Network Response
+type createNetworkCreateNetworkW1NetworkResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err string `json:"err"`
+	// Success Message
+	Msg createNetworkCreateNetworkW1NetworkResponseMsgW1Network `json:"msg"`
+}
+
+// GetCode returns createNetworkCreateNetworkW1NetworkResponse.Code, and is useful for accessing the field via an interface.
+func (v *createNetworkCreateNetworkW1NetworkResponse) GetCode() int { return v.Code }
+
+// GetErr returns createNetworkCreateNetworkW1NetworkResponse.Err, and is useful for accessing the field via an interface.
+func (v *createNetworkCreateNetworkW1NetworkResponse) GetErr() string { return v.Err }
+
+// GetMsg returns createNetworkCreateNetworkW1NetworkResponse.Msg, and is useful for accessing the field via an interface.
+func (v *createNetworkCreateNetworkW1NetworkResponse) GetMsg() createNetworkCreateNetworkW1NetworkResponseMsgW1Network {
+	return v.Msg
+}
+
+// createNetworkCreateNetworkW1NetworkResponseMsgW1Network includes the requested fields of the GraphQL type W1Network.
+// The GraphQL type's documentation follows.
+//
+// Network
+type createNetworkCreateNetworkW1NetworkResponseMsgW1Network struct {
+	// ID
+	Id string `json:"id"`
+	// Name
+	Name string `json:"name"`
+	// Subnets
+	Subnets []createNetworkCreateNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet `json:"subnets"`
+}
+
+// GetId returns createNetworkCreateNetworkW1NetworkResponseMsgW1Network.Id, and is useful for accessing the field via an interface.
+func (v *createNetworkCreateNetworkW1NetworkResponseMsgW1Network) GetId() string { return v.Id }
+
+// GetName returns createNetworkCreateNetworkW1NetworkResponseMsgW1Network.Name, and is useful for accessing the field via an interface.
+func (v *createNetworkCreateNetworkW1NetworkResponseMsgW1Network) GetName() string { return v.Name }
+
+// GetSubnets returns createNetworkCreateNetworkW1NetworkResponseMsgW1Network.Subnets, and is useful for accessing the field via an interface.
+func (v *createNetworkCreateNetworkW1NetworkResponseMsgW1Network) GetSubnets() []createNetworkCreateNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet {
+	return v.Subnets
+}
+
+// createNetworkCreateNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet includes the requested fields of the GraphQL type Subnet.
+// The GraphQL type's documentation follows.
+//
+// Subnet
+type createNetworkCreateNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet struct {
+	// CIDR
+	Cidr string `json:"cidr"`
+	// ID
+	Id string `json:"id"`
+	// Name
+	Name string `json:"name"`
+}
+
+// GetCidr returns createNetworkCreateNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet.Cidr, and is useful for accessing the field via an interface.
+func (v *createNetworkCreateNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet) GetCidr() string {
+	return v.Cidr
+}
+
+// GetId returns createNetworkCreateNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet.Id, and is useful for accessing the field via an interface.
+func (v *createNetworkCreateNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet) GetId() string {
+	return v.Id
+}
+
+// GetName returns createNetworkCreateNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet.Name, and is useful for accessing the field via an interface.
+func (v *createNetworkCreateNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet) GetName() string {
+	return v.Name
+}
+
+// createNetworkResponse is returned by createNetwork on success.
+type createNetworkResponse struct {
+	// Create Network
+	CreateNetwork createNetworkCreateNetworkW1NetworkResponse `json:"createNetwork"`
+}
+
+// GetCreateNetwork returns createNetworkResponse.CreateNetwork, and is useful for accessing the field via an interface.
+func (v *createNetworkResponse) GetCreateNetwork() createNetworkCreateNetworkW1NetworkResponse {
+	return v.CreateNetwork
+}
 
 // deleteKeyDeleteKeyResponse includes the requested fields of the GraphQL type Response.
 // The GraphQL type's documentation follows.
@@ -262,6 +416,84 @@ type getKeyResponse struct {
 // GetGetKey returns getKeyResponse.GetKey, and is useful for accessing the field via an interface.
 func (v *getKeyResponse) GetGetKey() getKeyGetKeyW1KeyResponse { return v.GetKey }
 
+// getNetworkGetNetworkW1NetworkResponse includes the requested fields of the GraphQL type W1NetworkResponse.
+// The GraphQL type's documentation follows.
+//
+// Network Response
+type getNetworkGetNetworkW1NetworkResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err string `json:"err"`
+	// Success Message
+	Msg getNetworkGetNetworkW1NetworkResponseMsgW1Network `json:"msg"`
+}
+
+// GetCode returns getNetworkGetNetworkW1NetworkResponse.Code, and is useful for accessing the field via an interface.
+func (v *getNetworkGetNetworkW1NetworkResponse) GetCode() int { return v.Code }
+
+// GetErr returns getNetworkGetNetworkW1NetworkResponse.Err, and is useful for accessing the field via an interface.
+func (v *getNetworkGetNetworkW1NetworkResponse) GetErr() string { return v.Err }
+
+// GetMsg returns getNetworkGetNetworkW1NetworkResponse.Msg, and is useful for accessing the field via an interface.
+func (v *getNetworkGetNetworkW1NetworkResponse) GetMsg() getNetworkGetNetworkW1NetworkResponseMsgW1Network {
+	return v.Msg
+}
+
+// getNetworkGetNetworkW1NetworkResponseMsgW1Network includes the requested fields of the GraphQL type W1Network.
+// The GraphQL type's documentation follows.
+//
+// Network
+type getNetworkGetNetworkW1NetworkResponseMsgW1Network struct {
+	// ID
+	Id string `json:"id"`
+	// Name
+	Name string `json:"name"`
+	// Subnets
+	Subnets []getNetworkGetNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet `json:"subnets"`
+}
+
+// GetId returns getNetworkGetNetworkW1NetworkResponseMsgW1Network.Id, and is useful for accessing the field via an interface.
+func (v *getNetworkGetNetworkW1NetworkResponseMsgW1Network) GetId() string { return v.Id }
+
+// GetName returns getNetworkGetNetworkW1NetworkResponseMsgW1Network.Name, and is useful for accessing the field via an interface.
+func (v *getNetworkGetNetworkW1NetworkResponseMsgW1Network) GetName() string { return v.Name }
+
+// GetSubnets returns getNetworkGetNetworkW1NetworkResponseMsgW1Network.Subnets, and is useful for accessing the field via an interface.
+func (v *getNetworkGetNetworkW1NetworkResponseMsgW1Network) GetSubnets() []getNetworkGetNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet {
+	return v.Subnets
+}
+
+// getNetworkGetNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet includes the requested fields of the GraphQL type Subnet.
+// The GraphQL type's documentation follows.
+//
+// Subnet
+type getNetworkGetNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet struct {
+	// ID
+	Id string `json:"id"`
+	// Name
+	Name string `json:"name"`
+}
+
+// GetId returns getNetworkGetNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet.Id, and is useful for accessing the field via an interface.
+func (v *getNetworkGetNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet) GetId() string { return v.Id }
+
+// GetName returns getNetworkGetNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet.Name, and is useful for accessing the field via an interface.
+func (v *getNetworkGetNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet) GetName() string {
+	return v.Name
+}
+
+// getNetworkResponse is returned by getNetwork on success.
+type getNetworkResponse struct {
+	// Get Network
+	GetNetwork getNetworkGetNetworkW1NetworkResponse `json:"getNetwork"`
+}
+
+// GetGetNetwork returns getNetworkResponse.GetNetwork, and is useful for accessing the field via an interface.
+func (v *getNetworkResponse) GetGetNetwork() getNetworkGetNetworkW1NetworkResponse {
+	return v.GetNetwork
+}
+
 // meMeUser includes the requested fields of the GraphQL type User.
 // The GraphQL type's documentation follows.
 //
@@ -372,6 +604,57 @@ func createKey(
 	var err_ error
 
 	var data_ createKeyResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by createNetwork.
+const createNetwork_Operation = `
+mutation createNetwork ($name: String!, $availabilityZone: AvailabilityZone, $projectId: UUID, $subnets: [SubnetInput]!) {
+	createNetwork(projectId: $projectId, name: $name, availabilityZone: $availabilityZone, subnets: $subnets) {
+		code
+		err
+		msg {
+			id
+			name
+			subnets {
+				cidr
+				id
+				name
+			}
+		}
+	}
+}
+`
+
+func createNetwork(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	availabilityZone AvailabilityZone,
+	projectId string,
+	subnets []SubnetInput,
+) (*createNetworkResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "createNetwork",
+		Query:  createNetwork_Operation,
+		Variables: &__createNetworkInput{
+			Name:             name,
+			AvailabilityZone: availabilityZone,
+			ProjectId:        projectId,
+			Subnets:          subnets,
+		},
+	}
+	var err_ error
+
+	var data_ createNetworkResponse
 	resp_ := &graphql.Response{Data: &data_}
 
 	err_ = client_.MakeRequest(
@@ -495,6 +778,52 @@ func getKey(
 	var err_ error
 
 	var data_ getKeyResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by getNetwork.
+const getNetwork_Operation = `
+query getNetwork ($id: UUID!, $projectId: UUID!) {
+	getNetwork(id: $id, projectId: $projectId) {
+		code
+		err
+		msg {
+			id
+			name
+			subnets {
+				id
+				name
+			}
+		}
+	}
+}
+`
+
+func getNetwork(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	projectId string,
+) (*getNetworkResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "getNetwork",
+		Query:  getNetwork_Operation,
+		Variables: &__getNetworkInput{
+			Id:        id,
+			ProjectId: projectId,
+		},
+	}
+	var err_ error
+
+	var data_ getNetworkResponse
 	resp_ := &graphql.Response{Data: &data_}
 
 	err_ = client_.MakeRequest(
