@@ -65,7 +65,7 @@ func (d *projectDataSource) Schema(_ context.Context, _ datasource.SchemaRequest
 			},
 			"name": schema.StringAttribute{
 				Description: "Name of the default project.",
-				Computed:    true,
+				Required:    true,
 			},
 		},
 	}
@@ -79,6 +79,22 @@ type projectDataSourceModel struct {
 // Read refreshes the Terraform state with the latest data.
 
 func (d *projectDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+	var data projectDataSourceModel
+
+	diags := req.Config.Get(ctx, &data)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if data.Name.ValueString() != "default" {
+		resp.Diagnostics.AddError(
+			"Currently only the default project is supported",
+			"",
+		)
+		return
+	}
+
 	defaultProject, err := getDefaultProject(ctx, d.wxOneClients.graphqlClient)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -95,7 +111,7 @@ func (d *projectDataSource) Read(ctx context.Context, req datasource.ReadRequest
 	}
 
 	// Set state
-	diags := resp.State.Set(ctx, &Project)
+	diags = resp.State.Set(ctx, &Project)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
