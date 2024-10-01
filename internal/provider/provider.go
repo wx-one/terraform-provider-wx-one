@@ -316,6 +316,7 @@ func (p *wxOneProvider) DataSources(_ context.Context) []func() datasource.DataS
 	return []func() datasource.DataSource{
 		NewProjectDataSource,
 		NewImageDataSource,
+		NewFlavorDataSource,
 	}
 }
 

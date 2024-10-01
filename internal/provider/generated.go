@@ -107,6 +107,14 @@ func (v *__deleteNetworkInput) GetId() string { return v.Id }
 // GetProjectId returns __deleteNetworkInput.ProjectId, and is useful for accessing the field via an interface.
 func (v *__deleteNetworkInput) GetProjectId() string { return v.ProjectId }
 
+// __getFlavorByNameInput is used internally by genqlient
+type __getFlavorByNameInput struct {
+	Name string `json:"name"`
+}
+
+// GetName returns __getFlavorByNameInput.Name, and is useful for accessing the field via an interface.
+func (v *__getFlavorByNameInput) GetName() string { return v.Name }
+
 // __getImageListInput is used internally by genqlient
 type __getImageListInput struct {
 	ProjectId string `json:"projectId"`
@@ -425,6 +433,53 @@ type getDefaultProjectResponse struct {
 // GetGetDefaultProject returns getDefaultProjectResponse.GetDefaultProject, and is useful for accessing the field via an interface.
 func (v *getDefaultProjectResponse) GetGetDefaultProject() getDefaultProjectGetDefaultProjectProjectResponse {
 	return v.GetDefaultProject
+}
+
+// getFlavorByNameGetFlavorByNameFlavorResponse includes the requested fields of the GraphQL type FlavorResponse.
+// The GraphQL type's documentation follows.
+//
+// Flavor Response
+type getFlavorByNameGetFlavorByNameFlavorResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err string `json:"err"`
+	// Success Message
+	Msg getFlavorByNameGetFlavorByNameFlavorResponseMsgFlavor `json:"msg"`
+}
+
+// GetCode returns getFlavorByNameGetFlavorByNameFlavorResponse.Code, and is useful for accessing the field via an interface.
+func (v *getFlavorByNameGetFlavorByNameFlavorResponse) GetCode() int { return v.Code }
+
+// GetErr returns getFlavorByNameGetFlavorByNameFlavorResponse.Err, and is useful for accessing the field via an interface.
+func (v *getFlavorByNameGetFlavorByNameFlavorResponse) GetErr() string { return v.Err }
+
+// GetMsg returns getFlavorByNameGetFlavorByNameFlavorResponse.Msg, and is useful for accessing the field via an interface.
+func (v *getFlavorByNameGetFlavorByNameFlavorResponse) GetMsg() getFlavorByNameGetFlavorByNameFlavorResponseMsgFlavor {
+	return v.Msg
+}
+
+// getFlavorByNameGetFlavorByNameFlavorResponseMsgFlavor includes the requested fields of the GraphQL type Flavor.
+// The GraphQL type's documentation follows.
+//
+// Flavor
+type getFlavorByNameGetFlavorByNameFlavorResponseMsgFlavor struct {
+	// ID
+	Id string `json:"id"`
+}
+
+// GetId returns getFlavorByNameGetFlavorByNameFlavorResponseMsgFlavor.Id, and is useful for accessing the field via an interface.
+func (v *getFlavorByNameGetFlavorByNameFlavorResponseMsgFlavor) GetId() string { return v.Id }
+
+// getFlavorByNameResponse is returned by getFlavorByName on success.
+type getFlavorByNameResponse struct {
+	// Get Flavor By Name
+	GetFlavorByName getFlavorByNameGetFlavorByNameFlavorResponse `json:"getFlavorByName"`
+}
+
+// GetGetFlavorByName returns getFlavorByNameResponse.GetFlavorByName, and is useful for accessing the field via an interface.
+func (v *getFlavorByNameResponse) GetGetFlavorByName() getFlavorByNameGetFlavorByNameFlavorResponse {
+	return v.GetFlavorByName
 }
 
 // getImageListGetImageListW1ImageListResponse includes the requested fields of the GraphQL type W1ImageListResponse.
@@ -958,6 +1013,45 @@ func getDefaultProject(
 	var err_ error
 
 	var data_ getDefaultProjectResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by getFlavorByName.
+const getFlavorByName_Operation = `
+query getFlavorByName ($name: String!) {
+	getFlavorByName(name: $name) {
+		code
+		err
+		msg {
+			id
+		}
+	}
+}
+`
+
+func getFlavorByName(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+) (*getFlavorByNameResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "getFlavorByName",
+		Query:  getFlavorByName_Operation,
+		Variables: &__getFlavorByNameInput{
+			Name: name,
+		},
+	}
+	var err_ error
+
+	var data_ getFlavorByNameResponse
 	resp_ := &graphql.Response{Data: &data_}
 
 	err_ = client_.MakeRequest(

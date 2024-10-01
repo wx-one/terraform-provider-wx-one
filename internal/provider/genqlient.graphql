@@ -66,101 +66,111 @@ query getKey(
 }
 
 mutation deleteKey(
-  $id: UUID!, 
+  $id: UUID!
   # @genqlient(omitempty: true)
   $projectId: UUID
 ) {
-	deleteKey(id: $id, projectId: $projectId) {
-		code
-		err
-		msg
-	}
+  deleteKey(id: $id, projectId: $projectId) {
+    code
+    err
+    msg
+  }
 }
 
 mutation updateKey(
-  $id: UUID!, 
+  $id: UUID!
   # @genqlient(omitempty: true)
-  $projectId: UUID, 
+  $projectId: UUID
   $name: String!
 ) {
-	updateKey(id: $id, name: $name, projectId: $projectId) {
-		code
-		err
-		msg {
-			id
-		}
-	}
+  updateKey(id: $id, name: $name, projectId: $projectId) {
+    code
+    err
+    msg {
+      id
+    }
+  }
 }
 
 mutation createNetwork(
-	$name: String!
-	$availabilityZone: AvailabilityZone
-	$projectId: UUID
-	$subnets: [SubnetInput]!
+  $name: String!
+  $availabilityZone: AvailabilityZone
+  $projectId: UUID
+  $subnets: [SubnetInput]!
 ) {
-	createNetwork(
-		projectId: $projectId
-		name: $name
-		availabilityZone: $availabilityZone
-		subnets: $subnets
-	) {
-		code
-		err
-		msg {
-			id		
-			name
-			subnets {
-				cidr
-				id
-				name
-			}
-		}
-	}
+  createNetwork(
+    projectId: $projectId
+    name: $name
+    availabilityZone: $availabilityZone
+    subnets: $subnets
+  ) {
+    code
+    err
+    msg {
+      id
+      name
+      subnets {
+        cidr
+        id
+        name
+      }
+    }
+  }
 }
 
 query getNetwork($id: UUID!, $projectId: UUID!) {
-	getNetwork(id: $id, projectId: $projectId) {
-		code
-		err
-		msg {
-			id
-			name
+  getNetwork(id: $id, projectId: $projectId) {
+    code
+    err
+    msg {
+      id
+      name
       availabilityZone
-			subnets {
-				id
-				name
+      subnets {
+        id
+        name
         ipVersion
-				cidr
-			}
-		}
-	}
+        cidr
+      }
+    }
+  }
 }
 
 mutation deleteNetwork($id: UUID!, $projectId: UUID!) {
-	deleteNetwork(id: $id, projectId: $projectId) {
-		code
-		err
-		msg
-	}
+  deleteNetwork(id: $id, projectId: $projectId) {
+    code
+    err
+    msg
+  }
 }
 
 mutation updateNetwork($id: UUID!, $projectId: UUID, $name: String!) {
-	updateNetwork(id: $id, name: $name, projectId: $projectId) {
-		code
-		err
-		msg {
-			id
-		}
-	}
+  updateNetwork(id: $id, name: $name, projectId: $projectId) {
+    code
+    err
+    msg {
+      id
+    }
+  }
+}
+
+query getFlavorByName($name: String!) {
+  getFlavorByName(name: $name) {
+    code
+    err
+    msg {
+      id
+    }
+  }
 }
 
 query getImageList($projectId: UUID!) {
-	getImageList(projectId: $projectId) {
-		code
-		err
-		msg {
-			id
-			name
-		}
-	}
+  getImageList(projectId: $projectId) {
+    code
+    err
+    msg {
+      id
+      name
+    }
+  }
 }
