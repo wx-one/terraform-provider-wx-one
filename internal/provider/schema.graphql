@@ -95,6 +95,8 @@ type W1Network {
   id: UUID!
   "Name"
   name: String!
+  "Availability Zone"
+  availabilityZone: AvailabilityZone
   "Project"
   project: Project
   "Subnets"
@@ -1442,6 +1444,8 @@ type Mutation {
     "Subnets"
     subnets: [SubnetInput]!
   ): W1NetworkResponse
+  "Update Network"
+  updateNetwork("ID" id: UUID!, "ID of Project" projectId: UUID, "Name" name: String!): W1NetworkResponse
   "Delete Network"
   deleteNetwork("ID" id: UUID!, "ID of Project" projectId: UUID!): Response
   "Create Key"

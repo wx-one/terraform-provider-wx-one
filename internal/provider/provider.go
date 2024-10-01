@@ -321,5 +321,6 @@ func (p *wxOneProvider) DataSources(_ context.Context) []func() datasource.DataS
 func (p *wxOneProvider) Resources(_ context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewKeyResource,
+		NewNetworkResource,
 	}
 }

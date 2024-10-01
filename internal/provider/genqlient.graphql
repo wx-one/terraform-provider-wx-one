@@ -125,10 +125,31 @@ query getNetwork($id: UUID!, $projectId: UUID!) {
 		msg {
 			id
 			name
+      availabilityZone
 			subnets {
 				id
 				name
+        ipVersion
+				cidr
 			}
+		}
+	}
+}
+
+mutation deleteNetwork($id: UUID!, $projectId: UUID!) {
+	deleteNetwork(id: $id, projectId: $projectId) {
+		code
+		err
+		msg
+	}
+}
+
+mutation updateNetwork($id: UUID!, $projectId: UUID, $name: String!) {
+	updateNetwork(id: $id, name: $name, projectId: $projectId) {
+		code
+		err
+		msg {
+			id
 		}
 	}
 }

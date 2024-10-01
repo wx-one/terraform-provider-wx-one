@@ -15,7 +15,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -94,7 +93,7 @@ type keyResourceModel struct {
 	PrivateKey  types.String `tfsdk:"private_key"`
 	PublicKey   types.String `tfsdk:"public_key"`
 	ProjectWide types.Bool   `tfsdk:"project_wide"`
-	ProjectId   types.String `tfsdk:"project_id"`
+	ProjectID   types.String `tfsdk:"project_id"`
 }
 
 // Configure adds the provider configured client to the resource.
@@ -128,7 +127,7 @@ func (r *keyResource) Create(ctx context.Context, req resource.CreateRequest, re
 		return
 	}
 
-	if plan.ProjectWide.ValueBool() && plan.ProjectId.IsNull() {
+	if plan.ProjectWide.ValueBool() && plan.ProjectID.IsNull() {
 		resp.Diagnostics.AddError(
 			"Missing Required Attribute",
 			"project id is required when projectwide is set to true.",
@@ -137,7 +136,7 @@ func (r *keyResource) Create(ctx context.Context, req resource.CreateRequest, re
 	}
 
 	// Create new key
-	key, err := createKey(ctx, r.wxOneClients.graphqlClient, plan.Name.ValueString(), plan.PublicKey.ValueString(), plan.ProjectId.ValueString(), plan.ProjectWide.ValueBool())
+	key, err := createKey(ctx, r.wxOneClients.graphqlClient, plan.Name.ValueString(), plan.PublicKey.ValueString(), plan.ProjectID.ValueString(), plan.ProjectWide.ValueBool())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating key",
@@ -203,10 +202,8 @@ func (r *keyResource) Update(ctx context.Context, req resource.UpdateRequest, re
 		return
 	}
 
-	tflog.Info(ctx, "######## ID", map[string]any{"success": plan.Name.ValueString()})
-
 	// Update existing key
-	_, err := updateKey(ctx, r.wxOneClients.graphqlClient, plan.ID.ValueString(), plan.ProjectId.ValueString(), plan.Name.ValueString())
+	_, err := updateKey(ctx, r.wxOneClients.graphqlClient, plan.ID.ValueString(), plan.ProjectID.ValueString(), plan.Name.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Updating WX-ONE Key",
@@ -233,7 +230,7 @@ func (r *keyResource) Delete(ctx context.Context, req resource.DeleteRequest, re
 	}
 
 	// Delete existing key
-	_, err := deleteKey(ctx, r.wxOneClients.graphqlClient, state.ID.ValueString(), state.ProjectId.ValueString())
+	_, err := deleteKey(ctx, r.wxOneClients.graphqlClient, state.ID.ValueString(), state.ProjectID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Deleting WX-ONE Key",

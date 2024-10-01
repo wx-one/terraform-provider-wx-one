@@ -16,7 +16,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -63,22 +62,15 @@ func (r *networkResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Validators: []validator.String{
 					stringvalidator.OneOf("wx_dus_1"),
 				},
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
-			"project": schema.SingleNestedAttribute{
-				Description: "Project of the network.",
+			"project_id": schema.StringAttribute{
+				Description: "Project id of the network.",
 				Required:    true,
-				Attributes: map[string]schema.Attribute{
-					"id": schema.StringAttribute{
-						Description: "Id of the project.",
-						Required:    true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
-						},
-					},
-					"name": schema.StringAttribute{
-						Description: "Name of the project.",
-						Optional:    true,
-					},
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
 				},
 			},
 			"subnets": schema.ListNestedAttribute{
@@ -88,17 +80,26 @@ func (r *networkResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 						"name": schema.StringAttribute{
 							Description: "Name of the subnet.",
 							Required:    true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.RequiresReplace(),
+							},
 						},
-						"ipVersion": schema.StringAttribute{
+						"ip_version": schema.StringAttribute{
 							Description: "IP Version of the subnet.",
 							Required:    true,
 							Validators: []validator.String{
 								stringvalidator.OneOf("IPv4"),
 							},
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.RequiresReplace(),
+							},
 						},
 						"cidr": schema.StringAttribute{
 							Description: "CIDR of the subnet.",
 							Required:    true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.RequiresReplace(),
+							},
 						},
 					},
 				},
@@ -111,13 +112,8 @@ type networkResourceModel struct {
 	ID               types.String  `tfsdk:"id"`
 	Name             types.String  `tfsdk:"name"`
 	AvailabilityZone types.String  `tfsdk:"availability_zone"`
-	Project          projectModel  `tfsdk:"project"`
+	ProjectID        types.String  `tfsdk:"project_id"`
 	Subnets          []subnetModel `tfsdk:"subnets"`
-}
-
-type projectModel struct {
-	ID   types.String `tfsdk:"id"`
-	Name types.String `tfsdk:"name"`
 }
 
 type subnetModel struct {
@@ -167,7 +163,7 @@ func (r *networkResource) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	// Create new network
-	network, err := createNetwork(ctx, r.wxOneClients.graphqlClient, plan.Name.ValueString(), AvailabilityZone(plan.AvailabilityZone.ValueString()), plan.Project.ID.ValueString(), subnetInput)
+	network, err := createNetwork(ctx, r.wxOneClients.graphqlClient, plan.Name.ValueString(), AvailabilityZone(plan.AvailabilityZone.ValueString()), plan.ProjectID.ValueString(), subnetInput)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating network",
@@ -198,7 +194,7 @@ func (r *networkResource) Read(ctx context.Context, req resource.ReadRequest, re
 	}
 
 	// Get refreshed network value from WX-ONE
-	network, err := getNetwork(ctx, r.wxOneClients.graphqlClient, state.ID.ValueString(), state.Project.ID.ValueString())
+	network, err := getNetwork(ctx, r.wxOneClients.graphqlClient, state.ID.ValueString(), state.ProjectID.ValueString())
 	if err != nil {
 		if isNotFoundError(err) {
 			resp.State.RemoveResource(ctx)
@@ -213,8 +209,17 @@ func (r *networkResource) Read(ctx context.Context, req resource.ReadRequest, re
 	}
 
 	state.Name = types.StringValue(network.GetNetwork.Msg.Name)
-	state.Project = types.BoolValue(network.GetNetwork.Msg.ProjectWide)
-	state.PublicNetwork = types.StringValue(network.GetNetwork.Msg.PublicNetwork)
+	subnets := make([]subnetModel, len(network.GetNetwork.Msg.Subnets))
+
+	for i, subnet := range network.GetNetwork.Msg.Subnets {
+		subnets[i] = subnetModel{
+			Name:      types.StringValue(subnet.Name),
+			IPVersion: types.StringValue(subnet.IpVersion),
+			CIDR:      types.StringValue(subnet.Cidr),
+		}
+	}
+	state.Subnets = subnets
+	state.AvailabilityZone = types.StringValue((string(network.GetNetwork.Msg.AvailabilityZone)))
 
 	// Set refreshed state
 	diags = resp.State.Set(ctx, state)
@@ -233,10 +238,8 @@ func (r *networkResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
-	tflog.Info(ctx, "######## ID", map[string]any{"success": plan.Name.ValueString()})
-
 	// Update existing network
-	_, err := updateNetwork(ctx, r.wxOneClients.graphqlClient, plan.ID.ValueString(), plan.ProjectId.ValueString(), plan.Name.ValueString())
+	_, err := updateNetwork(ctx, r.wxOneClients.graphqlClient, plan.ID.ValueString(), plan.ProjectID.ValueString(), plan.Name.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Updating WX-ONE Network",
@@ -263,7 +266,7 @@ func (r *networkResource) Delete(ctx context.Context, req resource.DeleteRequest
 	}
 
 	// Delete existing network
-	_, err := deleteNetwork(ctx, r.wxOneClients.graphqlClient, state.ID.ValueString(), state.ProjectId.ValueString())
+	_, err := deleteNetwork(ctx, r.wxOneClients.graphqlClient, state.ID.ValueString(), state.ProjectID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Deleting WX-ONE Network",
