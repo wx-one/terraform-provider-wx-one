@@ -24,6 +24,34 @@ const (
 	AvailabilityZoneUnknown AvailabilityZone = "UNKNOWN"
 )
 
+// Status of an instance
+type InstanceStatus string
+
+const (
+	// Instance is running
+	InstanceStatusRunning InstanceStatus = "RUNNING"
+	// Instance is created
+	InstanceStatusBuild InstanceStatus = "BUILD"
+	// Instance is stopped
+	InstanceStatusStopped InstanceStatus = "STOPPED"
+	// Instance was deleted
+	InstanceStatusDeleted InstanceStatus = "DELETED"
+	// Instance has an error state
+	InstanceStatusError InstanceStatus = "ERROR"
+	// Instance is rebooting
+	InstanceStatusReboot InstanceStatus = "REBOOT"
+	// Instance is getting rebuilded
+	InstanceStatusRebuild InstanceStatus = "REBUILD"
+	// Instance is shut off
+	InstanceStatusShutoff InstanceStatus = "SHUTOFF"
+	// Instance is suspended
+	InstanceStatusSuspended InstanceStatus = "SUSPENDED"
+	// Instance status is updating
+	InstanceStatusUpdating InstanceStatus = "UPDATING"
+	// Instance status is not known
+	InstanceStatusUnknown InstanceStatus = "UNKNOWN"
+)
+
 // Subnet Input
 type SubnetInput struct {
 	// Name
@@ -42,6 +70,42 @@ func (v *SubnetInput) GetIpVersion() string { return v.IpVersion }
 
 // GetCidr returns SubnetInput.Cidr, and is useful for accessing the field via an interface.
 func (v *SubnetInput) GetCidr() string { return v.Cidr }
+
+// __createInstanceInput is used internally by genqlient
+type __createInstanceInput struct {
+	NetworkId string           `json:"networkId"`
+	FlavorId  string           `json:"flavorId"`
+	ImageId   string           `json:"imageId"`
+	ProjectId string           `json:"projectId"`
+	Name      string           `json:"name"`
+	SshKeys   []string         `json:"sshKeys"`
+	Zone      AvailabilityZone `json:"zone"`
+	Managed   bool             `json:"managed"`
+}
+
+// GetNetworkId returns __createInstanceInput.NetworkId, and is useful for accessing the field via an interface.
+func (v *__createInstanceInput) GetNetworkId() string { return v.NetworkId }
+
+// GetFlavorId returns __createInstanceInput.FlavorId, and is useful for accessing the field via an interface.
+func (v *__createInstanceInput) GetFlavorId() string { return v.FlavorId }
+
+// GetImageId returns __createInstanceInput.ImageId, and is useful for accessing the field via an interface.
+func (v *__createInstanceInput) GetImageId() string { return v.ImageId }
+
+// GetProjectId returns __createInstanceInput.ProjectId, and is useful for accessing the field via an interface.
+func (v *__createInstanceInput) GetProjectId() string { return v.ProjectId }
+
+// GetName returns __createInstanceInput.Name, and is useful for accessing the field via an interface.
+func (v *__createInstanceInput) GetName() string { return v.Name }
+
+// GetSshKeys returns __createInstanceInput.SshKeys, and is useful for accessing the field via an interface.
+func (v *__createInstanceInput) GetSshKeys() []string { return v.SshKeys }
+
+// GetZone returns __createInstanceInput.Zone, and is useful for accessing the field via an interface.
+func (v *__createInstanceInput) GetZone() AvailabilityZone { return v.Zone }
+
+// GetManaged returns __createInstanceInput.Managed, and is useful for accessing the field via an interface.
+func (v *__createInstanceInput) GetManaged() bool { return v.Managed }
 
 // __createKeyInput is used internally by genqlient
 type __createKeyInput struct {
@@ -83,6 +147,18 @@ func (v *__createNetworkInput) GetProjectId() string { return v.ProjectId }
 // GetSubnets returns __createNetworkInput.Subnets, and is useful for accessing the field via an interface.
 func (v *__createNetworkInput) GetSubnets() []SubnetInput { return v.Subnets }
 
+// __deleteInstanceInput is used internally by genqlient
+type __deleteInstanceInput struct {
+	Id        string `json:"id"`
+	ProjectId string `json:"projectId"`
+}
+
+// GetId returns __deleteInstanceInput.Id, and is useful for accessing the field via an interface.
+func (v *__deleteInstanceInput) GetId() string { return v.Id }
+
+// GetProjectId returns __deleteInstanceInput.ProjectId, and is useful for accessing the field via an interface.
+func (v *__deleteInstanceInput) GetProjectId() string { return v.ProjectId }
+
 // __deleteKeyInput is used internally by genqlient
 type __deleteKeyInput struct {
 	Id        string `json:"id"`
@@ -122,6 +198,18 @@ type __getImageListInput struct {
 
 // GetProjectId returns __getImageListInput.ProjectId, and is useful for accessing the field via an interface.
 func (v *__getImageListInput) GetProjectId() string { return v.ProjectId }
+
+// __getInstanceInput is used internally by genqlient
+type __getInstanceInput struct {
+	Id        string `json:"id"`
+	ProjectId string `json:"projectId"`
+}
+
+// GetId returns __getInstanceInput.Id, and is useful for accessing the field via an interface.
+func (v *__getInstanceInput) GetId() string { return v.Id }
+
+// GetProjectId returns __getInstanceInput.ProjectId, and is useful for accessing the field via an interface.
+func (v *__getInstanceInput) GetProjectId() string { return v.ProjectId }
 
 // __getKeyInput is used internally by genqlient
 type __getKeyInput struct {
@@ -186,6 +274,53 @@ func (v *__updateNetworkInput) GetProjectId() string { return v.ProjectId }
 
 // GetName returns __updateNetworkInput.Name, and is useful for accessing the field via an interface.
 func (v *__updateNetworkInput) GetName() string { return v.Name }
+
+// createInstanceCreateInstanceW1InstanceResponse includes the requested fields of the GraphQL type W1InstanceResponse.
+// The GraphQL type's documentation follows.
+//
+// Instance Response
+type createInstanceCreateInstanceW1InstanceResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err string `json:"err"`
+	// Success Message
+	Msg createInstanceCreateInstanceW1InstanceResponseMsgW1Instance `json:"msg"`
+}
+
+// GetCode returns createInstanceCreateInstanceW1InstanceResponse.Code, and is useful for accessing the field via an interface.
+func (v *createInstanceCreateInstanceW1InstanceResponse) GetCode() int { return v.Code }
+
+// GetErr returns createInstanceCreateInstanceW1InstanceResponse.Err, and is useful for accessing the field via an interface.
+func (v *createInstanceCreateInstanceW1InstanceResponse) GetErr() string { return v.Err }
+
+// GetMsg returns createInstanceCreateInstanceW1InstanceResponse.Msg, and is useful for accessing the field via an interface.
+func (v *createInstanceCreateInstanceW1InstanceResponse) GetMsg() createInstanceCreateInstanceW1InstanceResponseMsgW1Instance {
+	return v.Msg
+}
+
+// createInstanceCreateInstanceW1InstanceResponseMsgW1Instance includes the requested fields of the GraphQL type W1Instance.
+// The GraphQL type's documentation follows.
+//
+// Instance
+type createInstanceCreateInstanceW1InstanceResponseMsgW1Instance struct {
+	// ID
+	Id string `json:"id"`
+}
+
+// GetId returns createInstanceCreateInstanceW1InstanceResponseMsgW1Instance.Id, and is useful for accessing the field via an interface.
+func (v *createInstanceCreateInstanceW1InstanceResponseMsgW1Instance) GetId() string { return v.Id }
+
+// createInstanceResponse is returned by createInstance on success.
+type createInstanceResponse struct {
+	// Create Instance
+	CreateInstance createInstanceCreateInstanceW1InstanceResponse `json:"createInstance"`
+}
+
+// GetCreateInstance returns createInstanceResponse.CreateInstance, and is useful for accessing the field via an interface.
+func (v *createInstanceResponse) GetCreateInstance() createInstanceCreateInstanceW1InstanceResponse {
+	return v.CreateInstance
+}
 
 // createKeyCreateKeyW1KeyResponse includes the requested fields of the GraphQL type W1KeyResponse.
 // The GraphQL type's documentation follows.
@@ -317,6 +452,55 @@ type createNetworkResponse struct {
 // GetCreateNetwork returns createNetworkResponse.CreateNetwork, and is useful for accessing the field via an interface.
 func (v *createNetworkResponse) GetCreateNetwork() createNetworkCreateNetworkW1NetworkResponse {
 	return v.CreateNetwork
+}
+
+// deleteInstanceDeleteInstanceW1InstanceResponse includes the requested fields of the GraphQL type W1InstanceResponse.
+// The GraphQL type's documentation follows.
+//
+// Instance Response
+type deleteInstanceDeleteInstanceW1InstanceResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err string `json:"err"`
+	// Success Message
+	Msg deleteInstanceDeleteInstanceW1InstanceResponseMsgW1Instance `json:"msg"`
+}
+
+// GetCode returns deleteInstanceDeleteInstanceW1InstanceResponse.Code, and is useful for accessing the field via an interface.
+func (v *deleteInstanceDeleteInstanceW1InstanceResponse) GetCode() int { return v.Code }
+
+// GetErr returns deleteInstanceDeleteInstanceW1InstanceResponse.Err, and is useful for accessing the field via an interface.
+func (v *deleteInstanceDeleteInstanceW1InstanceResponse) GetErr() string { return v.Err }
+
+// GetMsg returns deleteInstanceDeleteInstanceW1InstanceResponse.Msg, and is useful for accessing the field via an interface.
+func (v *deleteInstanceDeleteInstanceW1InstanceResponse) GetMsg() deleteInstanceDeleteInstanceW1InstanceResponseMsgW1Instance {
+	return v.Msg
+}
+
+// deleteInstanceDeleteInstanceW1InstanceResponseMsgW1Instance includes the requested fields of the GraphQL type W1Instance.
+// The GraphQL type's documentation follows.
+//
+// Instance
+type deleteInstanceDeleteInstanceW1InstanceResponseMsgW1Instance struct {
+	// Status of Instance
+	Status InstanceStatus `json:"status"`
+}
+
+// GetStatus returns deleteInstanceDeleteInstanceW1InstanceResponseMsgW1Instance.Status, and is useful for accessing the field via an interface.
+func (v *deleteInstanceDeleteInstanceW1InstanceResponseMsgW1Instance) GetStatus() InstanceStatus {
+	return v.Status
+}
+
+// deleteInstanceResponse is returned by deleteInstance on success.
+type deleteInstanceResponse struct {
+	// Delete Instance
+	DeleteInstance deleteInstanceDeleteInstanceW1InstanceResponse `json:"deleteInstance"`
+}
+
+// GetDeleteInstance returns deleteInstanceResponse.DeleteInstance, and is useful for accessing the field via an interface.
+func (v *deleteInstanceResponse) GetDeleteInstance() deleteInstanceDeleteInstanceW1InstanceResponse {
+	return v.DeleteInstance
 }
 
 // deleteKeyDeleteKeyResponse includes the requested fields of the GraphQL type Response.
@@ -532,6 +716,79 @@ type getImageListResponse struct {
 // GetGetImageList returns getImageListResponse.GetImageList, and is useful for accessing the field via an interface.
 func (v *getImageListResponse) GetGetImageList() getImageListGetImageListW1ImageListResponse {
 	return v.GetImageList
+}
+
+// getInstanceGetInstanceW1InstanceResponse includes the requested fields of the GraphQL type W1InstanceResponse.
+// The GraphQL type's documentation follows.
+//
+// Instance Response
+type getInstanceGetInstanceW1InstanceResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err string `json:"err"`
+	// Success Message
+	Msg getInstanceGetInstanceW1InstanceResponseMsgW1Instance `json:"msg"`
+}
+
+// GetCode returns getInstanceGetInstanceW1InstanceResponse.Code, and is useful for accessing the field via an interface.
+func (v *getInstanceGetInstanceW1InstanceResponse) GetCode() int { return v.Code }
+
+// GetErr returns getInstanceGetInstanceW1InstanceResponse.Err, and is useful for accessing the field via an interface.
+func (v *getInstanceGetInstanceW1InstanceResponse) GetErr() string { return v.Err }
+
+// GetMsg returns getInstanceGetInstanceW1InstanceResponse.Msg, and is useful for accessing the field via an interface.
+func (v *getInstanceGetInstanceW1InstanceResponse) GetMsg() getInstanceGetInstanceW1InstanceResponseMsgW1Instance {
+	return v.Msg
+}
+
+// getInstanceGetInstanceW1InstanceResponseMsgW1Instance includes the requested fields of the GraphQL type W1Instance.
+// The GraphQL type's documentation follows.
+//
+// Instance
+type getInstanceGetInstanceW1InstanceResponseMsgW1Instance struct {
+	// ID
+	Id string `json:"id"`
+	// Name
+	Name string `json:"name"`
+	// Status of Instance
+	Status InstanceStatus `json:"status"`
+	// Availability Zone
+	AvailabilityZone AvailabilityZone `json:"availabilityZone"`
+	// ID of flavor
+	FlavorId string `json:"flavorId"`
+}
+
+// GetId returns getInstanceGetInstanceW1InstanceResponseMsgW1Instance.Id, and is useful for accessing the field via an interface.
+func (v *getInstanceGetInstanceW1InstanceResponseMsgW1Instance) GetId() string { return v.Id }
+
+// GetName returns getInstanceGetInstanceW1InstanceResponseMsgW1Instance.Name, and is useful for accessing the field via an interface.
+func (v *getInstanceGetInstanceW1InstanceResponseMsgW1Instance) GetName() string { return v.Name }
+
+// GetStatus returns getInstanceGetInstanceW1InstanceResponseMsgW1Instance.Status, and is useful for accessing the field via an interface.
+func (v *getInstanceGetInstanceW1InstanceResponseMsgW1Instance) GetStatus() InstanceStatus {
+	return v.Status
+}
+
+// GetAvailabilityZone returns getInstanceGetInstanceW1InstanceResponseMsgW1Instance.AvailabilityZone, and is useful for accessing the field via an interface.
+func (v *getInstanceGetInstanceW1InstanceResponseMsgW1Instance) GetAvailabilityZone() AvailabilityZone {
+	return v.AvailabilityZone
+}
+
+// GetFlavorId returns getInstanceGetInstanceW1InstanceResponseMsgW1Instance.FlavorId, and is useful for accessing the field via an interface.
+func (v *getInstanceGetInstanceW1InstanceResponseMsgW1Instance) GetFlavorId() string {
+	return v.FlavorId
+}
+
+// getInstanceResponse is returned by getInstance on success.
+type getInstanceResponse struct {
+	// Get Instance
+	GetInstance getInstanceGetInstanceW1InstanceResponse `json:"getInstance"`
+}
+
+// GetGetInstance returns getInstanceResponse.GetInstance, and is useful for accessing the field via an interface.
+func (v *getInstanceResponse) GetGetInstance() getInstanceGetInstanceW1InstanceResponse {
+	return v.GetInstance
 }
 
 // getKeyGetKeyW1KeyResponse includes the requested fields of the GraphQL type W1KeyResponse.
@@ -814,6 +1071,59 @@ type updateNetworkUpdateNetworkW1NetworkResponseMsgW1Network struct {
 // GetId returns updateNetworkUpdateNetworkW1NetworkResponseMsgW1Network.Id, and is useful for accessing the field via an interface.
 func (v *updateNetworkUpdateNetworkW1NetworkResponseMsgW1Network) GetId() string { return v.Id }
 
+// The query or mutation executed by createInstance.
+const createInstance_Operation = `
+mutation createInstance ($networkId: UUID!, $flavorId: UUID!, $imageId: UUID!, $projectId: UUID!, $name: String!, $sshKeys: [UUID!]!, $zone: AvailabilityZone!, $managed: Boolean!) {
+	createInstance(flavor: $flavorId, image: $imageId, name: $name, networks: [$networkId], sshKeys: $sshKeys, projectId: $projectId, zone: $zone, managed: $managed) {
+		code
+		err
+		msg {
+			id
+		}
+	}
+}
+`
+
+func createInstance(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	networkId string,
+	flavorId string,
+	imageId string,
+	projectId string,
+	name string,
+	sshKeys []string,
+	zone AvailabilityZone,
+	managed bool,
+) (*createInstanceResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "createInstance",
+		Query:  createInstance_Operation,
+		Variables: &__createInstanceInput{
+			NetworkId: networkId,
+			FlavorId:  flavorId,
+			ImageId:   imageId,
+			ProjectId: projectId,
+			Name:      name,
+			SshKeys:   sshKeys,
+			Zone:      zone,
+			Managed:   managed,
+		},
+	}
+	var err_ error
+
+	var data_ createInstanceResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
 // The query or mutation executed by createKey.
 const createKey_Operation = `
 mutation createKey ($name: String!, $publicKey: String!, $projectId: UUID, $projectWide: Boolean) {
@@ -899,6 +1209,47 @@ func createNetwork(
 	var err_ error
 
 	var data_ createNetworkResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by deleteInstance.
+const deleteInstance_Operation = `
+mutation deleteInstance ($id: UUID!, $projectId: UUID!) {
+	deleteInstance(id: $id, projectId: $projectId) {
+		code
+		err
+		msg {
+			status
+		}
+	}
+}
+`
+
+func deleteInstance(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	projectId string,
+) (*deleteInstanceResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "deleteInstance",
+		Query:  deleteInstance_Operation,
+		Variables: &__deleteInstanceInput{
+			Id:        id,
+			ProjectId: projectId,
+		},
+	}
+	var err_ error
+
+	var data_ deleteInstanceResponse
 	resp_ := &graphql.Response{Data: &data_}
 
 	err_ = client_.MakeRequest(
@@ -1092,6 +1443,51 @@ func getImageList(
 	var err_ error
 
 	var data_ getImageListResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by getInstance.
+const getInstance_Operation = `
+query getInstance ($id: UUID!, $projectId: UUID!) {
+	getInstance(id: $id, projectId: $projectId) {
+		code
+		err
+		msg {
+			id
+			name
+			status
+			availabilityZone
+			flavorId
+		}
+	}
+}
+`
+
+func getInstance(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	projectId string,
+) (*getInstanceResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "getInstance",
+		Query:  getInstance_Operation,
+		Variables: &__getInstanceInput{
+			Id:        id,
+			ProjectId: projectId,
+		},
+	}
+	var err_ error
+
+	var data_ getInstanceResponse
 	resp_ := &graphql.Response{Data: &data_}
 
 	err_ = client_.MakeRequest(

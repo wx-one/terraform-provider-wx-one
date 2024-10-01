@@ -77,6 +77,13 @@ func (r *networkResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Required: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
+						"id": schema.StringAttribute{
+							Description: "ID of the subnet.",
+							Computed:    true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+						},
 						"name": schema.StringAttribute{
 							Description: "Name of the subnet.",
 							Required:    true,
@@ -117,6 +124,7 @@ type networkResourceModel struct {
 }
 
 type subnetModel struct {
+	ID        types.String `tfsdk:"id"`
 	Name      types.String `tfsdk:"name"`
 	IPVersion types.String `tfsdk:"ip_version"`
 	CIDR      types.String `tfsdk:"cidr"`
@@ -175,6 +183,10 @@ func (r *networkResource) Create(ctx context.Context, req resource.CreateRequest
 	// Map response body to schema and populate Computed attribute values
 	plan.ID = types.StringValue(network.CreateNetwork.Msg.Id)
 
+	for i, item := range network.CreateNetwork.Msg.Subnets {
+		plan.Subnets[i].ID = types.StringValue(item.Id)
+	}
+
 	// Set state to fully populated data
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
@@ -213,6 +225,7 @@ func (r *networkResource) Read(ctx context.Context, req resource.ReadRequest, re
 
 	for i, subnet := range network.GetNetwork.Msg.Subnets {
 		subnets[i] = subnetModel{
+			ID:        types.StringValue(subnet.Id),
 			Name:      types.StringValue(subnet.Name),
 			IPVersion: types.StringValue(subnet.IpVersion),
 			CIDR:      types.StringValue(subnet.Cidr),

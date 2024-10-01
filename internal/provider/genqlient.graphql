@@ -154,6 +154,58 @@ mutation updateNetwork($id: UUID!, $projectId: UUID, $name: String!) {
   }
 }
 
+mutation deleteInstance($id: UUID!, $projectId: UUID!) {
+  deleteInstance(id: $id, projectId: $projectId) {
+    code
+    err
+    msg {
+      status
+    }
+  }
+}
+
+mutation createInstance(
+  $networkId: UUID!
+  $flavorId: UUID!
+  $imageId: UUID!
+  $projectId: UUID!
+  $name: String!
+  $sshKeys: [UUID!]!
+  $zone: AvailabilityZone!
+  $managed: Boolean!
+) {
+  createInstance(
+    flavor: $flavorId
+    image: $imageId
+    name: $name
+    networks: [$networkId]
+    sshKeys: $sshKeys
+    projectId: $projectId
+    zone: $zone
+    managed: $managed
+  ) {
+    code
+    err
+    msg {
+      id
+    }
+  }
+}
+
+query getInstance($id: UUID!, $projectId: UUID!) {
+  getInstance(id: $id, projectId: $projectId) {
+    code
+    err
+    msg {
+      id
+      name
+      status
+      availabilityZone
+      flavorId
+    }
+  }
+}
+
 query getFlavorByName($name: String!) {
   getFlavorByName(name: $name) {
     code
