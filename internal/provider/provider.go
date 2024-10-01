@@ -237,8 +237,9 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 		return
 	}
 
-	hashValue := challenge["challenge"].(string) + challenge["date"].(string) + "wizardtales.com" + password
-	hash := sha512.Sum512([]byte(hashValue))
+	hash := sha512.Sum512([]byte(strings.ToUpper(password) + challenge["salt"].(string)))
+	hashValue := challenge["challenge"].(string) + challenge["date"].(string) + "wizardtales.com" + hex.EncodeToString(hash[:])
+	hash = sha512.Sum512([]byte(hashValue))
 
 	// Define the number of rounds
 	rounds := int(challenge["rounds"].(float64))
@@ -294,7 +295,7 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 			"Unable to Create WX-ONE API Client",
 			"An unexpected error occurred when creating the WX-ONE API client. "+
 				"If the error is not clear, please contact the provider developers.\n\n"+
-				"WX-ONE Client Error: "+err.Error(),
+				"WX-ONE Client Error: "+meErr.Error(),
 		)
 		return
 	}
