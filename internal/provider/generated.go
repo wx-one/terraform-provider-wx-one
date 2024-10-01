@@ -107,6 +107,14 @@ func (v *__deleteNetworkInput) GetId() string { return v.Id }
 // GetProjectId returns __deleteNetworkInput.ProjectId, and is useful for accessing the field via an interface.
 func (v *__deleteNetworkInput) GetProjectId() string { return v.ProjectId }
 
+// __getImageListInput is used internally by genqlient
+type __getImageListInput struct {
+	ProjectId string `json:"projectId"`
+}
+
+// GetProjectId returns __getImageListInput.ProjectId, and is useful for accessing the field via an interface.
+func (v *__getImageListInput) GetProjectId() string { return v.ProjectId }
+
 // __getKeyInput is used internally by genqlient
 type __getKeyInput struct {
 	Id          string `json:"id,omitempty"`
@@ -417,6 +425,58 @@ type getDefaultProjectResponse struct {
 // GetGetDefaultProject returns getDefaultProjectResponse.GetDefaultProject, and is useful for accessing the field via an interface.
 func (v *getDefaultProjectResponse) GetGetDefaultProject() getDefaultProjectGetDefaultProjectProjectResponse {
 	return v.GetDefaultProject
+}
+
+// getImageListGetImageListW1ImageListResponse includes the requested fields of the GraphQL type W1ImageListResponse.
+// The GraphQL type's documentation follows.
+//
+// Image List Response
+type getImageListGetImageListW1ImageListResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err string `json:"err"`
+	// Success Message
+	Msg []getImageListGetImageListW1ImageListResponseMsgW1Image `json:"msg"`
+}
+
+// GetCode returns getImageListGetImageListW1ImageListResponse.Code, and is useful for accessing the field via an interface.
+func (v *getImageListGetImageListW1ImageListResponse) GetCode() int { return v.Code }
+
+// GetErr returns getImageListGetImageListW1ImageListResponse.Err, and is useful for accessing the field via an interface.
+func (v *getImageListGetImageListW1ImageListResponse) GetErr() string { return v.Err }
+
+// GetMsg returns getImageListGetImageListW1ImageListResponse.Msg, and is useful for accessing the field via an interface.
+func (v *getImageListGetImageListW1ImageListResponse) GetMsg() []getImageListGetImageListW1ImageListResponseMsgW1Image {
+	return v.Msg
+}
+
+// getImageListGetImageListW1ImageListResponseMsgW1Image includes the requested fields of the GraphQL type W1Image.
+// The GraphQL type's documentation follows.
+//
+// Image
+type getImageListGetImageListW1ImageListResponseMsgW1Image struct {
+	// ID
+	Id string `json:"id"`
+	// Name
+	Name string `json:"name"`
+}
+
+// GetId returns getImageListGetImageListW1ImageListResponseMsgW1Image.Id, and is useful for accessing the field via an interface.
+func (v *getImageListGetImageListW1ImageListResponseMsgW1Image) GetId() string { return v.Id }
+
+// GetName returns getImageListGetImageListW1ImageListResponseMsgW1Image.Name, and is useful for accessing the field via an interface.
+func (v *getImageListGetImageListW1ImageListResponseMsgW1Image) GetName() string { return v.Name }
+
+// getImageListResponse is returned by getImageList on success.
+type getImageListResponse struct {
+	// Get Image List
+	GetImageList getImageListGetImageListW1ImageListResponse `json:"getImageList"`
+}
+
+// GetGetImageList returns getImageListResponse.GetImageList, and is useful for accessing the field via an interface.
+func (v *getImageListResponse) GetGetImageList() getImageListGetImageListW1ImageListResponse {
+	return v.GetImageList
 }
 
 // getKeyGetKeyW1KeyResponse includes the requested fields of the GraphQL type W1KeyResponse.
@@ -898,6 +958,46 @@ func getDefaultProject(
 	var err_ error
 
 	var data_ getDefaultProjectResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by getImageList.
+const getImageList_Operation = `
+query getImageList ($projectId: UUID!) {
+	getImageList(projectId: $projectId) {
+		code
+		err
+		msg {
+			id
+			name
+		}
+	}
+}
+`
+
+func getImageList(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	projectId string,
+) (*getImageListResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "getImageList",
+		Query:  getImageList_Operation,
+		Variables: &__getImageListInput{
+			ProjectId: projectId,
+		},
+	}
+	var err_ error
+
+	var data_ getImageListResponse
 	resp_ := &graphql.Response{Data: &data_}
 
 	err_ = client_.MakeRequest(

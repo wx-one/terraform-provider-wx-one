@@ -153,3 +153,14 @@ mutation updateNetwork($id: UUID!, $projectId: UUID, $name: String!) {
 		}
 	}
 }
+
+query getImageList($projectId: UUID!) {
+	getImageList(projectId: $projectId) {
+		code
+		err
+		msg {
+			id
+			name
+		}
+	}
+}

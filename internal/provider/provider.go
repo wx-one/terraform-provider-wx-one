@@ -314,6 +314,7 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 func (p *wxOneProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewProjectDataSource,
+		NewImageDataSource,
 	}
 }
 

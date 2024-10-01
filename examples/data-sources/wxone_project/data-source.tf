@@ -1,0 +1,1 @@
+data "wxone_project" "default" {}
