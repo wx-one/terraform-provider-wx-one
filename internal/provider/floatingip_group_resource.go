@@ -11,10 +11,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int32planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -54,8 +56,10 @@ func (r *floatingIPGroupResource) Schema(_ context.Context, _ resource.SchemaReq
 				Required:    true,
 			},
 			"nat": schema.BoolAttribute{
-				Description: "If the trafficn needs to be natted instead of routing towards the vm.",
+				Description: "If the traffic needs to be natted instead of routing towards the vm.",
+				Computed:    true,
 				Optional:    true,
+				Default:     booldefault.StaticBool(false),
 			},
 			"vms": schema.ListNestedAttribute{
 				Required: true,
@@ -189,6 +193,12 @@ func (r *floatingIPGroupResource) Read(ctx context.Context, req resource.ReadReq
 		}
 	}
 
+	tflog.Debug(ctx, "post")
+	if floatingIPAttachment.GetFloatingIPAttachment.Msg == nil {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+
 	if floatingIPAttachment.GetFloatingIPAttachment.Msg.GetTypename() != "FloatingIPInstanceAttachment" {
 		resp.Diagnostics.AddError(
 			"Error IP manipulated outside of terraform",
@@ -200,11 +210,16 @@ func (r *floatingIPGroupResource) Read(ctx context.Context, req resource.ReadReq
 	// refresh the vms in the asset
 	attachments := floatingIPAttachment.GetFloatingIPAttachment.Msg.(*getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPInstanceAttachment)
 	state.Nat = types.BoolValue(attachments.NatToVmsPrivateIp)
-	state.VMs = make([]vmModel, len(attachments.Vms))
-	for i, item := range attachments.Vms {
-		state.VMs[i].ID = types.StringValue(item.Id)
-		state.VMs[i].Priority = types.Int32Value(int32(item.Priority))
-		state.VMs[i].VMID = types.StringValue(item.VmId)
+	if len(attachments.Vms) > 0 {
+		state.VMs = make([]vmModel, len(attachments.Vms))
+		for i, item := range attachments.Vms {
+			state.VMs[i].ID = types.StringValue(item.Id)
+			state.VMs[i].Priority = types.Int32Value(int32(item.Priority))
+			state.VMs[i].VMID = types.StringValue(item.VmId)
+		}
+	} else {
+		resp.State.RemoveResource(ctx)
+		return
 	}
 
 	// Set refreshed state
