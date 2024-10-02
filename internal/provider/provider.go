@@ -327,5 +327,6 @@ func (p *wxOneProvider) Resources(_ context.Context) []func() resource.Resource 
 		NewNetworkResource,
 		NewInstanceResource,
 		NewFloatingIPResource,
+		NewFloatingIPGroupResource,
 	}
 }

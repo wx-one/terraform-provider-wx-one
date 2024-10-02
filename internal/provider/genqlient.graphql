@@ -17,6 +17,40 @@ query getDefaultProject {
   }
 }
 
+query getFloatingIPAttachment($id: UUID!, $projectId: UUID!) {
+  getFloatingIPAttachment(id: $id, projectId: $projectId) {
+    code
+    err
+    msg {
+      __typename
+      ... on FloatingIPInstanceAttachment {
+        natToVmsPrivateIp
+        vms {
+          id
+          priority
+          vmId
+        }
+      }
+    }
+  }
+}
+
+mutation deleteFloatingGroupByFloatingIpIdAndInstanceId(
+  $projectId: UUID!
+  $floatingIPId: UUID!
+  $instanceId: UUID!
+) {
+  deleteFloatingGroupByFloatingIpIdAndInstanceId(
+    projectId: $projectId
+    floatingIpId: $floatingIPId
+    instanceId: $instanceId
+  ) {
+    err
+    code
+    msg
+  }
+}
+
 mutation createKey(
   $name: String!
   $publicKey: String!
@@ -180,6 +214,27 @@ mutation deleteFloatingIP($id: UUID!, $projectId: UUID!) {
     code
     err
     msg
+  }
+}
+
+mutation createFloatingGroup(
+  $id: UUID!
+  $projectId: UUID!
+  $vms: [FloatingGroupVmInput]
+  $natToVmsPrivateIp: Boolean
+) {
+  createFloatingGroup(
+    id: $id
+    projectId: $projectId
+    vms: $vms
+    natToVmsPrivateIp: $natToVmsPrivateIp
+  ) {
+    code
+    err
+    msg {
+      id
+      vmId
+    }
   }
 }
 

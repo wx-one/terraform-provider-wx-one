@@ -527,16 +527,6 @@ type FloatingIPListResponse {
   msg: [W1FloatingIP]
 }
 
-"Floating IP Instance Attachment"
-type FloatingIPInstanceAttachment {
-  "ID"
-  id: UUID!
-  "name"
-  name: String!
-  "Nat to VMs private IP"
-  natToVmsPrivateIp: Boolean
-}
-
 "Instance Floating IP Attachment"
 type InstanceFloatingIPAttachment {
   "ID"
@@ -545,6 +535,23 @@ type InstanceFloatingIPAttachment {
   ip: String!
   "Nat to VMs private IP"
   natToVmsPrivateIp: Boolean
+}
+
+type FloatingIPInstance {
+  "ID"
+  id: UUID!
+  vmId: UUID!
+  "name"
+  name: String!
+  "Priority of vm (will be relevant later)"
+  priority: Int!
+}
+
+"Floating IP Instance Attachment"
+type FloatingIPInstanceAttachment {
+  "Nat to VMs private IP"
+  natToVmsPrivateIp: Boolean
+  vms: [FloatingIPInstance]
 }
 
 "Floating IP Attachment can be either an vm or loadbalancer frontend ip"
@@ -571,7 +578,7 @@ input FloatingGroupVmInput {
 }
 
 "Floating Group"
-type FloatingGroup {
+type FloatingGroupMember {
   "ID"
   id: UUID!
   "ID of vm"
@@ -591,7 +598,7 @@ type FloatingGroupResponse {
   "Error Message"
   err: String
   "Success Message"
-  msg: FloatingGroup
+  msg: [FloatingGroupMember]
 }
 
 "SSH Key"
