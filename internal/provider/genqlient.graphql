@@ -164,6 +164,25 @@ mutation deleteInstance($id: UUID!, $projectId: UUID!) {
   }
 }
 
+mutation createFloatingIP($projectId: UUID!) {
+  createFloatingIP(projectId: $projectId) {
+    code
+    err
+    msg {
+      id
+      ip
+    }
+  }
+}
+
+mutation deleteFloatingIP($id: UUID!, $projectId: UUID!) {
+  deleteFloatingIP(id: $id, projectId: $projectId) {
+    code
+    err
+    msg
+  }
+}
+
 mutation createInstance(
   $networkId: UUID!
   $flavorId: UUID!
@@ -188,6 +207,17 @@ mutation createInstance(
     err
     msg {
       id
+      status
+    }
+  }
+}
+
+query getFloatingIP($id: UUID!, $projectId: UUID!) {
+  getFloatingIP(id: $id, projectId: $projectId) {
+    code
+    err
+    msg {
+      ip
     }
   }
 }

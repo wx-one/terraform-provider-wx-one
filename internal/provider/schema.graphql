@@ -1373,6 +1373,12 @@ type Query {
     "If true or false filter only for attached or non attached Floating IPs"
     attached: Boolean
   ): FloatingIPListResponse
+  getFloatingIP(
+    "ID"
+    id: UUID!
+    "ID of Project"
+    projectId: UUID!
+  ): FloatingIPResponse
   "Get Floating IP Attachment"
   getFloatingIPAttachment(
     "ID"
@@ -1445,7 +1451,14 @@ type Mutation {
     subnets: [SubnetInput]!
   ): W1NetworkResponse
   "Update Network"
-  updateNetwork("ID" id: UUID!, "ID of Project" projectId: UUID, "Name" name: String!): W1NetworkResponse
+  updateNetwork(
+    "ID"
+    id: UUID!
+    "ID of Project"
+    projectId: UUID
+    "Name"
+    name: String!
+  ): W1NetworkResponse
   "Delete Network"
   deleteNetwork("ID" id: UUID!, "ID of Project" projectId: UUID!): Response
   "Create Key"
@@ -1460,7 +1473,14 @@ type Mutation {
     projectWide: Boolean = false
   ): W1KeyResponse
   "Update Key"
-  updateKey("ID" id: UUID!, "ID of Project" projectId: UUID, "Name" name: String!): W1KeyResponse
+  updateKey(
+    "ID"
+    id: UUID!
+    "ID of Project"
+    projectId: UUID
+    "Name"
+    name: String!
+  ): W1KeyResponse
   "Delete Key"
   deleteKey("ID" id: UUID!, "ID of Project" projectId: UUID): Response
   "Create Volume"

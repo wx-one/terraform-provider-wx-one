@@ -71,6 +71,14 @@ func (v *SubnetInput) GetIpVersion() string { return v.IpVersion }
 // GetCidr returns SubnetInput.Cidr, and is useful for accessing the field via an interface.
 func (v *SubnetInput) GetCidr() string { return v.Cidr }
 
+// __createFloatingIPInput is used internally by genqlient
+type __createFloatingIPInput struct {
+	ProjectId string `json:"projectId"`
+}
+
+// GetProjectId returns __createFloatingIPInput.ProjectId, and is useful for accessing the field via an interface.
+func (v *__createFloatingIPInput) GetProjectId() string { return v.ProjectId }
+
 // __createInstanceInput is used internally by genqlient
 type __createInstanceInput struct {
 	NetworkId string           `json:"networkId"`
@@ -147,6 +155,18 @@ func (v *__createNetworkInput) GetProjectId() string { return v.ProjectId }
 // GetSubnets returns __createNetworkInput.Subnets, and is useful for accessing the field via an interface.
 func (v *__createNetworkInput) GetSubnets() []SubnetInput { return v.Subnets }
 
+// __deleteFloatingIPInput is used internally by genqlient
+type __deleteFloatingIPInput struct {
+	Id        string `json:"id"`
+	ProjectId string `json:"projectId"`
+}
+
+// GetId returns __deleteFloatingIPInput.Id, and is useful for accessing the field via an interface.
+func (v *__deleteFloatingIPInput) GetId() string { return v.Id }
+
+// GetProjectId returns __deleteFloatingIPInput.ProjectId, and is useful for accessing the field via an interface.
+func (v *__deleteFloatingIPInput) GetProjectId() string { return v.ProjectId }
+
 // __deleteInstanceInput is used internally by genqlient
 type __deleteInstanceInput struct {
 	Id        string `json:"id"`
@@ -190,6 +210,18 @@ type __getFlavorByNameInput struct {
 
 // GetName returns __getFlavorByNameInput.Name, and is useful for accessing the field via an interface.
 func (v *__getFlavorByNameInput) GetName() string { return v.Name }
+
+// __getFloatingIPInput is used internally by genqlient
+type __getFloatingIPInput struct {
+	Id        string `json:"id"`
+	ProjectId string `json:"projectId"`
+}
+
+// GetId returns __getFloatingIPInput.Id, and is useful for accessing the field via an interface.
+func (v *__getFloatingIPInput) GetId() string { return v.Id }
+
+// GetProjectId returns __getFloatingIPInput.ProjectId, and is useful for accessing the field via an interface.
+func (v *__getFloatingIPInput) GetProjectId() string { return v.ProjectId }
 
 // __getImageListInput is used internally by genqlient
 type __getImageListInput struct {
@@ -275,6 +307,62 @@ func (v *__updateNetworkInput) GetProjectId() string { return v.ProjectId }
 // GetName returns __updateNetworkInput.Name, and is useful for accessing the field via an interface.
 func (v *__updateNetworkInput) GetName() string { return v.Name }
 
+// createFloatingIPCreateFloatingIPFloatingIPResponse includes the requested fields of the GraphQL type FloatingIPResponse.
+// The GraphQL type's documentation follows.
+//
+// Floating IP Response
+type createFloatingIPCreateFloatingIPFloatingIPResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err string `json:"err"`
+	// Success Message
+	Msg createFloatingIPCreateFloatingIPFloatingIPResponseMsgW1FloatingIP `json:"msg"`
+}
+
+// GetCode returns createFloatingIPCreateFloatingIPFloatingIPResponse.Code, and is useful for accessing the field via an interface.
+func (v *createFloatingIPCreateFloatingIPFloatingIPResponse) GetCode() int { return v.Code }
+
+// GetErr returns createFloatingIPCreateFloatingIPFloatingIPResponse.Err, and is useful for accessing the field via an interface.
+func (v *createFloatingIPCreateFloatingIPFloatingIPResponse) GetErr() string { return v.Err }
+
+// GetMsg returns createFloatingIPCreateFloatingIPFloatingIPResponse.Msg, and is useful for accessing the field via an interface.
+func (v *createFloatingIPCreateFloatingIPFloatingIPResponse) GetMsg() createFloatingIPCreateFloatingIPFloatingIPResponseMsgW1FloatingIP {
+	return v.Msg
+}
+
+// createFloatingIPCreateFloatingIPFloatingIPResponseMsgW1FloatingIP includes the requested fields of the GraphQL type W1FloatingIP.
+// The GraphQL type's documentation follows.
+//
+// Floating IP
+type createFloatingIPCreateFloatingIPFloatingIPResponseMsgW1FloatingIP struct {
+	// ID
+	Id string `json:"id"`
+	// Public IP
+	Ip string `json:"ip"`
+}
+
+// GetId returns createFloatingIPCreateFloatingIPFloatingIPResponseMsgW1FloatingIP.Id, and is useful for accessing the field via an interface.
+func (v *createFloatingIPCreateFloatingIPFloatingIPResponseMsgW1FloatingIP) GetId() string {
+	return v.Id
+}
+
+// GetIp returns createFloatingIPCreateFloatingIPFloatingIPResponseMsgW1FloatingIP.Ip, and is useful for accessing the field via an interface.
+func (v *createFloatingIPCreateFloatingIPFloatingIPResponseMsgW1FloatingIP) GetIp() string {
+	return v.Ip
+}
+
+// createFloatingIPResponse is returned by createFloatingIP on success.
+type createFloatingIPResponse struct {
+	// Create Floating IP
+	CreateFloatingIP createFloatingIPCreateFloatingIPFloatingIPResponse `json:"createFloatingIP"`
+}
+
+// GetCreateFloatingIP returns createFloatingIPResponse.CreateFloatingIP, and is useful for accessing the field via an interface.
+func (v *createFloatingIPResponse) GetCreateFloatingIP() createFloatingIPCreateFloatingIPFloatingIPResponse {
+	return v.CreateFloatingIP
+}
+
 // createInstanceCreateInstanceW1InstanceResponse includes the requested fields of the GraphQL type W1InstanceResponse.
 // The GraphQL type's documentation follows.
 //
@@ -306,10 +394,17 @@ func (v *createInstanceCreateInstanceW1InstanceResponse) GetMsg() createInstance
 type createInstanceCreateInstanceW1InstanceResponseMsgW1Instance struct {
 	// ID
 	Id string `json:"id"`
+	// Status of Instance
+	Status InstanceStatus `json:"status"`
 }
 
 // GetId returns createInstanceCreateInstanceW1InstanceResponseMsgW1Instance.Id, and is useful for accessing the field via an interface.
 func (v *createInstanceCreateInstanceW1InstanceResponseMsgW1Instance) GetId() string { return v.Id }
+
+// GetStatus returns createInstanceCreateInstanceW1InstanceResponseMsgW1Instance.Status, and is useful for accessing the field via an interface.
+func (v *createInstanceCreateInstanceW1InstanceResponseMsgW1Instance) GetStatus() InstanceStatus {
+	return v.Status
+}
 
 // createInstanceResponse is returned by createInstance on success.
 type createInstanceResponse struct {
@@ -452,6 +547,39 @@ type createNetworkResponse struct {
 // GetCreateNetwork returns createNetworkResponse.CreateNetwork, and is useful for accessing the field via an interface.
 func (v *createNetworkResponse) GetCreateNetwork() createNetworkCreateNetworkW1NetworkResponse {
 	return v.CreateNetwork
+}
+
+// deleteFloatingIPDeleteFloatingIPResponse includes the requested fields of the GraphQL type Response.
+// The GraphQL type's documentation follows.
+//
+// Response
+type deleteFloatingIPDeleteFloatingIPResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err string `json:"err"`
+	// Success Message
+	Msg string `json:"msg"`
+}
+
+// GetCode returns deleteFloatingIPDeleteFloatingIPResponse.Code, and is useful for accessing the field via an interface.
+func (v *deleteFloatingIPDeleteFloatingIPResponse) GetCode() int { return v.Code }
+
+// GetErr returns deleteFloatingIPDeleteFloatingIPResponse.Err, and is useful for accessing the field via an interface.
+func (v *deleteFloatingIPDeleteFloatingIPResponse) GetErr() string { return v.Err }
+
+// GetMsg returns deleteFloatingIPDeleteFloatingIPResponse.Msg, and is useful for accessing the field via an interface.
+func (v *deleteFloatingIPDeleteFloatingIPResponse) GetMsg() string { return v.Msg }
+
+// deleteFloatingIPResponse is returned by deleteFloatingIP on success.
+type deleteFloatingIPResponse struct {
+	// Delete Floating IP
+	DeleteFloatingIP deleteFloatingIPDeleteFloatingIPResponse `json:"deleteFloatingIP"`
+}
+
+// GetDeleteFloatingIP returns deleteFloatingIPResponse.DeleteFloatingIP, and is useful for accessing the field via an interface.
+func (v *deleteFloatingIPResponse) GetDeleteFloatingIP() deleteFloatingIPDeleteFloatingIPResponse {
+	return v.DeleteFloatingIP
 }
 
 // deleteInstanceDeleteInstanceW1InstanceResponse includes the requested fields of the GraphQL type W1InstanceResponse.
@@ -664,6 +792,52 @@ type getFlavorByNameResponse struct {
 // GetGetFlavorByName returns getFlavorByNameResponse.GetFlavorByName, and is useful for accessing the field via an interface.
 func (v *getFlavorByNameResponse) GetGetFlavorByName() getFlavorByNameGetFlavorByNameFlavorResponse {
 	return v.GetFlavorByName
+}
+
+// getFloatingIPGetFloatingIPFloatingIPResponse includes the requested fields of the GraphQL type FloatingIPResponse.
+// The GraphQL type's documentation follows.
+//
+// Floating IP Response
+type getFloatingIPGetFloatingIPFloatingIPResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err string `json:"err"`
+	// Success Message
+	Msg getFloatingIPGetFloatingIPFloatingIPResponseMsgW1FloatingIP `json:"msg"`
+}
+
+// GetCode returns getFloatingIPGetFloatingIPFloatingIPResponse.Code, and is useful for accessing the field via an interface.
+func (v *getFloatingIPGetFloatingIPFloatingIPResponse) GetCode() int { return v.Code }
+
+// GetErr returns getFloatingIPGetFloatingIPFloatingIPResponse.Err, and is useful for accessing the field via an interface.
+func (v *getFloatingIPGetFloatingIPFloatingIPResponse) GetErr() string { return v.Err }
+
+// GetMsg returns getFloatingIPGetFloatingIPFloatingIPResponse.Msg, and is useful for accessing the field via an interface.
+func (v *getFloatingIPGetFloatingIPFloatingIPResponse) GetMsg() getFloatingIPGetFloatingIPFloatingIPResponseMsgW1FloatingIP {
+	return v.Msg
+}
+
+// getFloatingIPGetFloatingIPFloatingIPResponseMsgW1FloatingIP includes the requested fields of the GraphQL type W1FloatingIP.
+// The GraphQL type's documentation follows.
+//
+// Floating IP
+type getFloatingIPGetFloatingIPFloatingIPResponseMsgW1FloatingIP struct {
+	// Public IP
+	Ip string `json:"ip"`
+}
+
+// GetIp returns getFloatingIPGetFloatingIPFloatingIPResponseMsgW1FloatingIP.Ip, and is useful for accessing the field via an interface.
+func (v *getFloatingIPGetFloatingIPFloatingIPResponseMsgW1FloatingIP) GetIp() string { return v.Ip }
+
+// getFloatingIPResponse is returned by getFloatingIP on success.
+type getFloatingIPResponse struct {
+	GetFloatingIP getFloatingIPGetFloatingIPFloatingIPResponse `json:"getFloatingIP"`
+}
+
+// GetGetFloatingIP returns getFloatingIPResponse.GetFloatingIP, and is useful for accessing the field via an interface.
+func (v *getFloatingIPResponse) GetGetFloatingIP() getFloatingIPGetFloatingIPFloatingIPResponse {
+	return v.GetFloatingIP
 }
 
 // getImageListGetImageListW1ImageListResponse includes the requested fields of the GraphQL type W1ImageListResponse.
@@ -1071,6 +1245,46 @@ type updateNetworkUpdateNetworkW1NetworkResponseMsgW1Network struct {
 // GetId returns updateNetworkUpdateNetworkW1NetworkResponseMsgW1Network.Id, and is useful for accessing the field via an interface.
 func (v *updateNetworkUpdateNetworkW1NetworkResponseMsgW1Network) GetId() string { return v.Id }
 
+// The query or mutation executed by createFloatingIP.
+const createFloatingIP_Operation = `
+mutation createFloatingIP ($projectId: UUID!) {
+	createFloatingIP(projectId: $projectId) {
+		code
+		err
+		msg {
+			id
+			ip
+		}
+	}
+}
+`
+
+func createFloatingIP(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	projectId string,
+) (*createFloatingIPResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "createFloatingIP",
+		Query:  createFloatingIP_Operation,
+		Variables: &__createFloatingIPInput{
+			ProjectId: projectId,
+		},
+	}
+	var err_ error
+
+	var data_ createFloatingIPResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
 // The query or mutation executed by createInstance.
 const createInstance_Operation = `
 mutation createInstance ($networkId: UUID!, $flavorId: UUID!, $imageId: UUID!, $projectId: UUID!, $name: String!, $sshKeys: [UUID!]!, $zone: AvailabilityZone!, $managed: Boolean!) {
@@ -1079,6 +1293,7 @@ mutation createInstance ($networkId: UUID!, $flavorId: UUID!, $imageId: UUID!, $
 		err
 		msg {
 			id
+			status
 		}
 	}
 }
@@ -1209,6 +1424,45 @@ func createNetwork(
 	var err_ error
 
 	var data_ createNetworkResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by deleteFloatingIP.
+const deleteFloatingIP_Operation = `
+mutation deleteFloatingIP ($id: UUID!, $projectId: UUID!) {
+	deleteFloatingIP(id: $id, projectId: $projectId) {
+		code
+		err
+		msg
+	}
+}
+`
+
+func deleteFloatingIP(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	projectId string,
+) (*deleteFloatingIPResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "deleteFloatingIP",
+		Query:  deleteFloatingIP_Operation,
+		Variables: &__deleteFloatingIPInput{
+			Id:        id,
+			ProjectId: projectId,
+		},
+	}
+	var err_ error
+
+	var data_ deleteFloatingIPResponse
 	resp_ := &graphql.Response{Data: &data_}
 
 	err_ = client_.MakeRequest(
@@ -1403,6 +1657,47 @@ func getFlavorByName(
 	var err_ error
 
 	var data_ getFlavorByNameResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by getFloatingIP.
+const getFloatingIP_Operation = `
+query getFloatingIP ($id: UUID!, $projectId: UUID!) {
+	getFloatingIP(id: $id, projectId: $projectId) {
+		code
+		err
+		msg {
+			ip
+		}
+	}
+}
+`
+
+func getFloatingIP(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	projectId string,
+) (*getFloatingIPResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "getFloatingIP",
+		Query:  getFloatingIP_Operation,
+		Variables: &__getFloatingIPInput{
+			Id:        id,
+			ProjectId: projectId,
+		},
+	}
+	var err_ error
+
+	var data_ getFloatingIPResponse
 	resp_ := &graphql.Response{Data: &data_}
 
 	err_ = client_.MakeRequest(

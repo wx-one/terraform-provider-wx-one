@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -16,6 +17,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -184,6 +186,7 @@ func (r *instanceResource) Create(ctx context.Context, req resource.CreateReques
 
 	// Map response body to schema and populate Computed attribute values
 	plan.ID = types.StringValue(instance.CreateInstance.Msg.Id)
+	plan.Status = types.StringValue(string(instance.CreateInstance.Msg.Status))
 
 	// Set state to fully populated data
 	diags = resp.State.Set(ctx, plan)
@@ -279,6 +282,21 @@ func (r *instanceResource) Delete(ctx context.Context, req resource.DeleteReques
 			"Could not delete instance, unexpected error: "+err.Error(),
 		)
 		return
+	}
+
+	// we have to fetch and wait for deletion here
+	for {
+		_, err := getInstance(ctx, r.wxOneClients.graphqlClient, state.ID.ValueString(), state.ProjectID.ValueString())
+		if err != nil {
+			if strings.Contains(err.Error(), "getInstance Not found") {
+				break
+			} else {
+				tflog.Info(ctx, "there was an unexpected err "+err.Error())
+			}
+		}
+
+		tflog.Info(ctx, "Waiting for instance deletion...")
+		time.Sleep(6 * time.Second)
 	}
 }
 
