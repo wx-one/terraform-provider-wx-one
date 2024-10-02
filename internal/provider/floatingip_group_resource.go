@@ -141,6 +141,20 @@ func (r *floatingIPGroupResource) Create(ctx context.Context, req resource.Creat
 		return
 	}
 
+	if (len(plan.VMs)) > 1 {
+		resp.Diagnostics.AddError(
+			"Error creating floating group",
+			"Currently this feature supports only a single target in the VMs array. Support for multiple targets will be announced over our newsletter.",
+		)
+		return
+	} else if len(plan.VMs) == 0 {
+		resp.Diagnostics.AddError(
+			"Error creating floating group",
+			"You must provide at least one target in the VMs array",
+		)
+		return
+	}
+
 	vmInput := make([]FloatingGroupVmInput, len(plan.VMs))
 	for i, item := range plan.VMs {
 		vmInput[i] = FloatingGroupVmInput{
