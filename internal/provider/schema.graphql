@@ -95,6 +95,8 @@ type W1Network {
   id: UUID!
   "Name"
   name: String!
+  "Availability Zone"
+  availabilityZone: AvailabilityZone
   "Project"
   project: Project
   "Subnets"
@@ -525,16 +527,6 @@ type FloatingIPListResponse {
   msg: [W1FloatingIP]
 }
 
-"Floating IP Instance Attachment"
-type FloatingIPInstanceAttachment {
-  "ID"
-  id: UUID!
-  "name"
-  name: String!
-  "Nat to VMs private IP"
-  natToVmsPrivateIp: Boolean
-}
-
 "Instance Floating IP Attachment"
 type InstanceFloatingIPAttachment {
   "ID"
@@ -543,6 +535,23 @@ type InstanceFloatingIPAttachment {
   ip: String!
   "Nat to VMs private IP"
   natToVmsPrivateIp: Boolean
+}
+
+type FloatingIPInstance {
+  "ID"
+  id: UUID!
+  vmId: UUID!
+  "name"
+  name: String!
+  "Priority of vm (will be relevant later)"
+  priority: Int!
+}
+
+"Floating IP Instance Attachment"
+type FloatingIPInstanceAttachment {
+  "Nat to VMs private IP"
+  natToVmsPrivateIp: Boolean
+  vms: [FloatingIPInstance]
 }
 
 "Floating IP Attachment can be either an vm or loadbalancer frontend ip"
@@ -569,7 +578,7 @@ input FloatingGroupVmInput {
 }
 
 "Floating Group"
-type FloatingGroup {
+type FloatingGroupMember {
   "ID"
   id: UUID!
   "ID of vm"
@@ -589,7 +598,7 @@ type FloatingGroupResponse {
   "Error Message"
   err: String
   "Success Message"
-  msg: FloatingGroup
+  msg: [FloatingGroupMember]
 }
 
 "SSH Key"
@@ -1299,6 +1308,13 @@ type Query {
     "ID of Project"
     projectId: UUID!
   ): W1NetworkListResponse
+  "Get Network"
+  getNetwork(
+    "ID of Network"
+    id: UUID!
+    "ID of Project"
+    projectId: UUID!
+  ): W1NetworkResponse
   # getSecurityGroupList(page: Int, limit: Int): SecurityGroupListResponse
   "Get Volume List"
   getVolumeList(
@@ -1333,6 +1349,17 @@ type Query {
   getImageList("ID of Project" projectId: UUID!): W1ImageListResponse
   "Get Key List"
   getKeyList("ID of Project" projectId: UUID): W1KeyListResponse
+  "Get Key"
+  getKey(
+    "ID"
+    id: UUID
+    "ID of Project"
+    projectId: UUID
+    "Name"
+    name: String
+    "Project Wide"
+    projectWide: Boolean
+  ): W1KeyResponse
   "Get Default Project"
   getDefaultProject: ProjectResponse
   "Get Projects"
@@ -1353,6 +1380,12 @@ type Query {
     "If true or false filter only for attached or non attached Floating IPs"
     attached: Boolean
   ): FloatingIPListResponse
+  getFloatingIP(
+    "ID"
+    id: UUID!
+    "ID of Project"
+    projectId: UUID!
+  ): FloatingIPResponse
   "Get Floating IP Attachment"
   getFloatingIPAttachment(
     "ID"
@@ -1424,6 +1457,15 @@ type Mutation {
     "Subnets"
     subnets: [SubnetInput]!
   ): W1NetworkResponse
+  "Update Network"
+  updateNetwork(
+    "ID"
+    id: UUID!
+    "ID of Project"
+    projectId: UUID
+    "Name"
+    name: String!
+  ): W1NetworkResponse
   "Delete Network"
   deleteNetwork("ID" id: UUID!, "ID of Project" projectId: UUID!): Response
   "Create Key"
@@ -1436,6 +1478,15 @@ type Mutation {
     publicKey: String
     "Shoule the key be valid for the complete project or only the user"
     projectWide: Boolean = false
+  ): W1KeyResponse
+  "Update Key"
+  updateKey(
+    "ID"
+    id: UUID!
+    "ID of Project"
+    projectId: UUID
+    "Name"
+    name: String!
   ): W1KeyResponse
   "Delete Key"
   deleteKey("ID" id: UUID!, "ID of Project" projectId: UUID): Response

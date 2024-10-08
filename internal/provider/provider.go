@@ -1,3 +1,6 @@
+// Copyright (c) HashiCorp, Inc.
+// SPDX-License-Identifier: MPL-2.0
+
 package provider
 
 import (
@@ -60,16 +63,20 @@ func (p *wxOneProvider) Metadata(_ context.Context, _ provider.MetadataRequest, 
 // Schema defines the provider-level schema for configuration data.
 func (p *wxOneProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: "Interact with WX-ONE.",
 		Attributes: map[string]schema.Attribute{
 			"host": schema.StringAttribute{
-				Optional: true,
+				Description: "URI for WX-ONE API. May also be provided via WX_ONE_HOST environment variable.",
+				Optional:    true,
 			},
 			"username": schema.StringAttribute{
-				Optional: true,
+				Description: "Username for WX-ONE API. May also be provided via WX_ONE_USERNAME environment variable.",
+				Optional:    true,
 			},
 			"password": schema.StringAttribute{
-				Optional:  true,
-				Sensitive: true,
+				Description: "Password for WX-ONE API. May also be provided via WX_ONE_PASSWORD environment variable.",
+				Optional:    true,
+				Sensitive:   true,
 			},
 		},
 	}
@@ -230,14 +237,15 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 		return
 	}
 
-	initialHashValue := strings.ToUpper(password) + challenge["salt"].(string)
-	hash := sha512.Sum512([]byte(initialHashValue))
+	hash := sha512.Sum512([]byte(strings.ToUpper(password) + challenge["salt"].(string)))
+	hashValue := challenge["challenge"].(string) + challenge["date"].(string) + "wizardtales.com" + hex.EncodeToString(hash[:])
+	hash = sha512.Sum512([]byte(hashValue))
 
 	// Define the number of rounds
 	rounds := int(challenge["rounds"].(float64))
 
 	// Perform the hashing multiple rounds
-	for i := 0; i < rounds; i++ {
+	for i := 1; i < rounds; i++ {
 		// Concatenate your strings
 		hashValue := challenge["challenge"].(string) + challenge["date"].(string) + "wizardtales.com" + hex.EncodeToString(hash[:])
 		hash = sha512.Sum512([]byte(hashValue))
@@ -275,27 +283,22 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 	cookieParts := strings.Split(cookies, ";")
 	cookie := cookieParts[0]
 
-	tflog.Info(ctx, "#######", map[string]interface{}{"login": login["auth"].(bool)})
-	tflog.Info(ctx, "#######", map[string]interface{}{"cookie": cookie})
-
 	httpClient := &http.Client{
 		Transport: setCookiesMiddleware(http.DefaultTransport, cookie),
 	}
 
 	grqphqlClient := graphql.NewClient(host+"/graphql", httpClient)
-	meResp, err := me(ctx, grqphqlClient)
+	_, meErr := me(ctx, grqphqlClient)
 
-	if err != nil {
+	if meErr != nil {
 		resp.Diagnostics.AddError(
 			"Unable to Create WX-ONE API Client",
 			"An unexpected error occurred when creating the WX-ONE API client. "+
 				"If the error is not clear, please contact the provider developers.\n\n"+
-				"WX-ONE Client Error: "+err.Error(),
+				"WX-ONE Client Error: "+meErr.Error(),
 		)
 		return
 	}
-
-	tflog.Info(ctx, "#######", map[string]interface{}{"me": meResp.Me.Id})
 
 	wxOneClients := WxOneClients{
 		httpClient:    restClient,
@@ -312,6 +315,8 @@ func (p *wxOneProvider) Configure(ctx context.Context, req provider.ConfigureReq
 func (p *wxOneProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewProjectDataSource,
+		NewImageDataSource,
+		NewFlavorDataSource,
 	}
 }
 
@@ -319,5 +324,9 @@ func (p *wxOneProvider) DataSources(_ context.Context) []func() datasource.DataS
 func (p *wxOneProvider) Resources(_ context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewKeyResource,
+		NewNetworkResource,
+		NewInstanceResource,
+		NewFloatingIPResource,
+		NewFloatingIPGroupResource,
 	}
 }

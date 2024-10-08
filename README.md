@@ -27,12 +27,25 @@ provider_installation {
 }
 ```
 
+### Create a new build and run
+
+```bash
+go install .  # create new build
+cd examples/provider-install-verification # go to terraform example
+WX_ONE_HOST=http://localhost:5000 WX_ONE_USERNAME=christian.wolf@wizardtales.com WX_ONE_PASSWORD=xxx TF_LOG_PROVIDER=DEBUG terraform plan # use your username and password and the correct host to run terraform plan 
+```
+
 - run `go install .` to create a build
 - run `cd examples/provider-install-verification && terraform plan` to check if terraform is able to work with local provider build 
 
 ## Add new graphql queries/mutations or update schema
 
 - for schema updates update file `internal/provider/schema.graphql` (it contains `customerSchema.gql` concatenated with `commonSchema.gql`)
+  ```
+  cat ../api-gateway/lib/graphql/commonSchema.gql > internal/provider/schema.graphql && \
+  echo "" >> internal/provider/schema.graphql && \
+  cat ../api-gateway/lib/graphql/customerSchema.gql >> internal/provider/schema.graphql
+  ```
 - to add or update queries and mutations add them to the file `internal/provider/genqlient.graphql`
 - to add additional go bindings for types update `internal/provider/genqlient.yaml` (for a complete list of configuration options see https://github.com/Khan/genqlient/blob/main/docs/genqlient.yaml)
 
@@ -41,6 +54,12 @@ after updating run
 ```
 cd internal/provider
 go run github.com/Khan/genqlient
+```
+
+## Generate documentation
+
+```
+cd tools; go generate ./...
 ```
 
 # Terraform Provider Scaffolding (Terraform Plugin Framework)
