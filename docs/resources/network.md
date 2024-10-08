@@ -52,6 +52,10 @@ Required:
 - `ip_version` (String) IP Version of the subnet.
 - `name` (String) Name of the subnet.
 
+Read-Only:
+
+- `id` (String) ID of the subnet.
+
 ## Import
 
 Import is supported using the following syntax:
