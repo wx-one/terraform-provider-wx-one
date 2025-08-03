@@ -10,7 +10,7 @@ lint:
 	golangci-lint run
 
 generate:
-	cd tools; go generate ./...
+	cp main.go main.goorig; sed -i 's#registry.terraform.io/providers/wx-one#hashicorp.com/edu#' main.go; cd tools; go generate ./...; cd ..; cp main.goorig main.go
 
 fmt:
 	gofmt -s -w -e .
