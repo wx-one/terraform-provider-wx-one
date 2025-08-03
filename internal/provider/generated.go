@@ -26,6 +26,16 @@ const (
 	AvailabilityZoneUnknown AvailabilityZone = "UNKNOWN"
 )
 
+// Ethernet Type
+type EtherType string
+
+const (
+	// IP version 4
+	EtherTypeIpv4 EtherType = "IPv4"
+	// IP version 6
+	EtherTypeIpv6 EtherType = "IPv6"
+)
+
 // Floating Group Vm Input
 type FloatingGroupVmInput struct {
 	// Priority of vm (will be relevant later)
@@ -92,6 +102,30 @@ const (
 	InstanceStatusUnknown InstanceStatus = "UNKNOWN"
 )
 
+// Protocol
+type Protocol string
+
+const (
+	// TCP
+	ProtocolTcp Protocol = "tcp"
+	// UDP
+	ProtocolUdp Protocol = "udp"
+	// ICMP
+	ProtocolIcmp Protocol = "icmp"
+	// use protocol int
+	ProtocolInt Protocol = "int"
+)
+
+// Security Group Rule Direction
+type SecurityGroupRuleDirection string
+
+const (
+	// Ingress Traffic
+	SecurityGroupRuleDirectionIngress SecurityGroupRuleDirection = "ingress"
+	// Egress Traffic
+	SecurityGroupRuleDirectionEgress SecurityGroupRuleDirection = "egress"
+)
+
 // Sev Options Input
 type SevOptionsInput struct {
 	// dhCert must be set together with session
@@ -129,6 +163,55 @@ func (v *SubnetInput) GetIpVersion() string { return v.IpVersion }
 
 // GetCidr returns SubnetInput.Cidr, and is useful for accessing the field via an interface.
 func (v *SubnetInput) GetCidr() string { return v.Cidr }
+
+// Security Group Input
+type W1SecurityGroupRuleInput struct {
+	// Name
+	Name string `json:"name"`
+	// Description
+	Description string `json:"description"`
+	// Direction (Ingress/Egress)
+	Direction SecurityGroupRuleDirection `json:"direction"`
+	// Ethernet Type
+	EtherType EtherType `json:"etherType"`
+	// Priority
+	Priority int `json:"priority"`
+	// Port List, either single, all, comma separated or a range 1:256
+	Ports string `json:"ports"`
+	// Protocol
+	Protocol Protocol `json:"protocol"`
+	// protocol Integer alternative
+	ProtocolInt int `json:"protocolInt"`
+	// IP/CIDR
+	Cidr string `json:"cidr"`
+}
+
+// GetName returns W1SecurityGroupRuleInput.Name, and is useful for accessing the field via an interface.
+func (v *W1SecurityGroupRuleInput) GetName() string { return v.Name }
+
+// GetDescription returns W1SecurityGroupRuleInput.Description, and is useful for accessing the field via an interface.
+func (v *W1SecurityGroupRuleInput) GetDescription() string { return v.Description }
+
+// GetDirection returns W1SecurityGroupRuleInput.Direction, and is useful for accessing the field via an interface.
+func (v *W1SecurityGroupRuleInput) GetDirection() SecurityGroupRuleDirection { return v.Direction }
+
+// GetEtherType returns W1SecurityGroupRuleInput.EtherType, and is useful for accessing the field via an interface.
+func (v *W1SecurityGroupRuleInput) GetEtherType() EtherType { return v.EtherType }
+
+// GetPriority returns W1SecurityGroupRuleInput.Priority, and is useful for accessing the field via an interface.
+func (v *W1SecurityGroupRuleInput) GetPriority() int { return v.Priority }
+
+// GetPorts returns W1SecurityGroupRuleInput.Ports, and is useful for accessing the field via an interface.
+func (v *W1SecurityGroupRuleInput) GetPorts() string { return v.Ports }
+
+// GetProtocol returns W1SecurityGroupRuleInput.Protocol, and is useful for accessing the field via an interface.
+func (v *W1SecurityGroupRuleInput) GetProtocol() Protocol { return v.Protocol }
+
+// GetProtocolInt returns W1SecurityGroupRuleInput.ProtocolInt, and is useful for accessing the field via an interface.
+func (v *W1SecurityGroupRuleInput) GetProtocolInt() int { return v.ProtocolInt }
+
+// GetCidr returns W1SecurityGroupRuleInput.Cidr, and is useful for accessing the field via an interface.
+func (v *W1SecurityGroupRuleInput) GetCidr() string { return v.Cidr }
 
 // Volume Type
 type W1SevType string
@@ -251,6 +334,26 @@ func (v *__createNetworkInput) GetProjectId() string { return v.ProjectId }
 
 // GetSubnets returns __createNetworkInput.Subnets, and is useful for accessing the field via an interface.
 func (v *__createNetworkInput) GetSubnets() []SubnetInput { return v.Subnets }
+
+// __createSecurityGroupInput is used internally by genqlient
+type __createSecurityGroupInput struct {
+	Name        string                     `json:"name"`
+	ProjectId   string                     `json:"projectId"`
+	Description string                     `json:"description"`
+	Rules       []W1SecurityGroupRuleInput `json:"rules"`
+}
+
+// GetName returns __createSecurityGroupInput.Name, and is useful for accessing the field via an interface.
+func (v *__createSecurityGroupInput) GetName() string { return v.Name }
+
+// GetProjectId returns __createSecurityGroupInput.ProjectId, and is useful for accessing the field via an interface.
+func (v *__createSecurityGroupInput) GetProjectId() string { return v.ProjectId }
+
+// GetDescription returns __createSecurityGroupInput.Description, and is useful for accessing the field via an interface.
+func (v *__createSecurityGroupInput) GetDescription() string { return v.Description }
+
+// GetRules returns __createSecurityGroupInput.Rules, and is useful for accessing the field via an interface.
+func (v *__createSecurityGroupInput) GetRules() []W1SecurityGroupRuleInput { return v.Rules }
 
 // __deleteFloatingGroupByFloatingIpIdAndInstanceIdInput is used internally by genqlient
 type __deleteFloatingGroupByFloatingIpIdAndInstanceIdInput struct {
@@ -405,6 +508,30 @@ func (v *__getNetworkInput) GetId() string { return v.Id }
 
 // GetProjectId returns __getNetworkInput.ProjectId, and is useful for accessing the field via an interface.
 func (v *__getNetworkInput) GetProjectId() string { return v.ProjectId }
+
+// __setSecurityGroupInput is used internally by genqlient
+type __setSecurityGroupInput struct {
+	Id          string                     `json:"id"`
+	Name        string                     `json:"name"`
+	ProjectId   string                     `json:"projectId"`
+	Description string                     `json:"description"`
+	Rules       []W1SecurityGroupRuleInput `json:"rules"`
+}
+
+// GetId returns __setSecurityGroupInput.Id, and is useful for accessing the field via an interface.
+func (v *__setSecurityGroupInput) GetId() string { return v.Id }
+
+// GetName returns __setSecurityGroupInput.Name, and is useful for accessing the field via an interface.
+func (v *__setSecurityGroupInput) GetName() string { return v.Name }
+
+// GetProjectId returns __setSecurityGroupInput.ProjectId, and is useful for accessing the field via an interface.
+func (v *__setSecurityGroupInput) GetProjectId() string { return v.ProjectId }
+
+// GetDescription returns __setSecurityGroupInput.Description, and is useful for accessing the field via an interface.
+func (v *__setSecurityGroupInput) GetDescription() string { return v.Description }
+
+// GetRules returns __setSecurityGroupInput.Rules, and is useful for accessing the field via an interface.
+func (v *__setSecurityGroupInput) GetRules() []W1SecurityGroupRuleInput { return v.Rules }
 
 // __updateKeyInput is used internally by genqlient
 type __updateKeyInput struct {
@@ -734,6 +861,62 @@ type createNetworkResponse struct {
 // GetCreateNetwork returns createNetworkResponse.CreateNetwork, and is useful for accessing the field via an interface.
 func (v *createNetworkResponse) GetCreateNetwork() createNetworkCreateNetworkW1NetworkResponse {
 	return v.CreateNetwork
+}
+
+// createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse includes the requested fields of the GraphQL type W1SecurityGroupResponse.
+// The GraphQL type's documentation follows.
+//
+// Security Group Response
+type createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err string `json:"err"`
+	// Success Message
+	Msg createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup `json:"msg"`
+}
+
+// GetCode returns createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse.Code, and is useful for accessing the field via an interface.
+func (v *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse) GetCode() int { return v.Code }
+
+// GetErr returns createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse.Err, and is useful for accessing the field via an interface.
+func (v *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse) GetErr() string { return v.Err }
+
+// GetMsg returns createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse.Msg, and is useful for accessing the field via an interface.
+func (v *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse) GetMsg() createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup {
+	return v.Msg
+}
+
+// createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup includes the requested fields of the GraphQL type W1SecurityGroup.
+// The GraphQL type's documentation follows.
+//
+// Security Group
+type createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup struct {
+	// ID
+	Id string `json:"id"`
+	// Name
+	Name string `json:"name"`
+}
+
+// GetId returns createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup.Id, and is useful for accessing the field via an interface.
+func (v *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup) GetId() string {
+	return v.Id
+}
+
+// GetName returns createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup.Name, and is useful for accessing the field via an interface.
+func (v *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup) GetName() string {
+	return v.Name
+}
+
+// createSecurityGroupResponse is returned by createSecurityGroup on success.
+type createSecurityGroupResponse struct {
+	// Create Security Group
+	CreateSecurityGroup createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse `json:"createSecurityGroup"`
+}
+
+// GetCreateSecurityGroup returns createSecurityGroupResponse.CreateSecurityGroup, and is useful for accessing the field via an interface.
+func (v *createSecurityGroupResponse) GetCreateSecurityGroup() createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse {
+	return v.CreateSecurityGroup
 }
 
 // deleteFloatingGroupByFloatingIpIdAndInstanceIdDeleteFloatingGroupByFloatingIpIdAndInstanceIdResponse includes the requested fields of the GraphQL type Response.
@@ -1610,6 +1793,62 @@ type meResponse struct {
 // GetMe returns meResponse.Me, and is useful for accessing the field via an interface.
 func (v *meResponse) GetMe() meMeUser { return v.Me }
 
+// setSecurityGroupResponse is returned by setSecurityGroup on success.
+type setSecurityGroupResponse struct {
+	// Update a Security Group
+	SetSecurityGroup setSecurityGroupSetSecurityGroupW1SecurityGroupResponse `json:"setSecurityGroup"`
+}
+
+// GetSetSecurityGroup returns setSecurityGroupResponse.SetSecurityGroup, and is useful for accessing the field via an interface.
+func (v *setSecurityGroupResponse) GetSetSecurityGroup() setSecurityGroupSetSecurityGroupW1SecurityGroupResponse {
+	return v.SetSecurityGroup
+}
+
+// setSecurityGroupSetSecurityGroupW1SecurityGroupResponse includes the requested fields of the GraphQL type W1SecurityGroupResponse.
+// The GraphQL type's documentation follows.
+//
+// Security Group Response
+type setSecurityGroupSetSecurityGroupW1SecurityGroupResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err string `json:"err"`
+	// Success Message
+	Msg setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup `json:"msg"`
+}
+
+// GetCode returns setSecurityGroupSetSecurityGroupW1SecurityGroupResponse.Code, and is useful for accessing the field via an interface.
+func (v *setSecurityGroupSetSecurityGroupW1SecurityGroupResponse) GetCode() int { return v.Code }
+
+// GetErr returns setSecurityGroupSetSecurityGroupW1SecurityGroupResponse.Err, and is useful for accessing the field via an interface.
+func (v *setSecurityGroupSetSecurityGroupW1SecurityGroupResponse) GetErr() string { return v.Err }
+
+// GetMsg returns setSecurityGroupSetSecurityGroupW1SecurityGroupResponse.Msg, and is useful for accessing the field via an interface.
+func (v *setSecurityGroupSetSecurityGroupW1SecurityGroupResponse) GetMsg() setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup {
+	return v.Msg
+}
+
+// setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup includes the requested fields of the GraphQL type W1SecurityGroup.
+// The GraphQL type's documentation follows.
+//
+// Security Group
+type setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup struct {
+	// ID
+	Id string `json:"id"`
+	// Name
+	Name string `json:"name"`
+}
+
+// GetId returns setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup.Id, and is useful for accessing the field via an interface.
+func (v *setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup) GetId() string {
+	return v.Id
+}
+
+// GetName returns setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup.Name, and is useful for accessing the field via an interface.
+func (v *setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup) GetName() string {
+	return v.Name
+}
+
 // updateKeyResponse is returned by updateKey on success.
 type updateKeyResponse struct {
 	// Update Key
@@ -1929,6 +2168,52 @@ func createNetwork(
 	var err_ error
 
 	var data_ createNetworkResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by createSecurityGroup.
+const createSecurityGroup_Operation = `
+mutation createSecurityGroup ($name: String!, $projectId: UUID!, $description: String, $rules: [W1SecurityGroupRuleInput]) {
+	createSecurityGroup(name: $name, description: $description, rules: $rules, projectId: $projectId) {
+		code
+		err
+		msg {
+			id
+			name
+		}
+	}
+}
+`
+
+func createSecurityGroup(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	projectId string,
+	description string,
+	rules []W1SecurityGroupRuleInput,
+) (*createSecurityGroupResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "createSecurityGroup",
+		Query:  createSecurityGroup_Operation,
+		Variables: &__createSecurityGroupInput{
+			Name:        name,
+			ProjectId:   projectId,
+			Description: description,
+			Rules:       rules,
+		},
+	}
+	var err_ error
+
+	var data_ createSecurityGroupResponse
 	resp_ := &graphql.Response{Data: &data_}
 
 	err_ = client_.MakeRequest(
@@ -2506,6 +2791,54 @@ func me(
 	var err_ error
 
 	var data_ meResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by setSecurityGroup.
+const setSecurityGroup_Operation = `
+mutation setSecurityGroup ($id: UUID!, $name: String!, $projectId: UUID!, $description: String, $rules: [W1SecurityGroupRuleInput]) {
+	setSecurityGroup(id: $id, name: $name, description: $description, rules: $rules, projectId: $projectId) {
+		code
+		err
+		msg {
+			id
+			name
+		}
+	}
+}
+`
+
+func setSecurityGroup(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	name string,
+	projectId string,
+	description string,
+	rules []W1SecurityGroupRuleInput,
+) (*setSecurityGroupResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "setSecurityGroup",
+		Query:  setSecurityGroup_Operation,
+		Variables: &__setSecurityGroupInput{
+			Id:          id,
+			Name:        name,
+			ProjectId:   projectId,
+			Description: description,
+			Rules:       rules,
+		},
+	}
+	var err_ error
+
+	var data_ setSecurityGroupResponse
 	resp_ := &graphql.Response{Data: &data_}
 
 	err_ = client_.MakeRequest(

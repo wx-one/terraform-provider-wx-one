@@ -311,3 +311,47 @@ query getImageList($projectId: UUID!) {
     }
   }
 }
+
+mutation setSecurityGroup(
+  $id: UUID!
+  $name: String!
+  $projectId: UUID!
+  $description: String
+  $rules: [W1SecurityGroupRuleInput]
+) {
+  setSecurityGroup(
+    id: $id
+    name: $name
+    description: $description
+    rules: $rules
+    projectId: $projectId
+  ) {
+    code
+    err
+    msg {
+      id
+      name
+    }
+  }
+}
+
+mutation createSecurityGroup(
+  $name: String!
+  $projectId: UUID!
+  $description: String
+  $rules: [W1SecurityGroupRuleInput]
+) {
+  createSecurityGroup(
+    name: $name
+    description: $description
+    rules: $rules
+    projectId: $projectId
+  ) {
+    code
+    err
+    msg {
+      id
+      name
+    }
+  }
+}

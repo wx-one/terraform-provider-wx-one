@@ -236,10 +236,6 @@ enum FlavorType {
   "TBD"
   dd1
   "TBD"
-  dd2
-  "TBD"
-  st1
-  "TBD"
   ha1
   "Unknown flavor type"
   UNKNOWN
@@ -1053,6 +1049,8 @@ enum Protocol {
   udp
   "ICMP"
   icmp
+  "use protocol int"
+  int
 }
 
 "Health Check Protocol"
@@ -1093,16 +1091,12 @@ type W1SecurityGroupRule {
   etherType: EtherType!
   "Priority"
   priority: Int!
-  "Minimum port in range"
-  portRangeMin: Int!
-  "Maximum port in range"
-  portRangeMax: Int!
+  "Port List, either single, all, comma separated or a range 1:256"
+  ports: String!
   "Protocol"
   protocol: Protocol!
-  "Source IP/CIDR"
-  source: String!
-  "Destination IP/CIDR"
-  destination: String!
+  "IP/CIDR"
+  cidr: String!
 }
 
 "Security Group Association"
@@ -1127,16 +1121,14 @@ input W1SecurityGroupRuleInput {
   etherType: EtherType!
   "Priority"
   priority: Int!
-  "Minimum port in range"
-  portRangeMin: Int!
-  "Maximum port in range"
-  portRangeMax: Int!
+  "Port List, either single, all, comma separated or a range 1:256"
+  ports: String!
   "Protocol"
   protocol: Protocol!
-  "Source IP/CIDR"
-  source: String!
-  "Destination IP/CIDR"
-  destination: String!
+  "protocol Integer alternative"
+  protocolInt: Int
+  "IP/CIDR"
+  cidr: String!
 }
 
 "Security Group Response"
@@ -1902,6 +1894,20 @@ type Mutation {
     "ID of Instance"
     instanceId: UUID!
   ): Response
+  "Update a Security Group"
+  setSecurityGroup(
+    "id"
+    id: UUID!
+    "Name"
+    name: String!
+    "Description"
+    description: String
+    "ID of Proejct"
+    projectId: UUID!
+    "Rules"
+    rules: [W1SecurityGroupRuleInput]
+  ): W1SecurityGroupResponse
+
   "Create Security Group"
   createSecurityGroup(
     "Name"
