@@ -25,7 +25,30 @@ Manages a instance.
 - `ssh_keys` (List of String) Id of the subnet.
 - `subnet_id` (String) Network subnet of the instance.
 
+### Optional
+
+- `additional` (Attributes) (see [below for nested schema](#nestedatt--additional))
+
 ### Read-Only
 
 - `id` (String) ID of the instance in UUID format.
 - `status` (String) Status of the instance.
+
+<a id="nestedatt--additional"></a>
+### Nested Schema for `additional`
+
+Optional:
+
+- `sev_options` (Attributes) (see [below for nested schema](#nestedatt--additional--sev_options))
+- `sev_type` (String) Select SEV Type if supported
+- `uefi` (Boolean) Use an UEFI Bios if supported
+- `vtpm` (Boolean) Attach a vTPM to the VM if supported
+
+<a id="nestedatt--additional--sev_options"></a>
+### Nested Schema for `additional.sev_options`
+
+Optional:
+
+- `dh_cert` (String) dhcert
+- `kernel_hashes` (String) kernel hashes
+- `session` (String) session

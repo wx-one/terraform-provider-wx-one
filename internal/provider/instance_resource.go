@@ -98,10 +98,10 @@ func (r *instanceResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 				Description: "Id of the subnet.",
 				ElementType: types.StringType,
 			},
-			"example_attribute": schema.SingleNestedAttribute{
+			"additional": schema.SingleNestedAttribute{
 				Optional: true,
 				Attributes: map[string]schema.Attribute{
-					"vTPM": schema.BoolAttribute{
+					"vtpm": schema.BoolAttribute{
 						Description: "Attach a vTPM to the VM if supported",
 						Optional:    true,
 					},
@@ -109,7 +109,7 @@ func (r *instanceResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 						Description: "Use an UEFI Bios if supported",
 						Optional:    true,
 					},
-					"sevType": schema.StringAttribute{
+					"sev_type": schema.StringAttribute{
 						Description: "Select SEV Type if supported",
 						Optional:    true,
 						Validators: []validator.String{
@@ -119,10 +119,10 @@ func (r *instanceResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 							stringplanmodifier.RequiresReplace(),
 						},
 					},
-					"sevOptions": schema.SingleNestedAttribute{
+					"sev_options": schema.SingleNestedAttribute{
 						Optional: true,
 						Attributes: map[string]schema.Attribute{
-							"dhCert": schema.StringAttribute{
+							"dh_cert": schema.StringAttribute{
 								Description: "dhcert",
 								Optional:    true,
 							},
@@ -130,7 +130,7 @@ func (r *instanceResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 								Description: "session",
 								Optional:    true,
 							},
-							"kernelHashes": schema.StringAttribute{
+							"kernel_hashes": schema.StringAttribute{
 								Description: "kernel hashes",
 								Optional:    true,
 							},
@@ -168,7 +168,7 @@ type sevOptionModel struct {
 }
 
 type additionalModel struct {
-	vTPM       types.Bool     `tfsdk:"vTPM"`
+	vTPM       types.Bool     `tfsdk:"vtpm"`
 	uefi       types.Bool     `tfsdk:"uefi"`
 	sevType    types.String   `tfsdk:"sev_type"`
 	sevOptions sevOptionModel `tfsdk:"sev_options"`
