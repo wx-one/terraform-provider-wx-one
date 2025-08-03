@@ -27,6 +27,8 @@ var (
 	_ resource.ResourceWithImportState = &instanceResource{}
 )
 
+var SEV_TYPES = []string{"sev", "sev_es", "sev_snp", "sev_snp_vtpm"}
+
 // NewInstanceResource is a helper function to simplify the provider implementation.
 func NewInstanceResource() resource.Resource {
 	return &instanceResource{}
@@ -96,6 +98,46 @@ func (r *instanceResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 				Description: "Id of the subnet.",
 				ElementType: types.StringType,
 			},
+			"example_attribute": schema.SingleNestedAttribute{
+				Optional: true,
+				Attributes: map[string]schema.Attribute{
+					"vTPM": schema.BoolAttribute{
+						Description: "Attach a vTPM to the VM if supported",
+						Optional:    true,
+					},
+					"uefi": schema.BoolAttribute{
+						Description: "Use an UEFI Bios if supported",
+						Optional:    true,
+					},
+					"sevType": schema.StringAttribute{
+						Description: "Select SEV Type if supported",
+						Optional:    true,
+						Validators: []validator.String{
+							stringvalidator.OneOf(SEV_TYPES...),
+						},
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.RequiresReplace(),
+						},
+					},
+					"sevOptions": schema.SingleNestedAttribute{
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"dhCert": schema.StringAttribute{
+								Description: "dhcert",
+								Optional:    true,
+							},
+							"session": schema.StringAttribute{
+								Description: "session",
+								Optional:    true,
+							},
+							"kernelHashes": schema.StringAttribute{
+								Description: "kernel hashes",
+								Optional:    true,
+							},
+						},
+					},
+				},
+			},
 			// "floating_ips": schema.ListNestedAttribute{
 			// 	Required: true,
 			// 	NestedObject: schema.NestedAttributeObject{
@@ -119,6 +161,19 @@ func (r *instanceResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 	}
 }
 
+type sevOptionModel struct {
+	dhCert       types.String `tfsdk:"dhCert"`
+	session      types.String `tfsdk:"session"`
+	kernelHashes types.String `tfsdk:"kernelHashes"`
+}
+
+type additionalModel struct {
+	vTPM       types.Bool     `tfsdk:"vTPM"`
+	uefi       types.Bool     `tfsdk:"uefi"`
+	sevType    types.String   `tfsdk:"sev_type"`
+	sevOptions sevOptionModel `tfsdk:"sev_options"`
+}
+
 type instanceResourceModel struct {
 	ID               types.String `tfsdk:"id"`
 	Name             types.String `tfsdk:"name"`
@@ -129,7 +184,8 @@ type instanceResourceModel struct {
 	Status           types.String `tfsdk:"status"`
 	ProjectID        types.String `tfsdk:"project_id"`
 	// FloatingIPs      []floatingIPModel `tfsdk:"floating_ips"`
-	SSHKeys []types.String `tfsdk:"ssh_keys"`
+	SSHKeys    []types.String  `tfsdk:"ssh_keys"`
+	additional additionalModel `tfsdk:"additional"`
 }
 
 // type floatingIPModel struct {
@@ -174,8 +230,20 @@ func (r *instanceResource) Create(ctx context.Context, req resource.CreateReques
 		sshKeysInput[i] = item.ValueString()
 	}
 
+	var additional InstanceAdditionalInput
+	var sevOptions SevOptionsInput
+
+	sevOptions.DhCert = plan.additional.sevOptions.dhCert.ValueString()
+	sevOptions.Session = plan.additional.sevOptions.session.ValueString()
+	sevOptions.KernelHashes = plan.additional.sevOptions.kernelHashes.ValueString()
+
+	additional.SevType = W1SevType(plan.additional.sevType.ValueString())
+	additional.VTPM = plan.additional.vTPM.ValueBool()
+	additional.Uefi = plan.additional.uefi.ValueBool()
+	additional.SevOptions = sevOptions
+
 	// Create new instance
-	instance, err := createInstance(ctx, r.wxOneClients.graphqlClient, plan.NetworkID.ValueString(), plan.FlavorID.ValueString(), plan.ImageID.ValueString(), plan.ProjectID.ValueString(), plan.Name.ValueString(), sshKeysInput, AvailabilityZone(plan.AvailabilityZone.ValueString()), false)
+	instance, err := createInstance(ctx, r.wxOneClients.graphqlClient, plan.NetworkID.ValueString(), plan.FlavorID.ValueString(), plan.ImageID.ValueString(), plan.ProjectID.ValueString(), plan.Name.ValueString(), sshKeysInput, AvailabilityZone(plan.AvailabilityZone.ValueString()), false, additional)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating instance",

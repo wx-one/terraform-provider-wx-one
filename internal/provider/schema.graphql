@@ -7,6 +7,22 @@ scalar UUID
 "E-Mail Address"
 scalar Email
 
+"Pagination Info"
+type PaginationInfo {
+  nextCursor: String
+  prevCursor: String
+  hasNext: Boolean!
+  hasPrev: Boolean!
+  totalCount: Int
+}
+
+"Pagination Input"
+input PaginationInput {
+  cursor: String
+  direction: String
+  pageSize: Int
+}
+
 "Software Categories"
 enum SoftwareCategory {
   "all"
@@ -121,6 +137,8 @@ type W1NetworkListResponse {
   err: String
   "Success Message"
   msg: [W1Network]
+  "Pagination Info"
+  pagination: PaginationInfo
 }
 
 "User"
@@ -145,6 +163,8 @@ type UserListResponse {
   err: String
   "Success Message"
   msg: [User]
+  "Pagination"
+  pagination: PaginationInfo
 }
 
 "Image Type"
@@ -173,6 +193,8 @@ type W1Image {
   storageId: UUID
   "Filename (Custom Image only)"
   filename: String
+  "Status of image"
+  status: ImageStatus
 }
 
 "Image Response"
@@ -193,6 +215,8 @@ type W1ImageListResponse {
   err: String
   "Success Message"
   msg: [W1Image]
+  "Pagination"
+  pagination: PaginationInfo
 }
 
 "Response"
@@ -211,6 +235,10 @@ enum FlavorType {
   vs1
   "TBD"
   dd1
+  "TBD"
+  dd2
+  "TBD"
+  st1
   "TBD"
   ha1
   "Unknown flavor type"
@@ -301,6 +329,48 @@ type Quota {
   volumeType: W1VolumeType
 }
 
+"Boot Disk"
+input BootDiskInput {
+  "ID of Volume"
+  id: UUID!
+  "Should volume be reprovisioned"
+  reprovision: Boolean!
+}
+
+"Volume Type"
+enum W1SevType {
+  "SEV"
+  sev
+  "SEV ES"
+  sev_es
+  "SEV SNP"
+  sev_snp
+  "SEV SNP with ephemeral SVSM vTPM, can be combined with a normal vTPM"
+  sev_snp_vtpm
+}
+
+"Sev Options Input"
+input SevOptionsInput {
+  "dhCert must be set together with session"
+  dhCert: String
+  "session"
+  session: String
+  "kernelHashes"
+  kernelHashes: String
+}
+
+"Instance Additional Options"
+input InstanceAdditionalInput {
+  "provision VM with vTPM, ignored if not supported by VM type"
+  vTPM: Boolean
+  "use uefi bios, ignored if not supported by VM type"
+  uefi: Boolean
+  "specify the SEV type, ignored if not supported by VM type"
+  sevType: W1SevType
+  "sevOptions"
+  sevOptions: SevOptionsInput
+}
+
 "Quota Input"
 input QuotaInput {
   "Type of quota"
@@ -335,6 +405,8 @@ type QuotaListResponse {
   err: String
   "Success Message"
   msg: [Quota]
+  "Pagination"
+  pagination: PaginationInfo
 }
 
 "Quota Response"
@@ -383,6 +455,12 @@ type SoftwareMode {
   params: JSON
   "Pricing details of this mode"
   pricing: JSON
+  "is configurable"
+  isConfigurable: Boolean
+  "config html template"
+  configHtmlTemplate: String
+  "config js template"
+  configJsTemplate: String
 }
 
 "Software"
@@ -469,6 +547,326 @@ type InstalledSoftwareListResponse {
   err: String
   "Success Message"
   msg: [InstalledSoftware]
+  "Pagination"
+  pagination: PaginationInfo
+}
+
+"Software Configuration Response"
+type SoftwareConfigurationResponse {
+  "Return Code"
+  code: Int!
+  "Error Message"
+  err: String
+  "Success Message"
+  msg: JSON
+}
+
+"Revolut Order State"
+enum RevolutOrderState {
+  "PENDING"
+  PENDING
+  "PROCESSING"
+  PROCESSING
+  "AUTHORISED"
+  AUTHORISED
+  "COMPLETED"
+  COMPLETED
+  "CANCELLED"
+  CANCELLED
+  "FAILED"
+  FAILED
+}
+
+"Revolut Order Type"
+enum RevolutOrderType {
+  "PAYMENT"
+  PAYMENT
+  "REFUND"
+  REFUND
+  "CHARGEBACK"
+  CHARGEBACK
+}
+
+"Revolut Order"
+type RevolutOrder {
+  "ID"
+  id: String
+  "Reference Number"
+  referenceNumber: String
+  "Type"
+  type: RevolutOrderType
+  "Token"
+  token: String
+  "Description"
+  description: String
+  "State"
+  state: RevolutOrderState
+  "Amount"
+  amount: Float
+  "Currency"
+  currency: String
+  "Created At"
+  createdAt: String
+}
+
+"Revolut Order Response"
+type RevolutOrderResponse {
+  "Return Code"
+  code: Int!
+  "Error Message"
+  err: String
+  "Success Message"
+  msg: RevolutOrder
+}
+
+"Revolut Order List Response"
+type RevolutOrderListResponse {
+  "Return Code"
+  code: Int!
+  "Error Message"
+  err: String
+  "Success Message"
+  msg: [RevolutOrder]
+}
+
+"Revolut Card"
+type RevolutCard {
+  "ID"
+  id: String
+  "last 4 digits"
+  last4: String
+  "expiry month"
+  expiryMonth: Int
+  "expiry year"
+  expiryYear: Int
+  "Cardholder name"
+  cardholderName: String
+  "Brand"
+  brand: String
+}
+
+"Revolut Card Response"
+type RevolutCardResponse {
+  "Return Code"
+  code: Int!
+  "Error Message"
+  err: String
+  "Success Message"
+  msg: RevolutCard
+}
+
+"Revolut Customer"
+type RevolutCustomer {
+  "Revolut ID"
+  id: String!
+  "E-Mail"
+  email: String
+  "WX-ONE Organization ID"
+  organizationId: UUID
+  "WX-ONE User ID"
+  userId: UUID
+}
+
+"Revolut Customer List Response"
+type RevolutCustomerListResponse {
+  "Return Code"
+  code: Int!
+  "Error Message"
+  err: String
+  "Success Message"
+  msg: [RevolutCustomer]
+}
+
+"Api Key"
+type ApiKey {
+  "ID"
+  id: UUID!
+  "Username"
+  username: String!
+  "Description"
+  description: String
+  "Password"
+  password: String
+  "Created At"
+  createdAt: String
+  "Expire At"
+  expireAt: String
+}
+
+"Api Key List Response"
+type ApiKeyListResponse {
+  "Return Code"
+  code: Int!
+  "Error Message"
+  err: String
+  "Success Message"
+  msg: [ApiKey]
+  "Pagination"
+  pagination: PaginationInfo
+}
+
+"Api Key Response"
+type ApiKeyResponse {
+  "Return Code"
+  code: Int!
+  "Error Message"
+  err: String
+  "Success Message"
+  msg: ApiKey
+}
+
+"Instance Additional Options"
+type InstanceAdditional {
+  "provision VM with vTPM, ignored if not supported by VM type"
+  vTPM: Boolean
+  "use uefi bios, ignored if not supported by VM type"
+  uefi: Boolean
+  "specify the SEV type, ignored if not supported by VM type"
+  sevType: W1SevType
+}
+
+"Instance"
+type W1Instance {
+  "ID"
+  id: UUID!
+  "Name"
+  name: String!
+  "Status of Instance"
+  status: InstanceStatus!
+  "Availability Zone"
+  availabilityZone: AvailabilityZone
+  "Additional Properties of Instance"
+  properties: JSON
+  "ID of flavor"
+  flavorId: UUID
+  "Internal IP addresses"
+  addresses: [String]
+  "ProjectId of resource"
+  projectId: JSON
+  "Attached Volumes"
+  volumes: [W1Volume]
+  "Attached FloatingIPs"
+  floatingIPs: [InstanceFloatingIPAttachment]
+  "Addtional Instance Options"
+  additional: InstanceAdditional
+}
+
+"Instance Response"
+type W1InstanceResponse {
+  "Return Code"
+  code: Int!
+  "Error Message"
+  err: String
+  "Success Message"
+  msg: W1Instance
+}
+
+"Instance List Response"
+type W1InstanceListResponse {
+  "Return Code"
+  code: Int!
+  "Error Message"
+  err: String
+  "Success Message"
+  msg: [W1Instance]
+  "Pagination Info"
+  pagination: PaginationInfo
+}
+
+"Instance Paginated List Response"
+type W1InstancePaginatedListResponse {
+  "Return Code"
+  code: Int!
+  "Error Message"
+  err: String
+  "Success Message"
+  msg: [W1Instance]
+}
+
+"Instance Volume Attachment"
+type W1InstanceVolumeAttachmentsResponse {
+  "Return Code"
+  code: Int!
+  "Error Message"
+  err: String
+  "Success Message"
+  msg: [W1Volume]
+}
+
+"Instance Floating Attachment Response"
+type W1InstanceFloatingIPAttachmentsResponse {
+  "Return Code"
+  code: Int!
+  "Error Message"
+  err: String
+  "Success Message"
+  msg: [InstanceFloatingIPAttachment]
+}
+
+"Instance Floating IP Attachment"
+type InstanceFloatingIPAttachment {
+  "ID"
+  id: UUID!
+  "name"
+  ip: String!
+  "Nat to VMs private IP"
+  natToVmsPrivateIp: Boolean
+}
+
+"Volume List Response"
+type W1VolumeListResponse {
+  "Return Code"
+  code: Int!
+  "Error Message"
+  err: String
+  "Success Message"
+  msg: [W1Volume]
+}
+
+"Volume Attachment Response"
+type W1VolumeAttachmentResponse {
+  "Return Code"
+  code: Int!
+  "Error Message"
+  err: String
+  "Success Message"
+  msg: W1Instance
+}
+
+"Volume"
+type W1Volume {
+  "ID"
+  id: UUID!
+  "Name"
+  name: String!
+  "Size in GB"
+  size: Int!
+  "Volume Type"
+  volumeType: W1VolumeType!
+  "attachedTo"
+  attachedTo: W1Instance
+  "device"
+  device: String
+}
+
+"Volume Response"
+type W1VolumeResponse {
+  "Return Code"
+  code: Int!
+  "Error Message"
+  err: String
+  "Success Message"
+  msg: W1Volume
+}
+
+"Status of an image"
+enum ImageStatus {
+  "Instance is ready"
+  READY
+  "Image is waiting to be prepared"
+  PENDING
+  "error on preparing image"
+  ERROR
 }
 
 "Status of an instance"
@@ -525,16 +923,8 @@ type FloatingIPListResponse {
   err: String
   "Success Message"
   msg: [W1FloatingIP]
-}
-
-"Instance Floating IP Attachment"
-type InstanceFloatingIPAttachment {
-  "ID"
-  id: UUID!
-  "name"
-  ip: String!
-  "Nat to VMs private IP"
-  natToVmsPrivateIp: Boolean
+  "Pagination"
+  pagination: PaginationInfo
 }
 
 type FloatingIPInstance {
@@ -625,6 +1015,8 @@ type W1KeyListResponse {
   err: String
   "Success Message"
   msg: [W1Key]
+  "Pagination"
+  pagination: PaginationInfo
 }
 
 "Key Response"
@@ -635,70 +1027,6 @@ type W1KeyResponse {
   err: String
   "Success Message"
   msg: W1Key
-}
-
-"Instance"
-type W1Instance {
-  "ID"
-  id: UUID!
-  "Name"
-  name: String!
-  "Status of Instance"
-  status: InstanceStatus!
-  "Availability Zone"
-  availabilityZone: AvailabilityZone
-  "Additional Properties of Instance"
-  properties: JSON
-  "ID of flavor"
-  flavorId: UUID
-  "Internal IP addresses"
-  addresses: JSON
-  "ProjectId of resource"
-  projectId: JSON
-  "Attached Volumes"
-  volumes: [W1Volume]
-  "Attached FloatingIPs"
-  floatingIPs: [InstanceFloatingIPAttachment]
-}
-
-"Instance Response"
-type W1InstanceResponse {
-  "Return Code"
-  code: Int!
-  "Error Message"
-  err: String
-  "Success Message"
-  msg: W1Instance
-}
-
-"Instance List Response"
-type W1InstanceListResponse {
-  "Return Code"
-  code: Int!
-  "Error Message"
-  err: String
-  "Success Message"
-  msg: [W1Instance]
-}
-
-"Instance Volume Attachment"
-type W1InstanceVolumeAttachmentsResponse {
-  "Return Code"
-  code: Int!
-  "Error Message"
-  err: String
-  "Success Message"
-  msg: [W1Volume]
-}
-
-"Instance Floating Attachment Response"
-type W1InstanceFloatingIPAttachmentsResponse {
-  "Return Code"
-  code: Int!
-  "Error Message"
-  err: String
-  "Success Message"
-  msg: [InstanceFloatingIPAttachment]
 }
 
 "Security Group Rule Direction"
@@ -849,50 +1177,6 @@ type W1SecurityGroupAssociationResponse {
   err: String
   "Success Message"
   msg: W1SecurityGroupAssociation
-}
-
-"Volume List Response"
-type W1VolumeListResponse {
-  "Return Code"
-  code: Int!
-  "Error Message"
-  err: String
-  "Success Message"
-  msg: [W1Volume]
-}
-
-"Volume Attachment Response"
-type W1VolumeAttachmentResponse {
-  "Return Code"
-  code: Int!
-  "Error Message"
-  err: String
-  "Success Message"
-  msg: W1Instance
-}
-
-"Volume"
-type W1Volume {
-  "ID"
-  id: UUID!
-  "Name"
-  name: String!
-  "Size in GB"
-  size: Int!
-  "Volume Type"
-  volumeType: W1VolumeType!
-  "attachedTo"
-  attachedTo: W1Instance
-}
-
-"Volume Response"
-type W1VolumeResponse {
-  "Return Code"
-  code: Int!
-  "Error Message"
-  err: String
-  "Success Message"
-  msg: W1Volume
 }
 
 "Algorithm Type"
@@ -1054,7 +1338,7 @@ type LoadBalancer {
   "Description"
   description: String
   "ID of project"
-  projectId: String!
+  projectId: UUID!
   "Frontend IPs"
   frontendIPs: [LoadBalancerFrontendIP!]
   "Backends"
@@ -1147,6 +1431,8 @@ type BillListResponse {
   err: String
   "Success Message"
   msg: [Bill]
+  "Pagination"
+  pagination: PaginationInfo
 }
 
 "Profile"
@@ -1165,8 +1451,8 @@ type ProfileResponse {
   msg: Profile
 }
 
-"Bank Details"
-type BankDetails {
+"Organization Change Request"
+type OrganizationChangeRequest {
   "Bank Owner Name"
   bankOwnerName: String
   "IBAN"
@@ -1181,10 +1467,18 @@ type BankDetails {
   ifscCode: String
   "SWIFT Code"
   swiftCode: String
+  "Commercial Register Number"
+  commercialRegisterNumber: String
+  "Register Court"
+  registerCourt: String
+  "VAT Number"
+  vatNumber: String
 }
 
 "Organization"
 type Organization {
+  "id"
+  id: UUID
   "Name"
   name: String
   "Address line 1"
@@ -1203,6 +1497,8 @@ type Organization {
   vatNumber: String
   "Commercial Register Number"
   commercialRegisterNumber: String
+  "Register Court"
+  registerCourt: String
   "GSTIN"
   gstin: String
   "CIN"
@@ -1221,8 +1517,16 @@ type Organization {
   ifscCode: String
   "Swift Code"
   swiftCode: String
-  "Existing Change Request for Bank Details"
-  bankDetailsChangeRequest: BankDetails
+  "Aggree to sepa"
+  agreeSEPA: Boolean
+  "Existing Change Request"
+  changeRequest: OrganizationChangeRequest
+  "External Mandate"
+  extMandate: String
+  "Revolut Customer ID"
+  revolutCustomerId: String
+  "Revolut Customer Card"
+  revolutCustomerCard: RevolutCard
 }
 
 "Organization Response"
@@ -1293,11 +1597,17 @@ type Query {
   "Get Flavor By Name"
   getFlavorByName("Name" name: String!): FlavorResponse
   "Get Instance List"
-  getInstanceList("ID of Project" projectId: UUID!): W1InstanceListResponse
+  getInstanceList(
+    "ID of Project"
+    projectId: UUID!
+    pagination: PaginationInput
+  ): W1InstanceListResponse
   "Get Instance"
   getInstance(
     "ID"
-    id: UUID!
+    id: UUID
+    "Name"
+    name: String
     "ID of Project"
     projectId: UUID!
   ): W1InstanceResponse
@@ -1307,6 +1617,8 @@ type Query {
     zoneId: UUID
     "ID of Project"
     projectId: UUID!
+    "Pagination"
+    pagination: PaginationInput
   ): W1NetworkListResponse
   "Get Network"
   getNetwork(
@@ -1316,6 +1628,15 @@ type Query {
     projectId: UUID!
   ): W1NetworkResponse
   # getSecurityGroupList(page: Int, limit: Int): SecurityGroupListResponse
+  "Get Volume"
+  getVolume(
+    "ID"
+    id: UUID
+    "name"
+    name: String
+    "ID of Project"
+    projectId: UUID!
+  ): W1VolumeResponse
   "Get Volume List"
   getVolumeList(
     "ID of Project"
@@ -1346,9 +1667,20 @@ type Query {
   ): W1InstanceFloatingIPAttachmentsResponse
   # getImageListOS(tenantId: String!): [Image]
   "Get Image List"
-  getImageList("ID of Project" projectId: UUID!): W1ImageListResponse
+  getImageList(
+    "ID of Project"
+    projectId: UUID!
+    "Pagination"
+    pagination: PaginationInput
+    "If true or false filter only for ready Images"
+    ready: Boolean
+  ): W1ImageListResponse
   "Get Key List"
-  getKeyList("ID of Project" projectId: UUID): W1KeyListResponse
+  getKeyList(
+    "ID of Project"
+    projectId: UUID
+    pagination: PaginationInput
+  ): W1KeyListResponse
   "Get Key"
   getKey(
     "ID"
@@ -1379,6 +1711,8 @@ type Query {
     projectId: UUID!
     "If true or false filter only for attached or non attached Floating IPs"
     attached: Boolean
+    "Pagination"
+    pagination: PaginationInput
   ): FloatingIPListResponse
   getFloatingIP(
     "ID"
@@ -1394,7 +1728,11 @@ type Query {
     projectId: UUID!
   ): FloatingIPAttachmentResponse
   "Get Quota List"
-  getQuotaList("ID of Project" projectId: UUID!): QuotaListResponse
+  getQuotaList(
+    "ID of Project"
+    projectId: UUID!
+    pagination: PaginationInput
+  ): QuotaListResponse
   "Get Quota"
   getQuota("ID of Quota" id: UUID!): QuotaResponse
   "Get Forecast Billing"
@@ -1404,9 +1742,19 @@ type Query {
     atDate: String
   ): BillListResponse
   "Get Actual Billing"
-  getActualBilling("projectId" projectId: UUID!): BillListResponse
+  getActualBilling(
+    "projectId"
+    projectId: UUID!
+    "pagination"
+    pagination: PaginationInput
+  ): BillListResponse
   "Get Project Access List"
-  getProjectAccessUserList("projectId" projectId: UUID!): UserListResponse
+  getProjectAccessUserList(
+    "projectId"
+    projectId: UUID!
+    "pagination"
+    pagination: PaginationInput
+  ): UserListResponse
   "Get Software List"
   getSoftwareList(
     "category"
@@ -1420,8 +1768,30 @@ type Query {
   getInstalledSoftwareList(
     "Project ID"
     projectId: UUID!
+    "Pagination"
+    pagination: PaginationInput
   ): InstalledSoftwareListResponse
+  getInstalledSoftware(
+    "ID"
+    id: UUID!
+    "Project ID"
+    projectId: UUID!
+  ): InstalledSoftwareResponse
+  "Get pricing list"
   getPricingList: PricingListResponse
+  "List api keys of a user"
+  getApiKeyList(pagination: PaginationInput): ApiKeyListResponse
+  "Get Software Configuration"
+  getSoftwareConfiguration(
+    "ID"
+    id: UUID!
+    "Project ID"
+    projectId: UUID!
+  ): SoftwareConfigurationResponse
+  "Retrieve revolut order list"
+  getRevolutOrderList: RevolutOrderListResponse
+  "Get revolut customer card"
+  getRevolutCustomerCard: RevolutCardResponse
 }
 
 type Mutation {
@@ -1521,7 +1891,7 @@ type Mutation {
     "ID of Instance"
     instanceId: UUID!
     "Target device name i.e. sdx"
-    device: String
+    device: String!
   ): Response
   "Detach Volume From Instance"
   detachVolumeFromInstance(
@@ -1651,6 +2021,10 @@ type Mutation {
     managed: Boolean!
     "SSH Keys"
     sshKeys: [UUID!]
+    "Make the boot disk an external one"
+    bootDisk: BootDiskInput
+    "Additional Options"
+    additional: InstanceAdditionalInput
   ): W1InstanceResponse
   "Start Instance"
   startInstance(
@@ -1667,12 +2041,7 @@ type Mutation {
     projectId: UUID!
   ): W1InstanceResponse
   "Delete Instance"
-  deleteInstance(
-    "ID"
-    id: UUID!
-    "ID of Project"
-    projectId: UUID!
-  ): W1InstanceResponse
+  deleteInstance("ID" id: UUID!, "ID of Project" projectId: UUID!): Response
   rebootInstance(
     "ID"
     id: UUID!
@@ -1860,6 +2229,14 @@ type Mutation {
     ifscCode: String
     "SWIFT Code"
     swiftCode: String
+    "Commercial Register Number"
+    commercialRegisterNumber: String
+    "Register Court"
+    registerCourt: String
+    "Vat Number"
+    vatNumber: String
+    "Agree SEPA"
+    agreeSEPA: Boolean
   ): OrganizationResponse
   "Invite User"
   inviteUser(
@@ -1870,6 +2247,8 @@ type Mutation {
     "Project Role"
     projectRole: Int!
   ): Response
+  "Install Demo"
+  installDemo("app" app: String!): Response
   "Install Software"
   installSoftware(
     "Name"
@@ -1886,6 +2265,32 @@ type Mutation {
     params: JSON
   ): InstalledSoftwareResponse
   uninstallSoftware("ID" id: UUID, "ID of Project" projectId: UUID!): Response
+  "Create API Key"
+  createApiKey(
+    "Description"
+    description: String
+    "Expire at"
+    expireAt: String
+  ): ApiKeyResponse
+  "Delete API Key"
+  deleteApiKey("id" id: UUID!): Response
+  "Delete Profile"
+  deleteProfile: Response
+  "Cancel Organization Change Request"
+  cancelOrganizationChangeRequest: Response
+  "Configure Software"
+  configureSoftware(
+    "ID"
+    id: UUID!
+    "Project ID"
+    projectId: UUID!
+    "params"
+    params: JSON
+  ): Response
+  "Prepare revolut customer card setup"
+  prepareRevolutCustomerCardSetup: RevolutOrderResponse
+  "Delete revolut customer card"
+  deleteRevolutCustomerCard: Response
 }
 
 schema {
