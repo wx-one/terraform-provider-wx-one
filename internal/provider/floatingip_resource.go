@@ -149,7 +149,10 @@ func (r *floatingIPResource) Read(ctx context.Context, req resource.ReadRequest,
 		}
 	}
 
-	state.IP = types.StringValue(floatingIP.GetFloatingIP.Msg.Ip)
+	if floatingIP.GetFloatingIP.Msg != nil {
+
+		state.IP = types.StringValue(floatingIP.GetFloatingIP.Msg.Ip)
+	}
 
 	// Set refreshed state
 	diags = resp.State.Set(ctx, state)

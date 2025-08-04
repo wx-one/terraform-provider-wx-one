@@ -162,16 +162,16 @@ func (r *instanceResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 }
 
 type sevOptionModel struct {
-	dhCert       types.String `tfsdk:"dhCert"`
-	session      types.String `tfsdk:"session"`
-	kernelHashes types.String `tfsdk:"kernelHashes"`
+	DhCert       types.String `tfsdk:"dhCert"`
+	Session      types.String `tfsdk:"session"`
+	KernelHashes types.String `tfsdk:"kernelHashes"`
 }
 
 type additionalModel struct {
-	vTPM       types.Bool     `tfsdk:"vtpm"`
-	uefi       types.Bool     `tfsdk:"uefi"`
-	sevType    types.String   `tfsdk:"sev_type"`
-	sevOptions sevOptionModel `tfsdk:"sev_options"`
+	VTPM       types.Bool      `tfsdk:"vtpm"`
+	Uefi       types.Bool      `tfsdk:"uefi"`
+	SevType    types.String    `tfsdk:"sev_type"`
+	SevOptions *sevOptionModel `tfsdk:"sev_options"`
 }
 
 type instanceResourceModel struct {
@@ -184,8 +184,8 @@ type instanceResourceModel struct {
 	Status           types.String `tfsdk:"status"`
 	ProjectID        types.String `tfsdk:"project_id"`
 	// FloatingIPs      []floatingIPModel `tfsdk:"floating_ips"`
-	SSHKeys    []types.String  `tfsdk:"ssh_keys"`
-	additional additionalModel `tfsdk:"additional"`
+	SSHKeys    []types.String   `tfsdk:"ssh_keys"`
+	Additional *additionalModel `tfsdk:"additional"`
 }
 
 // type floatingIPModel struct {
@@ -230,17 +230,26 @@ func (r *instanceResource) Create(ctx context.Context, req resource.CreateReques
 		sshKeysInput[i] = item.ValueString()
 	}
 
-	var additional InstanceAdditionalInput
-	var sevOptions SevOptionsInput
+	var additional *InstanceAdditionalInput
+	var sevOptions *SevOptionsInput
 
-	sevOptions.DhCert = plan.additional.sevOptions.dhCert.ValueString()
-	sevOptions.Session = plan.additional.sevOptions.session.ValueString()
-	sevOptions.KernelHashes = plan.additional.sevOptions.kernelHashes.ValueString()
+	if plan.Additional != nil {
 
-	additional.SevType = W1SevType(plan.additional.sevType.ValueString())
-	additional.VTPM = plan.additional.vTPM.ValueBool()
-	additional.Uefi = plan.additional.uefi.ValueBool()
-	additional.SevOptions = sevOptions
+		if plan.Additional.SevOptions != nil {
+			sevOptions = &SevOptionsInput{}
+			sevOptions.DhCert = plan.Additional.SevOptions.DhCert.ValueStringPointer()
+			sevOptions.Session = plan.Additional.SevOptions.Session.ValueStringPointer()
+			sevOptions.KernelHashes = plan.Additional.SevOptions.KernelHashes.ValueStringPointer()
+		}
+
+		sevType := W1SevType(plan.Additional.SevType.ValueString())
+		additional = &InstanceAdditionalInput{}
+		additional.SevType = &sevType
+		additional.VTPM = plan.Additional.VTPM.ValueBoolPointer()
+		additional.Uefi = plan.Additional.Uefi.ValueBoolPointer()
+
+		additional.SevOptions = sevOptions
+	}
 
 	// Create new instance
 	instance, err := createInstance(ctx, r.wxOneClients.graphqlClient, plan.NetworkID.ValueString(), plan.FlavorID.ValueString(), plan.ImageID.ValueString(), plan.ProjectID.ValueString(), plan.Name.ValueString(), sshKeysInput, AvailabilityZone(plan.AvailabilityZone.ValueString()), false, additional)
@@ -290,7 +299,7 @@ func (r *instanceResource) Read(ctx context.Context, req resource.ReadRequest, r
 	}
 
 	state.Name = types.StringValue(instance.GetInstance.Msg.Name)
-	state.AvailabilityZone = types.StringValue((string(instance.GetInstance.Msg.AvailabilityZone)))
+	state.AvailabilityZone = types.StringValue((string(*instance.GetInstance.Msg.AvailabilityZone)))
 
 	// Set refreshed state
 	diags = resp.State.Set(ctx, state)

@@ -4,12 +4,14 @@
 # Default genqlient config; for full documentation see:
 # https://github.com/Khan/genqlient/blob/main/docs/genqlient.yaml
 schema: schema.graphql
+optional: pointer_omitempty
+use_struct_references: true
 operations:
-- genqlient.graphql
+  - genqlient.graphql
 generated: generated.go
 bindings:
-  UUID: 
+  UUID:
     type: string
-  Email: 
+  Email:
     type: string
 package: provider

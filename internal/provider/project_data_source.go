@@ -107,7 +107,7 @@ func (d *projectDataSource) Read(ctx context.Context, req datasource.ReadRequest
 	// Map response body to model
 	Project := projectDataSourceModel{
 		ID:   types.StringValue(defaultProject.GetDefaultProject.Msg.Id),
-		Name: types.StringValue(defaultProject.GetDefaultProject.Msg.Name),
+		Name: types.StringValue(*defaultProject.GetDefaultProject.Msg.Name),
 	}
 
 	// Set state

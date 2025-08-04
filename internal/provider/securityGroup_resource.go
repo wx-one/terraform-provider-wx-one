@@ -167,9 +167,10 @@ func (r *securityGroupResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	ruleInput := make([]W1SecurityGroupRuleInput, len(plan.Rules))
+	ruleInput := make([]*W1SecurityGroupRuleInput, len(plan.Rules))
 	for i, item := range plan.Rules {
-		ruleInput[i] = W1SecurityGroupRuleInput{
+		protocolInt := int(item.ProtocolInt.ValueInt32())
+		ruleInput[i] = &W1SecurityGroupRuleInput{
 			Name:        item.Name.ValueString(),
 			Description: item.Description.ValueString(),
 			Ports:       item.Ports.ValueString(),
@@ -177,12 +178,12 @@ func (r *securityGroupResource) Create(ctx context.Context, req resource.CreateR
 			Direction:   SecurityGroupRuleDirection(item.Direction.ValueString()),
 			EtherType:   EtherType(item.EtherType.ValueString()),
 			Protocol:    Protocol(item.Protocol.ValueString()),
-			ProtocolInt: int(item.ProtocolInt.ValueInt32()),
+			ProtocolInt: &protocolInt,
 		}
 	}
 
 	// Create new securityGroup
-	securityGroup, err := createSecurityGroup(ctx, r.wxOneClients.graphqlClient, plan.Name.ValueString(), plan.ProjectID.ValueString(), plan.Description.ValueString(), ruleInput)
+	securityGroup, err := createSecurityGroup(ctx, r.wxOneClients.graphqlClient, plan.Name.ValueString(), plan.ProjectID.ValueString(), plan.Description.ValueStringPointer(), ruleInput)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating securityGroup",
@@ -262,9 +263,10 @@ func (r *securityGroupResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	ruleInput := make([]W1SecurityGroupRuleInput, len(plan.Rules))
+	ruleInput := make([]*W1SecurityGroupRuleInput, len(plan.Rules))
 	for i, item := range plan.Rules {
-		ruleInput[i] = W1SecurityGroupRuleInput{
+		protocolInt := int(item.ProtocolInt.ValueInt32())
+		ruleInput[i] = &W1SecurityGroupRuleInput{
 			Name:        item.Name.ValueString(),
 			Description: item.Description.ValueString(),
 			Ports:       item.Ports.ValueString(),
@@ -272,12 +274,12 @@ func (r *securityGroupResource) Update(ctx context.Context, req resource.UpdateR
 			Direction:   SecurityGroupRuleDirection(item.Direction.ValueString()),
 			EtherType:   EtherType(item.EtherType.ValueString()),
 			Protocol:    Protocol(item.Protocol.ValueString()),
-			ProtocolInt: int(item.ProtocolInt.ValueInt32()),
+			ProtocolInt: &protocolInt,
 		}
 	}
 
 	// Update existing securityGroup
-	_, err := setSecurityGroup(ctx, r.wxOneClients.graphqlClient, plan.ID.ValueString(), plan.Name.ValueString(), plan.ProjectID.ValueString(), plan.Description.ValueString(), ruleInput)
+	_, err := setSecurityGroup(ctx, r.wxOneClients.graphqlClient, plan.ID.ValueString(), plan.Name.ValueString(), plan.ProjectID.ValueString(), plan.Description.ValueStringPointer(), ruleInput)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Updating WX-ONE securityGroup",

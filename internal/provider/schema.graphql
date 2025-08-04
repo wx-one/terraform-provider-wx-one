@@ -358,12 +358,16 @@ input SevOptionsInput {
 "Instance Additional Options"
 input InstanceAdditionalInput {
   "provision VM with vTPM, ignored if not supported by VM type"
+  # @genqlient(omitempty: true, pointer: true)
   vTPM: Boolean
   "use uefi bios, ignored if not supported by VM type"
+  # @genqlient(omitempty: true, pointer: true)
   uefi: Boolean
   "specify the SEV type, ignored if not supported by VM type"
+  # @genqlient(omitempty: true, pointer: true)
   sevType: W1SevType
   "sevOptions"
+  # @genqlient(omitempty: true, pointer: true)
   sevOptions: SevOptionsInput
 }
 

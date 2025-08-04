@@ -136,7 +136,7 @@ func (r *keyResource) Create(ctx context.Context, req resource.CreateRequest, re
 	}
 
 	// Create new key
-	key, err := createKey(ctx, r.wxOneClients.graphqlClient, plan.Name.ValueString(), plan.PublicKey.ValueString(), plan.ProjectID.ValueString(), plan.ProjectWide.ValueBool())
+	key, err := createKey(ctx, r.wxOneClients.graphqlClient, plan.Name.ValueString(), plan.PublicKey.ValueString(), plan.ProjectID.ValueStringPointer(), plan.ProjectWide.ValueBoolPointer())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating key",
@@ -167,7 +167,11 @@ func (r *keyResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 	}
 
 	// Get refreshed key value from WX-ONE
-	key, err := getKey(ctx, r.wxOneClients.graphqlClient, state.ID.ValueString(), "", "", (*bool)(nil))
+	emptyStr := ""
+
+	var projectID *string
+
+	key, err := getKey(ctx, r.wxOneClients.graphqlClient, state.ID.ValueStringPointer(), &emptyStr, projectID, (*bool)(nil))
 	if err != nil {
 		if isNotFoundError(err) {
 			resp.State.RemoveResource(ctx)
@@ -203,7 +207,7 @@ func (r *keyResource) Update(ctx context.Context, req resource.UpdateRequest, re
 	}
 
 	// Update existing key
-	_, err := updateKey(ctx, r.wxOneClients.graphqlClient, plan.ID.ValueString(), plan.ProjectID.ValueString(), plan.Name.ValueString())
+	_, err := updateKey(ctx, r.wxOneClients.graphqlClient, plan.ID.ValueString(), plan.ProjectID.ValueStringPointer(), plan.Name.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Updating WX-ONE Key",
@@ -230,7 +234,7 @@ func (r *keyResource) Delete(ctx context.Context, req resource.DeleteRequest, re
 	}
 
 	// Delete existing key
-	_, err := deleteKey(ctx, r.wxOneClients.graphqlClient, state.ID.ValueString(), state.ProjectID.ValueString())
+	_, err := deleteKey(ctx, r.wxOneClients.graphqlClient, state.ID.ValueString(), state.ProjectID.ValueStringPointer())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Deleting WX-ONE Key",

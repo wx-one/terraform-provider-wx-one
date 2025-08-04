@@ -161,17 +161,18 @@ func (r *networkResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	subnetInput := make([]SubnetInput, len(plan.Subnets))
+	subnetInput := make([]*SubnetInput, len(plan.Subnets))
 	for i, item := range plan.Subnets {
-		subnetInput[i] = SubnetInput{
+		subnetInput[i] = &SubnetInput{
 			Name:      item.Name.ValueString(),
 			IpVersion: item.IPVersion.ValueString(),
-			Cidr:      item.CIDR.ValueString(),
+			Cidr:      item.CIDR.ValueStringPointer(),
 		}
 	}
 
 	// Create new network
-	network, err := createNetwork(ctx, r.wxOneClients.graphqlClient, plan.Name.ValueString(), AvailabilityZone(plan.AvailabilityZone.ValueString()), plan.ProjectID.ValueString(), subnetInput)
+	avZone := AvailabilityZone(plan.AvailabilityZone.ValueString())
+	network, err := createNetwork(ctx, r.wxOneClients.graphqlClient, plan.Name.ValueString(), &avZone, plan.ProjectID.ValueStringPointer(), subnetInput)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating network",
@@ -227,12 +228,12 @@ func (r *networkResource) Read(ctx context.Context, req resource.ReadRequest, re
 		subnets[i] = subnetModel{
 			ID:        types.StringValue(subnet.Id),
 			Name:      types.StringValue(subnet.Name),
-			IPVersion: types.StringValue(subnet.IpVersion),
+			IPVersion: types.StringValue(*subnet.IpVersion),
 			CIDR:      types.StringValue(subnet.Cidr),
 		}
 	}
 	state.Subnets = subnets
-	state.AvailabilityZone = types.StringValue((string(network.GetNetwork.Msg.AvailabilityZone)))
+	state.AvailabilityZone = types.StringValue((string(*network.GetNetwork.Msg.AvailabilityZone)))
 
 	// Set refreshed state
 	diags = resp.State.Set(ctx, state)
@@ -252,7 +253,7 @@ func (r *networkResource) Update(ctx context.Context, req resource.UpdateRequest
 	}
 
 	// Update existing network
-	_, err := updateNetwork(ctx, r.wxOneClients.graphqlClient, plan.ID.ValueString(), plan.ProjectID.ValueString(), plan.Name.ValueString())
+	_, err := updateNetwork(ctx, r.wxOneClients.graphqlClient, plan.ID.ValueString(), plan.ProjectID.ValueStringPointer(), plan.Name.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Updating WX-ONE Network",

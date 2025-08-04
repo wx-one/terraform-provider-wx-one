@@ -26,6 +26,14 @@ const (
 	AvailabilityZoneUnknown AvailabilityZone = "UNKNOWN"
 )
 
+var AllAvailabilityZone = []AvailabilityZone{
+	AvailabilityZoneWxDus1,
+	AvailabilityZoneWxDus2,
+	AvailabilityZoneWxDus3,
+	AvailabilityZoneWxDus,
+	AvailabilityZoneUnknown,
+}
+
 // Ethernet Type
 type EtherType string
 
@@ -35,6 +43,11 @@ const (
 	// IP version 6
 	EtherTypeIpv6 EtherType = "IPv6"
 )
+
+var AllEtherType = []EtherType{
+	EtherTypeIpv4,
+	EtherTypeIpv6,
+}
 
 // Floating Group Vm Input
 type FloatingGroupVmInput struct {
@@ -53,26 +66,26 @@ func (v *FloatingGroupVmInput) GetVm() string { return v.Vm }
 // Instance Additional Options
 type InstanceAdditionalInput struct {
 	// provision VM with vTPM, ignored if not supported by VM type
-	VTPM bool `json:"vTPM"`
+	VTPM *bool `json:"vTPM,omitempty"`
 	// use uefi bios, ignored if not supported by VM type
-	Uefi bool `json:"uefi"`
+	Uefi *bool `json:"uefi,omitempty"`
 	// specify the SEV type, ignored if not supported by VM type
-	SevType W1SevType `json:"sevType"`
+	SevType *W1SevType `json:"sevType,omitempty"`
 	// sevOptions
-	SevOptions SevOptionsInput `json:"sevOptions"`
+	SevOptions *SevOptionsInput `json:"sevOptions,omitempty"`
 }
 
 // GetVTPM returns InstanceAdditionalInput.VTPM, and is useful for accessing the field via an interface.
-func (v *InstanceAdditionalInput) GetVTPM() bool { return v.VTPM }
+func (v *InstanceAdditionalInput) GetVTPM() *bool { return v.VTPM }
 
 // GetUefi returns InstanceAdditionalInput.Uefi, and is useful for accessing the field via an interface.
-func (v *InstanceAdditionalInput) GetUefi() bool { return v.Uefi }
+func (v *InstanceAdditionalInput) GetUefi() *bool { return v.Uefi }
 
 // GetSevType returns InstanceAdditionalInput.SevType, and is useful for accessing the field via an interface.
-func (v *InstanceAdditionalInput) GetSevType() W1SevType { return v.SevType }
+func (v *InstanceAdditionalInput) GetSevType() *W1SevType { return v.SevType }
 
 // GetSevOptions returns InstanceAdditionalInput.SevOptions, and is useful for accessing the field via an interface.
-func (v *InstanceAdditionalInput) GetSevOptions() SevOptionsInput { return v.SevOptions }
+func (v *InstanceAdditionalInput) GetSevOptions() *SevOptionsInput { return v.SevOptions }
 
 // Status of an instance
 type InstanceStatus string
@@ -102,6 +115,20 @@ const (
 	InstanceStatusUnknown InstanceStatus = "UNKNOWN"
 )
 
+var AllInstanceStatus = []InstanceStatus{
+	InstanceStatusRunning,
+	InstanceStatusBuild,
+	InstanceStatusStopped,
+	InstanceStatusDeleted,
+	InstanceStatusError,
+	InstanceStatusReboot,
+	InstanceStatusRebuild,
+	InstanceStatusShutoff,
+	InstanceStatusSuspended,
+	InstanceStatusUpdating,
+	InstanceStatusUnknown,
+}
+
 // Protocol
 type Protocol string
 
@@ -116,6 +143,13 @@ const (
 	ProtocolInt Protocol = "int"
 )
 
+var AllProtocol = []Protocol{
+	ProtocolTcp,
+	ProtocolUdp,
+	ProtocolIcmp,
+	ProtocolInt,
+}
+
 // Security Group Rule Direction
 type SecurityGroupRuleDirection string
 
@@ -126,24 +160,29 @@ const (
 	SecurityGroupRuleDirectionEgress SecurityGroupRuleDirection = "egress"
 )
 
+var AllSecurityGroupRuleDirection = []SecurityGroupRuleDirection{
+	SecurityGroupRuleDirectionIngress,
+	SecurityGroupRuleDirectionEgress,
+}
+
 // Sev Options Input
 type SevOptionsInput struct {
 	// dhCert must be set together with session
-	DhCert string `json:"dhCert"`
+	DhCert *string `json:"dhCert,omitempty"`
 	// session
-	Session string `json:"session"`
+	Session *string `json:"session,omitempty"`
 	// kernelHashes
-	KernelHashes string `json:"kernelHashes"`
+	KernelHashes *string `json:"kernelHashes,omitempty"`
 }
 
 // GetDhCert returns SevOptionsInput.DhCert, and is useful for accessing the field via an interface.
-func (v *SevOptionsInput) GetDhCert() string { return v.DhCert }
+func (v *SevOptionsInput) GetDhCert() *string { return v.DhCert }
 
 // GetSession returns SevOptionsInput.Session, and is useful for accessing the field via an interface.
-func (v *SevOptionsInput) GetSession() string { return v.Session }
+func (v *SevOptionsInput) GetSession() *string { return v.Session }
 
 // GetKernelHashes returns SevOptionsInput.KernelHashes, and is useful for accessing the field via an interface.
-func (v *SevOptionsInput) GetKernelHashes() string { return v.KernelHashes }
+func (v *SevOptionsInput) GetKernelHashes() *string { return v.KernelHashes }
 
 // Subnet Input
 type SubnetInput struct {
@@ -152,7 +191,7 @@ type SubnetInput struct {
 	// IP Version
 	IpVersion string `json:"ipVersion"`
 	// CIDR
-	Cidr string `json:"cidr"`
+	Cidr *string `json:"cidr,omitempty"`
 }
 
 // GetName returns SubnetInput.Name, and is useful for accessing the field via an interface.
@@ -162,7 +201,7 @@ func (v *SubnetInput) GetName() string { return v.Name }
 func (v *SubnetInput) GetIpVersion() string { return v.IpVersion }
 
 // GetCidr returns SubnetInput.Cidr, and is useful for accessing the field via an interface.
-func (v *SubnetInput) GetCidr() string { return v.Cidr }
+func (v *SubnetInput) GetCidr() *string { return v.Cidr }
 
 // Security Group Input
 type W1SecurityGroupRuleInput struct {
@@ -181,7 +220,7 @@ type W1SecurityGroupRuleInput struct {
 	// Protocol
 	Protocol Protocol `json:"protocol"`
 	// protocol Integer alternative
-	ProtocolInt int `json:"protocolInt"`
+	ProtocolInt *int `json:"protocolInt,omitempty"`
 	// IP/CIDR
 	Cidr string `json:"cidr"`
 }
@@ -208,7 +247,7 @@ func (v *W1SecurityGroupRuleInput) GetPorts() string { return v.Ports }
 func (v *W1SecurityGroupRuleInput) GetProtocol() Protocol { return v.Protocol }
 
 // GetProtocolInt returns W1SecurityGroupRuleInput.ProtocolInt, and is useful for accessing the field via an interface.
-func (v *W1SecurityGroupRuleInput) GetProtocolInt() int { return v.ProtocolInt }
+func (v *W1SecurityGroupRuleInput) GetProtocolInt() *int { return v.ProtocolInt }
 
 // GetCidr returns W1SecurityGroupRuleInput.Cidr, and is useful for accessing the field via an interface.
 func (v *W1SecurityGroupRuleInput) GetCidr() string { return v.Cidr }
@@ -227,12 +266,19 @@ const (
 	W1SevTypeSevSnpVtpm W1SevType = "sev_snp_vtpm"
 )
 
+var AllW1SevType = []W1SevType{
+	W1SevTypeSev,
+	W1SevTypeSevEs,
+	W1SevTypeSevSnp,
+	W1SevTypeSevSnpVtpm,
+}
+
 // __createFloatingGroupInput is used internally by genqlient
 type __createFloatingGroupInput struct {
-	Id                string                 `json:"id"`
-	ProjectId         string                 `json:"projectId"`
-	Vms               []FloatingGroupVmInput `json:"vms"`
-	NatToVmsPrivateIp bool                   `json:"natToVmsPrivateIp"`
+	Id                string                  `json:"id"`
+	ProjectId         string                  `json:"projectId"`
+	Vms               []*FloatingGroupVmInput `json:"vms,omitempty"`
+	NatToVmsPrivateIp *bool                   `json:"natToVmsPrivateIp,omitempty"`
 }
 
 // GetId returns __createFloatingGroupInput.Id, and is useful for accessing the field via an interface.
@@ -242,10 +288,10 @@ func (v *__createFloatingGroupInput) GetId() string { return v.Id }
 func (v *__createFloatingGroupInput) GetProjectId() string { return v.ProjectId }
 
 // GetVms returns __createFloatingGroupInput.Vms, and is useful for accessing the field via an interface.
-func (v *__createFloatingGroupInput) GetVms() []FloatingGroupVmInput { return v.Vms }
+func (v *__createFloatingGroupInput) GetVms() []*FloatingGroupVmInput { return v.Vms }
 
 // GetNatToVmsPrivateIp returns __createFloatingGroupInput.NatToVmsPrivateIp, and is useful for accessing the field via an interface.
-func (v *__createFloatingGroupInput) GetNatToVmsPrivateIp() bool { return v.NatToVmsPrivateIp }
+func (v *__createFloatingGroupInput) GetNatToVmsPrivateIp() *bool { return v.NatToVmsPrivateIp }
 
 // __createFloatingIPInput is used internally by genqlient
 type __createFloatingIPInput struct {
@@ -257,15 +303,15 @@ func (v *__createFloatingIPInput) GetProjectId() string { return v.ProjectId }
 
 // __createInstanceInput is used internally by genqlient
 type __createInstanceInput struct {
-	NetworkId  string                  `json:"networkId"`
-	FlavorId   string                  `json:"flavorId"`
-	ImageId    string                  `json:"imageId"`
-	ProjectId  string                  `json:"projectId"`
-	Name       string                  `json:"name"`
-	SshKeys    []string                `json:"sshKeys"`
-	Zone       AvailabilityZone        `json:"zone"`
-	Managed    bool                    `json:"managed"`
-	Additional InstanceAdditionalInput `json:"additional"`
+	NetworkId  string                   `json:"networkId"`
+	FlavorId   string                   `json:"flavorId"`
+	ImageId    string                   `json:"imageId"`
+	ProjectId  string                   `json:"projectId"`
+	Name       string                   `json:"name"`
+	SshKeys    []string                 `json:"sshKeys"`
+	Zone       AvailabilityZone         `json:"zone"`
+	Managed    bool                     `json:"managed"`
+	Additional *InstanceAdditionalInput `json:"additional,omitempty"`
 }
 
 // GetNetworkId returns __createInstanceInput.NetworkId, and is useful for accessing the field via an interface.
@@ -293,14 +339,14 @@ func (v *__createInstanceInput) GetZone() AvailabilityZone { return v.Zone }
 func (v *__createInstanceInput) GetManaged() bool { return v.Managed }
 
 // GetAdditional returns __createInstanceInput.Additional, and is useful for accessing the field via an interface.
-func (v *__createInstanceInput) GetAdditional() InstanceAdditionalInput { return v.Additional }
+func (v *__createInstanceInput) GetAdditional() *InstanceAdditionalInput { return v.Additional }
 
 // __createKeyInput is used internally by genqlient
 type __createKeyInput struct {
-	Name        string `json:"name"`
-	PublicKey   string `json:"publicKey"`
-	ProjectId   string `json:"projectId,omitempty"`
-	ProjectWide bool   `json:"projectWide"`
+	Name        string  `json:"name"`
+	PublicKey   string  `json:"publicKey"`
+	ProjectId   *string `json:"projectId,omitempty"`
+	ProjectWide *bool   `json:"projectWide,omitempty"`
 }
 
 // GetName returns __createKeyInput.Name, and is useful for accessing the field via an interface.
@@ -310,37 +356,37 @@ func (v *__createKeyInput) GetName() string { return v.Name }
 func (v *__createKeyInput) GetPublicKey() string { return v.PublicKey }
 
 // GetProjectId returns __createKeyInput.ProjectId, and is useful for accessing the field via an interface.
-func (v *__createKeyInput) GetProjectId() string { return v.ProjectId }
+func (v *__createKeyInput) GetProjectId() *string { return v.ProjectId }
 
 // GetProjectWide returns __createKeyInput.ProjectWide, and is useful for accessing the field via an interface.
-func (v *__createKeyInput) GetProjectWide() bool { return v.ProjectWide }
+func (v *__createKeyInput) GetProjectWide() *bool { return v.ProjectWide }
 
 // __createNetworkInput is used internally by genqlient
 type __createNetworkInput struct {
-	Name             string           `json:"name"`
-	AvailabilityZone AvailabilityZone `json:"availabilityZone"`
-	ProjectId        string           `json:"projectId"`
-	Subnets          []SubnetInput    `json:"subnets"`
+	Name             string            `json:"name"`
+	AvailabilityZone *AvailabilityZone `json:"availabilityZone,omitempty"`
+	ProjectId        *string           `json:"projectId,omitempty"`
+	Subnets          []*SubnetInput    `json:"subnets,omitempty"`
 }
 
 // GetName returns __createNetworkInput.Name, and is useful for accessing the field via an interface.
 func (v *__createNetworkInput) GetName() string { return v.Name }
 
 // GetAvailabilityZone returns __createNetworkInput.AvailabilityZone, and is useful for accessing the field via an interface.
-func (v *__createNetworkInput) GetAvailabilityZone() AvailabilityZone { return v.AvailabilityZone }
+func (v *__createNetworkInput) GetAvailabilityZone() *AvailabilityZone { return v.AvailabilityZone }
 
 // GetProjectId returns __createNetworkInput.ProjectId, and is useful for accessing the field via an interface.
-func (v *__createNetworkInput) GetProjectId() string { return v.ProjectId }
+func (v *__createNetworkInput) GetProjectId() *string { return v.ProjectId }
 
 // GetSubnets returns __createNetworkInput.Subnets, and is useful for accessing the field via an interface.
-func (v *__createNetworkInput) GetSubnets() []SubnetInput { return v.Subnets }
+func (v *__createNetworkInput) GetSubnets() []*SubnetInput { return v.Subnets }
 
 // __createSecurityGroupInput is used internally by genqlient
 type __createSecurityGroupInput struct {
-	Name        string                     `json:"name"`
-	ProjectId   string                     `json:"projectId"`
-	Description string                     `json:"description"`
-	Rules       []W1SecurityGroupRuleInput `json:"rules"`
+	Name        string                      `json:"name"`
+	ProjectId   string                      `json:"projectId"`
+	Description *string                     `json:"description,omitempty"`
+	Rules       []*W1SecurityGroupRuleInput `json:"rules,omitempty"`
 }
 
 // GetName returns __createSecurityGroupInput.Name, and is useful for accessing the field via an interface.
@@ -350,10 +396,10 @@ func (v *__createSecurityGroupInput) GetName() string { return v.Name }
 func (v *__createSecurityGroupInput) GetProjectId() string { return v.ProjectId }
 
 // GetDescription returns __createSecurityGroupInput.Description, and is useful for accessing the field via an interface.
-func (v *__createSecurityGroupInput) GetDescription() string { return v.Description }
+func (v *__createSecurityGroupInput) GetDescription() *string { return v.Description }
 
 // GetRules returns __createSecurityGroupInput.Rules, and is useful for accessing the field via an interface.
-func (v *__createSecurityGroupInput) GetRules() []W1SecurityGroupRuleInput { return v.Rules }
+func (v *__createSecurityGroupInput) GetRules() []*W1SecurityGroupRuleInput { return v.Rules }
 
 // __deleteFloatingGroupByFloatingIpIdAndInstanceIdInput is used internally by genqlient
 type __deleteFloatingGroupByFloatingIpIdAndInstanceIdInput struct {
@@ -403,15 +449,15 @@ func (v *__deleteInstanceInput) GetProjectId() string { return v.ProjectId }
 
 // __deleteKeyInput is used internally by genqlient
 type __deleteKeyInput struct {
-	Id        string `json:"id"`
-	ProjectId string `json:"projectId,omitempty"`
+	Id        string  `json:"id"`
+	ProjectId *string `json:"projectId,omitempty"`
 }
 
 // GetId returns __deleteKeyInput.Id, and is useful for accessing the field via an interface.
 func (v *__deleteKeyInput) GetId() string { return v.Id }
 
 // GetProjectId returns __deleteKeyInput.ProjectId, and is useful for accessing the field via an interface.
-func (v *__deleteKeyInput) GetProjectId() string { return v.ProjectId }
+func (v *__deleteKeyInput) GetProjectId() *string { return v.ProjectId }
 
 // __deleteNetworkInput is used internally by genqlient
 type __deleteNetworkInput struct {
@@ -479,20 +525,20 @@ func (v *__getInstanceInput) GetProjectId() string { return v.ProjectId }
 
 // __getKeyInput is used internally by genqlient
 type __getKeyInput struct {
-	Id          string `json:"id,omitempty"`
-	Name        string `json:"name,omitempty"`
-	ProjectId   string `json:"projectId,omitempty"`
-	ProjectWide *bool  `json:"projectWide,omitempty"`
+	Id          *string `json:"id,omitempty"`
+	Name        *string `json:"name,omitempty"`
+	ProjectId   *string `json:"projectId,omitempty"`
+	ProjectWide *bool   `json:"projectWide,omitempty"`
 }
 
 // GetId returns __getKeyInput.Id, and is useful for accessing the field via an interface.
-func (v *__getKeyInput) GetId() string { return v.Id }
+func (v *__getKeyInput) GetId() *string { return v.Id }
 
 // GetName returns __getKeyInput.Name, and is useful for accessing the field via an interface.
-func (v *__getKeyInput) GetName() string { return v.Name }
+func (v *__getKeyInput) GetName() *string { return v.Name }
 
 // GetProjectId returns __getKeyInput.ProjectId, and is useful for accessing the field via an interface.
-func (v *__getKeyInput) GetProjectId() string { return v.ProjectId }
+func (v *__getKeyInput) GetProjectId() *string { return v.ProjectId }
 
 // GetProjectWide returns __getKeyInput.ProjectWide, and is useful for accessing the field via an interface.
 func (v *__getKeyInput) GetProjectWide() *bool { return v.ProjectWide }
@@ -511,11 +557,11 @@ func (v *__getNetworkInput) GetProjectId() string { return v.ProjectId }
 
 // __setSecurityGroupInput is used internally by genqlient
 type __setSecurityGroupInput struct {
-	Id          string                     `json:"id"`
-	Name        string                     `json:"name"`
-	ProjectId   string                     `json:"projectId"`
-	Description string                     `json:"description"`
-	Rules       []W1SecurityGroupRuleInput `json:"rules"`
+	Id          string                      `json:"id"`
+	Name        string                      `json:"name"`
+	ProjectId   string                      `json:"projectId"`
+	Description *string                     `json:"description,omitempty"`
+	Rules       []*W1SecurityGroupRuleInput `json:"rules,omitempty"`
 }
 
 // GetId returns __setSecurityGroupInput.Id, and is useful for accessing the field via an interface.
@@ -528,39 +574,39 @@ func (v *__setSecurityGroupInput) GetName() string { return v.Name }
 func (v *__setSecurityGroupInput) GetProjectId() string { return v.ProjectId }
 
 // GetDescription returns __setSecurityGroupInput.Description, and is useful for accessing the field via an interface.
-func (v *__setSecurityGroupInput) GetDescription() string { return v.Description }
+func (v *__setSecurityGroupInput) GetDescription() *string { return v.Description }
 
 // GetRules returns __setSecurityGroupInput.Rules, and is useful for accessing the field via an interface.
-func (v *__setSecurityGroupInput) GetRules() []W1SecurityGroupRuleInput { return v.Rules }
+func (v *__setSecurityGroupInput) GetRules() []*W1SecurityGroupRuleInput { return v.Rules }
 
 // __updateKeyInput is used internally by genqlient
 type __updateKeyInput struct {
-	Id        string `json:"id"`
-	ProjectId string `json:"projectId,omitempty"`
-	Name      string `json:"name"`
+	Id        string  `json:"id"`
+	ProjectId *string `json:"projectId,omitempty"`
+	Name      string  `json:"name"`
 }
 
 // GetId returns __updateKeyInput.Id, and is useful for accessing the field via an interface.
 func (v *__updateKeyInput) GetId() string { return v.Id }
 
 // GetProjectId returns __updateKeyInput.ProjectId, and is useful for accessing the field via an interface.
-func (v *__updateKeyInput) GetProjectId() string { return v.ProjectId }
+func (v *__updateKeyInput) GetProjectId() *string { return v.ProjectId }
 
 // GetName returns __updateKeyInput.Name, and is useful for accessing the field via an interface.
 func (v *__updateKeyInput) GetName() string { return v.Name }
 
 // __updateNetworkInput is used internally by genqlient
 type __updateNetworkInput struct {
-	Id        string `json:"id"`
-	ProjectId string `json:"projectId"`
-	Name      string `json:"name"`
+	Id        string  `json:"id"`
+	ProjectId *string `json:"projectId,omitempty"`
+	Name      string  `json:"name"`
 }
 
 // GetId returns __updateNetworkInput.Id, and is useful for accessing the field via an interface.
 func (v *__updateNetworkInput) GetId() string { return v.Id }
 
 // GetProjectId returns __updateNetworkInput.ProjectId, and is useful for accessing the field via an interface.
-func (v *__updateNetworkInput) GetProjectId() string { return v.ProjectId }
+func (v *__updateNetworkInput) GetProjectId() *string { return v.ProjectId }
 
 // GetName returns __updateNetworkInput.Name, and is useful for accessing the field via an interface.
 func (v *__updateNetworkInput) GetName() string { return v.Name }
@@ -573,19 +619,19 @@ type createFloatingGroupCreateFloatingGroupFloatingGroupResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg []createFloatingGroupCreateFloatingGroupFloatingGroupResponseMsgFloatingGroupMember `json:"msg"`
+	Msg []*createFloatingGroupCreateFloatingGroupFloatingGroupResponseMsgFloatingGroupMember `json:"msg"`
 }
 
 // GetCode returns createFloatingGroupCreateFloatingGroupFloatingGroupResponse.Code, and is useful for accessing the field via an interface.
 func (v *createFloatingGroupCreateFloatingGroupFloatingGroupResponse) GetCode() int { return v.Code }
 
 // GetErr returns createFloatingGroupCreateFloatingGroupFloatingGroupResponse.Err, and is useful for accessing the field via an interface.
-func (v *createFloatingGroupCreateFloatingGroupFloatingGroupResponse) GetErr() string { return v.Err }
+func (v *createFloatingGroupCreateFloatingGroupFloatingGroupResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns createFloatingGroupCreateFloatingGroupFloatingGroupResponse.Msg, and is useful for accessing the field via an interface.
-func (v *createFloatingGroupCreateFloatingGroupFloatingGroupResponse) GetMsg() []createFloatingGroupCreateFloatingGroupFloatingGroupResponseMsgFloatingGroupMember {
+func (v *createFloatingGroupCreateFloatingGroupFloatingGroupResponse) GetMsg() []*createFloatingGroupCreateFloatingGroupFloatingGroupResponseMsgFloatingGroupMember {
 	return v.Msg
 }
 
@@ -613,11 +659,11 @@ func (v *createFloatingGroupCreateFloatingGroupFloatingGroupResponseMsgFloatingG
 // createFloatingGroupResponse is returned by createFloatingGroup on success.
 type createFloatingGroupResponse struct {
 	// Create Floating Group
-	CreateFloatingGroup createFloatingGroupCreateFloatingGroupFloatingGroupResponse `json:"createFloatingGroup"`
+	CreateFloatingGroup *createFloatingGroupCreateFloatingGroupFloatingGroupResponse `json:"createFloatingGroup"`
 }
 
 // GetCreateFloatingGroup returns createFloatingGroupResponse.CreateFloatingGroup, and is useful for accessing the field via an interface.
-func (v *createFloatingGroupResponse) GetCreateFloatingGroup() createFloatingGroupCreateFloatingGroupFloatingGroupResponse {
+func (v *createFloatingGroupResponse) GetCreateFloatingGroup() *createFloatingGroupCreateFloatingGroupFloatingGroupResponse {
 	return v.CreateFloatingGroup
 }
 
@@ -629,19 +675,19 @@ type createFloatingIPCreateFloatingIPFloatingIPResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg createFloatingIPCreateFloatingIPFloatingIPResponseMsgW1FloatingIP `json:"msg"`
+	Msg *createFloatingIPCreateFloatingIPFloatingIPResponseMsgW1FloatingIP `json:"msg"`
 }
 
 // GetCode returns createFloatingIPCreateFloatingIPFloatingIPResponse.Code, and is useful for accessing the field via an interface.
 func (v *createFloatingIPCreateFloatingIPFloatingIPResponse) GetCode() int { return v.Code }
 
 // GetErr returns createFloatingIPCreateFloatingIPFloatingIPResponse.Err, and is useful for accessing the field via an interface.
-func (v *createFloatingIPCreateFloatingIPFloatingIPResponse) GetErr() string { return v.Err }
+func (v *createFloatingIPCreateFloatingIPFloatingIPResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns createFloatingIPCreateFloatingIPFloatingIPResponse.Msg, and is useful for accessing the field via an interface.
-func (v *createFloatingIPCreateFloatingIPFloatingIPResponse) GetMsg() createFloatingIPCreateFloatingIPFloatingIPResponseMsgW1FloatingIP {
+func (v *createFloatingIPCreateFloatingIPFloatingIPResponse) GetMsg() *createFloatingIPCreateFloatingIPFloatingIPResponseMsgW1FloatingIP {
 	return v.Msg
 }
 
@@ -669,11 +715,11 @@ func (v *createFloatingIPCreateFloatingIPFloatingIPResponseMsgW1FloatingIP) GetI
 // createFloatingIPResponse is returned by createFloatingIP on success.
 type createFloatingIPResponse struct {
 	// Create Floating IP
-	CreateFloatingIP createFloatingIPCreateFloatingIPFloatingIPResponse `json:"createFloatingIP"`
+	CreateFloatingIP *createFloatingIPCreateFloatingIPFloatingIPResponse `json:"createFloatingIP"`
 }
 
 // GetCreateFloatingIP returns createFloatingIPResponse.CreateFloatingIP, and is useful for accessing the field via an interface.
-func (v *createFloatingIPResponse) GetCreateFloatingIP() createFloatingIPCreateFloatingIPFloatingIPResponse {
+func (v *createFloatingIPResponse) GetCreateFloatingIP() *createFloatingIPCreateFloatingIPFloatingIPResponse {
 	return v.CreateFloatingIP
 }
 
@@ -685,19 +731,19 @@ type createInstanceCreateInstanceW1InstanceResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg createInstanceCreateInstanceW1InstanceResponseMsgW1Instance `json:"msg"`
+	Msg *createInstanceCreateInstanceW1InstanceResponseMsgW1Instance `json:"msg"`
 }
 
 // GetCode returns createInstanceCreateInstanceW1InstanceResponse.Code, and is useful for accessing the field via an interface.
 func (v *createInstanceCreateInstanceW1InstanceResponse) GetCode() int { return v.Code }
 
 // GetErr returns createInstanceCreateInstanceW1InstanceResponse.Err, and is useful for accessing the field via an interface.
-func (v *createInstanceCreateInstanceW1InstanceResponse) GetErr() string { return v.Err }
+func (v *createInstanceCreateInstanceW1InstanceResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns createInstanceCreateInstanceW1InstanceResponse.Msg, and is useful for accessing the field via an interface.
-func (v *createInstanceCreateInstanceW1InstanceResponse) GetMsg() createInstanceCreateInstanceW1InstanceResponseMsgW1Instance {
+func (v *createInstanceCreateInstanceW1InstanceResponse) GetMsg() *createInstanceCreateInstanceW1InstanceResponseMsgW1Instance {
 	return v.Msg
 }
 
@@ -723,11 +769,11 @@ func (v *createInstanceCreateInstanceW1InstanceResponseMsgW1Instance) GetStatus(
 // createInstanceResponse is returned by createInstance on success.
 type createInstanceResponse struct {
 	// Create Instance
-	CreateInstance createInstanceCreateInstanceW1InstanceResponse `json:"createInstance"`
+	CreateInstance *createInstanceCreateInstanceW1InstanceResponse `json:"createInstance"`
 }
 
 // GetCreateInstance returns createInstanceResponse.CreateInstance, and is useful for accessing the field via an interface.
-func (v *createInstanceResponse) GetCreateInstance() createInstanceCreateInstanceW1InstanceResponse {
+func (v *createInstanceResponse) GetCreateInstance() *createInstanceCreateInstanceW1InstanceResponse {
 	return v.CreateInstance
 }
 
@@ -739,19 +785,19 @@ type createKeyCreateKeyW1KeyResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg createKeyCreateKeyW1KeyResponseMsgW1Key `json:"msg"`
+	Msg *createKeyCreateKeyW1KeyResponseMsgW1Key `json:"msg"`
 }
 
 // GetCode returns createKeyCreateKeyW1KeyResponse.Code, and is useful for accessing the field via an interface.
 func (v *createKeyCreateKeyW1KeyResponse) GetCode() int { return v.Code }
 
 // GetErr returns createKeyCreateKeyW1KeyResponse.Err, and is useful for accessing the field via an interface.
-func (v *createKeyCreateKeyW1KeyResponse) GetErr() string { return v.Err }
+func (v *createKeyCreateKeyW1KeyResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns createKeyCreateKeyW1KeyResponse.Msg, and is useful for accessing the field via an interface.
-func (v *createKeyCreateKeyW1KeyResponse) GetMsg() createKeyCreateKeyW1KeyResponseMsgW1Key {
+func (v *createKeyCreateKeyW1KeyResponse) GetMsg() *createKeyCreateKeyW1KeyResponseMsgW1Key {
 	return v.Msg
 }
 
@@ -770,11 +816,11 @@ func (v *createKeyCreateKeyW1KeyResponseMsgW1Key) GetId() string { return v.Id }
 // createKeyResponse is returned by createKey on success.
 type createKeyResponse struct {
 	// Create Key
-	CreateKey createKeyCreateKeyW1KeyResponse `json:"createKey"`
+	CreateKey *createKeyCreateKeyW1KeyResponse `json:"createKey"`
 }
 
 // GetCreateKey returns createKeyResponse.CreateKey, and is useful for accessing the field via an interface.
-func (v *createKeyResponse) GetCreateKey() createKeyCreateKeyW1KeyResponse { return v.CreateKey }
+func (v *createKeyResponse) GetCreateKey() *createKeyCreateKeyW1KeyResponse { return v.CreateKey }
 
 // createNetworkCreateNetworkW1NetworkResponse includes the requested fields of the GraphQL type W1NetworkResponse.
 // The GraphQL type's documentation follows.
@@ -784,19 +830,19 @@ type createNetworkCreateNetworkW1NetworkResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg createNetworkCreateNetworkW1NetworkResponseMsgW1Network `json:"msg"`
+	Msg *createNetworkCreateNetworkW1NetworkResponseMsgW1Network `json:"msg"`
 }
 
 // GetCode returns createNetworkCreateNetworkW1NetworkResponse.Code, and is useful for accessing the field via an interface.
 func (v *createNetworkCreateNetworkW1NetworkResponse) GetCode() int { return v.Code }
 
 // GetErr returns createNetworkCreateNetworkW1NetworkResponse.Err, and is useful for accessing the field via an interface.
-func (v *createNetworkCreateNetworkW1NetworkResponse) GetErr() string { return v.Err }
+func (v *createNetworkCreateNetworkW1NetworkResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns createNetworkCreateNetworkW1NetworkResponse.Msg, and is useful for accessing the field via an interface.
-func (v *createNetworkCreateNetworkW1NetworkResponse) GetMsg() createNetworkCreateNetworkW1NetworkResponseMsgW1Network {
+func (v *createNetworkCreateNetworkW1NetworkResponse) GetMsg() *createNetworkCreateNetworkW1NetworkResponseMsgW1Network {
 	return v.Msg
 }
 
@@ -810,7 +856,7 @@ type createNetworkCreateNetworkW1NetworkResponseMsgW1Network struct {
 	// Name
 	Name string `json:"name"`
 	// Subnets
-	Subnets []createNetworkCreateNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet `json:"subnets"`
+	Subnets []*createNetworkCreateNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet `json:"subnets"`
 }
 
 // GetId returns createNetworkCreateNetworkW1NetworkResponseMsgW1Network.Id, and is useful for accessing the field via an interface.
@@ -820,7 +866,7 @@ func (v *createNetworkCreateNetworkW1NetworkResponseMsgW1Network) GetId() string
 func (v *createNetworkCreateNetworkW1NetworkResponseMsgW1Network) GetName() string { return v.Name }
 
 // GetSubnets returns createNetworkCreateNetworkW1NetworkResponseMsgW1Network.Subnets, and is useful for accessing the field via an interface.
-func (v *createNetworkCreateNetworkW1NetworkResponseMsgW1Network) GetSubnets() []createNetworkCreateNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet {
+func (v *createNetworkCreateNetworkW1NetworkResponseMsgW1Network) GetSubnets() []*createNetworkCreateNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet {
 	return v.Subnets
 }
 
@@ -855,11 +901,11 @@ func (v *createNetworkCreateNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet) G
 // createNetworkResponse is returned by createNetwork on success.
 type createNetworkResponse struct {
 	// Create Network
-	CreateNetwork createNetworkCreateNetworkW1NetworkResponse `json:"createNetwork"`
+	CreateNetwork *createNetworkCreateNetworkW1NetworkResponse `json:"createNetwork"`
 }
 
 // GetCreateNetwork returns createNetworkResponse.CreateNetwork, and is useful for accessing the field via an interface.
-func (v *createNetworkResponse) GetCreateNetwork() createNetworkCreateNetworkW1NetworkResponse {
+func (v *createNetworkResponse) GetCreateNetwork() *createNetworkCreateNetworkW1NetworkResponse {
 	return v.CreateNetwork
 }
 
@@ -871,19 +917,21 @@ type createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup `json:"msg"`
+	Msg *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup `json:"msg"`
 }
 
 // GetCode returns createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse.Code, and is useful for accessing the field via an interface.
 func (v *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse) GetCode() int { return v.Code }
 
 // GetErr returns createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse.Err, and is useful for accessing the field via an interface.
-func (v *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse) GetErr() string { return v.Err }
+func (v *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse) GetErr() *string {
+	return v.Err
+}
 
 // GetMsg returns createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse.Msg, and is useful for accessing the field via an interface.
-func (v *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse) GetMsg() createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup {
+func (v *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse) GetMsg() *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup {
 	return v.Msg
 }
 
@@ -911,11 +959,11 @@ func (v *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1Secur
 // createSecurityGroupResponse is returned by createSecurityGroup on success.
 type createSecurityGroupResponse struct {
 	// Create Security Group
-	CreateSecurityGroup createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse `json:"createSecurityGroup"`
+	CreateSecurityGroup *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse `json:"createSecurityGroup"`
 }
 
 // GetCreateSecurityGroup returns createSecurityGroupResponse.CreateSecurityGroup, and is useful for accessing the field via an interface.
-func (v *createSecurityGroupResponse) GetCreateSecurityGroup() createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse {
+func (v *createSecurityGroupResponse) GetCreateSecurityGroup() *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponse {
 	return v.CreateSecurityGroup
 }
 
@@ -925,15 +973,15 @@ func (v *createSecurityGroupResponse) GetCreateSecurityGroup() createSecurityGro
 // Response
 type deleteFloatingGroupByFloatingIpIdAndInstanceIdDeleteFloatingGroupByFloatingIpIdAndInstanceIdResponse struct {
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Return Code
 	Code int `json:"code"`
 	// Success Message
-	Msg string `json:"msg"`
+	Msg *string `json:"msg"`
 }
 
 // GetErr returns deleteFloatingGroupByFloatingIpIdAndInstanceIdDeleteFloatingGroupByFloatingIpIdAndInstanceIdResponse.Err, and is useful for accessing the field via an interface.
-func (v *deleteFloatingGroupByFloatingIpIdAndInstanceIdDeleteFloatingGroupByFloatingIpIdAndInstanceIdResponse) GetErr() string {
+func (v *deleteFloatingGroupByFloatingIpIdAndInstanceIdDeleteFloatingGroupByFloatingIpIdAndInstanceIdResponse) GetErr() *string {
 	return v.Err
 }
 
@@ -943,18 +991,18 @@ func (v *deleteFloatingGroupByFloatingIpIdAndInstanceIdDeleteFloatingGroupByFloa
 }
 
 // GetMsg returns deleteFloatingGroupByFloatingIpIdAndInstanceIdDeleteFloatingGroupByFloatingIpIdAndInstanceIdResponse.Msg, and is useful for accessing the field via an interface.
-func (v *deleteFloatingGroupByFloatingIpIdAndInstanceIdDeleteFloatingGroupByFloatingIpIdAndInstanceIdResponse) GetMsg() string {
+func (v *deleteFloatingGroupByFloatingIpIdAndInstanceIdDeleteFloatingGroupByFloatingIpIdAndInstanceIdResponse) GetMsg() *string {
 	return v.Msg
 }
 
 // deleteFloatingGroupByFloatingIpIdAndInstanceIdResponse is returned by deleteFloatingGroupByFloatingIpIdAndInstanceId on success.
 type deleteFloatingGroupByFloatingIpIdAndInstanceIdResponse struct {
 	// Delete Floating Group by Ip and Instance ID
-	DeleteFloatingGroupByFloatingIpIdAndInstanceId deleteFloatingGroupByFloatingIpIdAndInstanceIdDeleteFloatingGroupByFloatingIpIdAndInstanceIdResponse `json:"deleteFloatingGroupByFloatingIpIdAndInstanceId"`
+	DeleteFloatingGroupByFloatingIpIdAndInstanceId *deleteFloatingGroupByFloatingIpIdAndInstanceIdDeleteFloatingGroupByFloatingIpIdAndInstanceIdResponse `json:"deleteFloatingGroupByFloatingIpIdAndInstanceId"`
 }
 
 // GetDeleteFloatingGroupByFloatingIpIdAndInstanceId returns deleteFloatingGroupByFloatingIpIdAndInstanceIdResponse.DeleteFloatingGroupByFloatingIpIdAndInstanceId, and is useful for accessing the field via an interface.
-func (v *deleteFloatingGroupByFloatingIpIdAndInstanceIdResponse) GetDeleteFloatingGroupByFloatingIpIdAndInstanceId() deleteFloatingGroupByFloatingIpIdAndInstanceIdDeleteFloatingGroupByFloatingIpIdAndInstanceIdResponse {
+func (v *deleteFloatingGroupByFloatingIpIdAndInstanceIdResponse) GetDeleteFloatingGroupByFloatingIpIdAndInstanceId() *deleteFloatingGroupByFloatingIpIdAndInstanceIdDeleteFloatingGroupByFloatingIpIdAndInstanceIdResponse {
 	return v.DeleteFloatingGroupByFloatingIpIdAndInstanceId
 }
 
@@ -966,28 +1014,28 @@ type deleteFloatingIPDeleteFloatingIPResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg string `json:"msg"`
+	Msg *string `json:"msg"`
 }
 
 // GetCode returns deleteFloatingIPDeleteFloatingIPResponse.Code, and is useful for accessing the field via an interface.
 func (v *deleteFloatingIPDeleteFloatingIPResponse) GetCode() int { return v.Code }
 
 // GetErr returns deleteFloatingIPDeleteFloatingIPResponse.Err, and is useful for accessing the field via an interface.
-func (v *deleteFloatingIPDeleteFloatingIPResponse) GetErr() string { return v.Err }
+func (v *deleteFloatingIPDeleteFloatingIPResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns deleteFloatingIPDeleteFloatingIPResponse.Msg, and is useful for accessing the field via an interface.
-func (v *deleteFloatingIPDeleteFloatingIPResponse) GetMsg() string { return v.Msg }
+func (v *deleteFloatingIPDeleteFloatingIPResponse) GetMsg() *string { return v.Msg }
 
 // deleteFloatingIPResponse is returned by deleteFloatingIP on success.
 type deleteFloatingIPResponse struct {
 	// Delete Floating IP
-	DeleteFloatingIP deleteFloatingIPDeleteFloatingIPResponse `json:"deleteFloatingIP"`
+	DeleteFloatingIP *deleteFloatingIPDeleteFloatingIPResponse `json:"deleteFloatingIP"`
 }
 
 // GetDeleteFloatingIP returns deleteFloatingIPResponse.DeleteFloatingIP, and is useful for accessing the field via an interface.
-func (v *deleteFloatingIPResponse) GetDeleteFloatingIP() deleteFloatingIPDeleteFloatingIPResponse {
+func (v *deleteFloatingIPResponse) GetDeleteFloatingIP() *deleteFloatingIPDeleteFloatingIPResponse {
 	return v.DeleteFloatingIP
 }
 
@@ -999,28 +1047,28 @@ type deleteInstanceDeleteInstanceResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg string `json:"msg"`
+	Msg *string `json:"msg"`
 }
 
 // GetCode returns deleteInstanceDeleteInstanceResponse.Code, and is useful for accessing the field via an interface.
 func (v *deleteInstanceDeleteInstanceResponse) GetCode() int { return v.Code }
 
 // GetErr returns deleteInstanceDeleteInstanceResponse.Err, and is useful for accessing the field via an interface.
-func (v *deleteInstanceDeleteInstanceResponse) GetErr() string { return v.Err }
+func (v *deleteInstanceDeleteInstanceResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns deleteInstanceDeleteInstanceResponse.Msg, and is useful for accessing the field via an interface.
-func (v *deleteInstanceDeleteInstanceResponse) GetMsg() string { return v.Msg }
+func (v *deleteInstanceDeleteInstanceResponse) GetMsg() *string { return v.Msg }
 
 // deleteInstanceResponse is returned by deleteInstance on success.
 type deleteInstanceResponse struct {
 	// Delete Instance
-	DeleteInstance deleteInstanceDeleteInstanceResponse `json:"deleteInstance"`
+	DeleteInstance *deleteInstanceDeleteInstanceResponse `json:"deleteInstance"`
 }
 
 // GetDeleteInstance returns deleteInstanceResponse.DeleteInstance, and is useful for accessing the field via an interface.
-func (v *deleteInstanceResponse) GetDeleteInstance() deleteInstanceDeleteInstanceResponse {
+func (v *deleteInstanceResponse) GetDeleteInstance() *deleteInstanceDeleteInstanceResponse {
 	return v.DeleteInstance
 }
 
@@ -1032,28 +1080,28 @@ type deleteKeyDeleteKeyResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg string `json:"msg"`
+	Msg *string `json:"msg"`
 }
 
 // GetCode returns deleteKeyDeleteKeyResponse.Code, and is useful for accessing the field via an interface.
 func (v *deleteKeyDeleteKeyResponse) GetCode() int { return v.Code }
 
 // GetErr returns deleteKeyDeleteKeyResponse.Err, and is useful for accessing the field via an interface.
-func (v *deleteKeyDeleteKeyResponse) GetErr() string { return v.Err }
+func (v *deleteKeyDeleteKeyResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns deleteKeyDeleteKeyResponse.Msg, and is useful for accessing the field via an interface.
-func (v *deleteKeyDeleteKeyResponse) GetMsg() string { return v.Msg }
+func (v *deleteKeyDeleteKeyResponse) GetMsg() *string { return v.Msg }
 
 // deleteKeyResponse is returned by deleteKey on success.
 type deleteKeyResponse struct {
 	// Delete Key
-	DeleteKey deleteKeyDeleteKeyResponse `json:"deleteKey"`
+	DeleteKey *deleteKeyDeleteKeyResponse `json:"deleteKey"`
 }
 
 // GetDeleteKey returns deleteKeyResponse.DeleteKey, and is useful for accessing the field via an interface.
-func (v *deleteKeyResponse) GetDeleteKey() deleteKeyDeleteKeyResponse { return v.DeleteKey }
+func (v *deleteKeyResponse) GetDeleteKey() *deleteKeyDeleteKeyResponse { return v.DeleteKey }
 
 // deleteNetworkDeleteNetworkResponse includes the requested fields of the GraphQL type Response.
 // The GraphQL type's documentation follows.
@@ -1063,28 +1111,28 @@ type deleteNetworkDeleteNetworkResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg string `json:"msg"`
+	Msg *string `json:"msg"`
 }
 
 // GetCode returns deleteNetworkDeleteNetworkResponse.Code, and is useful for accessing the field via an interface.
 func (v *deleteNetworkDeleteNetworkResponse) GetCode() int { return v.Code }
 
 // GetErr returns deleteNetworkDeleteNetworkResponse.Err, and is useful for accessing the field via an interface.
-func (v *deleteNetworkDeleteNetworkResponse) GetErr() string { return v.Err }
+func (v *deleteNetworkDeleteNetworkResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns deleteNetworkDeleteNetworkResponse.Msg, and is useful for accessing the field via an interface.
-func (v *deleteNetworkDeleteNetworkResponse) GetMsg() string { return v.Msg }
+func (v *deleteNetworkDeleteNetworkResponse) GetMsg() *string { return v.Msg }
 
 // deleteNetworkResponse is returned by deleteNetwork on success.
 type deleteNetworkResponse struct {
 	// Delete Network
-	DeleteNetwork deleteNetworkDeleteNetworkResponse `json:"deleteNetwork"`
+	DeleteNetwork *deleteNetworkDeleteNetworkResponse `json:"deleteNetwork"`
 }
 
 // GetDeleteNetwork returns deleteNetworkResponse.DeleteNetwork, and is useful for accessing the field via an interface.
-func (v *deleteNetworkResponse) GetDeleteNetwork() deleteNetworkDeleteNetworkResponse {
+func (v *deleteNetworkResponse) GetDeleteNetwork() *deleteNetworkDeleteNetworkResponse {
 	return v.DeleteNetwork
 }
 
@@ -1096,19 +1144,19 @@ type getDefaultProjectGetDefaultProjectProjectResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg getDefaultProjectGetDefaultProjectProjectResponseMsgProject `json:"msg"`
+	Msg *getDefaultProjectGetDefaultProjectProjectResponseMsgProject `json:"msg"`
 }
 
 // GetCode returns getDefaultProjectGetDefaultProjectProjectResponse.Code, and is useful for accessing the field via an interface.
 func (v *getDefaultProjectGetDefaultProjectProjectResponse) GetCode() int { return v.Code }
 
 // GetErr returns getDefaultProjectGetDefaultProjectProjectResponse.Err, and is useful for accessing the field via an interface.
-func (v *getDefaultProjectGetDefaultProjectProjectResponse) GetErr() string { return v.Err }
+func (v *getDefaultProjectGetDefaultProjectProjectResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns getDefaultProjectGetDefaultProjectProjectResponse.Msg, and is useful for accessing the field via an interface.
-func (v *getDefaultProjectGetDefaultProjectProjectResponse) GetMsg() getDefaultProjectGetDefaultProjectProjectResponseMsgProject {
+func (v *getDefaultProjectGetDefaultProjectProjectResponse) GetMsg() *getDefaultProjectGetDefaultProjectProjectResponseMsgProject {
 	return v.Msg
 }
 
@@ -1120,23 +1168,25 @@ type getDefaultProjectGetDefaultProjectProjectResponseMsgProject struct {
 	// ID
 	Id string `json:"id"`
 	// Name
-	Name string `json:"name"`
+	Name *string `json:"name"`
 }
 
 // GetId returns getDefaultProjectGetDefaultProjectProjectResponseMsgProject.Id, and is useful for accessing the field via an interface.
 func (v *getDefaultProjectGetDefaultProjectProjectResponseMsgProject) GetId() string { return v.Id }
 
 // GetName returns getDefaultProjectGetDefaultProjectProjectResponseMsgProject.Name, and is useful for accessing the field via an interface.
-func (v *getDefaultProjectGetDefaultProjectProjectResponseMsgProject) GetName() string { return v.Name }
+func (v *getDefaultProjectGetDefaultProjectProjectResponseMsgProject) GetName() *string {
+	return v.Name
+}
 
 // getDefaultProjectResponse is returned by getDefaultProject on success.
 type getDefaultProjectResponse struct {
 	// Get Default Project
-	GetDefaultProject getDefaultProjectGetDefaultProjectProjectResponse `json:"getDefaultProject"`
+	GetDefaultProject *getDefaultProjectGetDefaultProjectProjectResponse `json:"getDefaultProject"`
 }
 
 // GetGetDefaultProject returns getDefaultProjectResponse.GetDefaultProject, and is useful for accessing the field via an interface.
-func (v *getDefaultProjectResponse) GetGetDefaultProject() getDefaultProjectGetDefaultProjectProjectResponse {
+func (v *getDefaultProjectResponse) GetGetDefaultProject() *getDefaultProjectGetDefaultProjectProjectResponse {
 	return v.GetDefaultProject
 }
 
@@ -1148,19 +1198,19 @@ type getFlavorByNameGetFlavorByNameFlavorResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg getFlavorByNameGetFlavorByNameFlavorResponseMsgFlavor `json:"msg"`
+	Msg *getFlavorByNameGetFlavorByNameFlavorResponseMsgFlavor `json:"msg"`
 }
 
 // GetCode returns getFlavorByNameGetFlavorByNameFlavorResponse.Code, and is useful for accessing the field via an interface.
 func (v *getFlavorByNameGetFlavorByNameFlavorResponse) GetCode() int { return v.Code }
 
 // GetErr returns getFlavorByNameGetFlavorByNameFlavorResponse.Err, and is useful for accessing the field via an interface.
-func (v *getFlavorByNameGetFlavorByNameFlavorResponse) GetErr() string { return v.Err }
+func (v *getFlavorByNameGetFlavorByNameFlavorResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns getFlavorByNameGetFlavorByNameFlavorResponse.Msg, and is useful for accessing the field via an interface.
-func (v *getFlavorByNameGetFlavorByNameFlavorResponse) GetMsg() getFlavorByNameGetFlavorByNameFlavorResponseMsgFlavor {
+func (v *getFlavorByNameGetFlavorByNameFlavorResponse) GetMsg() *getFlavorByNameGetFlavorByNameFlavorResponseMsgFlavor {
 	return v.Msg
 }
 
@@ -1179,11 +1229,11 @@ func (v *getFlavorByNameGetFlavorByNameFlavorResponseMsgFlavor) GetId() string {
 // getFlavorByNameResponse is returned by getFlavorByName on success.
 type getFlavorByNameResponse struct {
 	// Get Flavor By Name
-	GetFlavorByName getFlavorByNameGetFlavorByNameFlavorResponse `json:"getFlavorByName"`
+	GetFlavorByName *getFlavorByNameGetFlavorByNameFlavorResponse `json:"getFlavorByName"`
 }
 
 // GetGetFlavorByName returns getFlavorByNameResponse.GetFlavorByName, and is useful for accessing the field via an interface.
-func (v *getFlavorByNameResponse) GetGetFlavorByName() getFlavorByNameGetFlavorByNameFlavorResponse {
+func (v *getFlavorByNameResponse) GetGetFlavorByName() *getFlavorByNameGetFlavorByNameFlavorResponse {
 	return v.GetFlavorByName
 }
 
@@ -1195,9 +1245,9 @@ type getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponse 
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPAttachment `json:"-"`
+	Msg *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPAttachment `json:"-"`
 }
 
 // GetCode returns getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponse.Code, and is useful for accessing the field via an interface.
@@ -1206,12 +1256,12 @@ func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentRespo
 }
 
 // GetErr returns getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponse.Err, and is useful for accessing the field via an interface.
-func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponse) GetErr() string {
+func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponse) GetErr() *string {
 	return v.Err
 }
 
 // GetMsg returns getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponse.Msg, and is useful for accessing the field via an interface.
-func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponse) GetMsg() getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPAttachment {
+func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponse) GetMsg() *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPAttachment {
 	return v.Msg
 }
 
@@ -1237,8 +1287,9 @@ func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentRespo
 		dst := &v.Msg
 		src := firstPass.Msg
 		if len(src) != 0 && string(src) != "null" {
+			*dst = new(getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPAttachment)
 			err = __unmarshalgetFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPAttachment(
-				src, dst)
+				src, *dst)
 			if err != nil {
 				return fmt.Errorf(
 					"unable to unmarshal getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponse.Msg: %w", err)
@@ -1251,7 +1302,7 @@ func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentRespo
 type __premarshalgetFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponse struct {
 	Code int `json:"code"`
 
-	Err string `json:"err"`
+	Err *string `json:"err"`
 
 	Msg json.RawMessage `json:"msg"`
 }
@@ -1273,12 +1324,14 @@ func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentRespo
 
 		dst := &retval.Msg
 		src := v.Msg
-		var err error
-		*dst, err = __marshalgetFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPAttachment(
-			&src)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"unable to marshal getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponse.Msg: %w", err)
+		if src != nil {
+			var err error
+			*dst, err = __marshalgetFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPAttachment(
+				src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponse.Msg: %w", err)
+			}
 		}
 	}
 	return &retval, nil
@@ -1295,7 +1348,7 @@ func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentRespo
 type getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPAttachment interface {
 	implementsGraphQLInterfacegetFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPAttachment()
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
-	GetTypename() string
+	GetTypename() *string
 }
 
 func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPInstanceAttachment) implementsGraphQLInterfacegetFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPAttachment() {
@@ -1365,24 +1418,24 @@ func __marshalgetFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachment
 //
 // Floating IP Instance Attachment
 type getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPInstanceAttachment struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 	// Nat to VMs private IP
-	NatToVmsPrivateIp bool                                                                                                                             `json:"natToVmsPrivateIp"`
-	Vms               []getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPInstanceAttachmentVmsFloatingIPInstance `json:"vms"`
+	NatToVmsPrivateIp *bool                                                                                                                             `json:"natToVmsPrivateIp"`
+	Vms               []*getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPInstanceAttachmentVmsFloatingIPInstance `json:"vms"`
 }
 
 // GetTypename returns getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPInstanceAttachment.Typename, and is useful for accessing the field via an interface.
-func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPInstanceAttachment) GetTypename() string {
+func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPInstanceAttachment) GetTypename() *string {
 	return v.Typename
 }
 
 // GetNatToVmsPrivateIp returns getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPInstanceAttachment.NatToVmsPrivateIp, and is useful for accessing the field via an interface.
-func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPInstanceAttachment) GetNatToVmsPrivateIp() bool {
+func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPInstanceAttachment) GetNatToVmsPrivateIp() *bool {
 	return v.NatToVmsPrivateIp
 }
 
 // GetVms returns getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPInstanceAttachment.Vms, and is useful for accessing the field via an interface.
-func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPInstanceAttachment) GetVms() []getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPInstanceAttachmentVmsFloatingIPInstance {
+func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPInstanceAttachment) GetVms() []*getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPInstanceAttachmentVmsFloatingIPInstance {
 	return v.Vms
 }
 
@@ -1415,22 +1468,22 @@ func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentRespo
 //
 // Loadbalancer Frontend IP
 type getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgLoadBalancerFrontendIP struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 }
 
 // GetTypename returns getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgLoadBalancerFrontendIP.Typename, and is useful for accessing the field via an interface.
-func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgLoadBalancerFrontendIP) GetTypename() string {
+func (v *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgLoadBalancerFrontendIP) GetTypename() *string {
 	return v.Typename
 }
 
 // getFloatingIPAttachmentResponse is returned by getFloatingIPAttachment on success.
 type getFloatingIPAttachmentResponse struct {
 	// Get Floating IP Attachment
-	GetFloatingIPAttachment getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponse `json:"getFloatingIPAttachment"`
+	GetFloatingIPAttachment *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponse `json:"getFloatingIPAttachment"`
 }
 
 // GetGetFloatingIPAttachment returns getFloatingIPAttachmentResponse.GetFloatingIPAttachment, and is useful for accessing the field via an interface.
-func (v *getFloatingIPAttachmentResponse) GetGetFloatingIPAttachment() getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponse {
+func (v *getFloatingIPAttachmentResponse) GetGetFloatingIPAttachment() *getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponse {
 	return v.GetFloatingIPAttachment
 }
 
@@ -1442,19 +1495,19 @@ type getFloatingIPGetFloatingIPFloatingIPResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg getFloatingIPGetFloatingIPFloatingIPResponseMsgW1FloatingIP `json:"msg"`
+	Msg *getFloatingIPGetFloatingIPFloatingIPResponseMsgW1FloatingIP `json:"msg"`
 }
 
 // GetCode returns getFloatingIPGetFloatingIPFloatingIPResponse.Code, and is useful for accessing the field via an interface.
 func (v *getFloatingIPGetFloatingIPFloatingIPResponse) GetCode() int { return v.Code }
 
 // GetErr returns getFloatingIPGetFloatingIPFloatingIPResponse.Err, and is useful for accessing the field via an interface.
-func (v *getFloatingIPGetFloatingIPFloatingIPResponse) GetErr() string { return v.Err }
+func (v *getFloatingIPGetFloatingIPFloatingIPResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns getFloatingIPGetFloatingIPFloatingIPResponse.Msg, and is useful for accessing the field via an interface.
-func (v *getFloatingIPGetFloatingIPFloatingIPResponse) GetMsg() getFloatingIPGetFloatingIPFloatingIPResponseMsgW1FloatingIP {
+func (v *getFloatingIPGetFloatingIPFloatingIPResponse) GetMsg() *getFloatingIPGetFloatingIPFloatingIPResponseMsgW1FloatingIP {
 	return v.Msg
 }
 
@@ -1472,11 +1525,11 @@ func (v *getFloatingIPGetFloatingIPFloatingIPResponseMsgW1FloatingIP) GetIp() st
 
 // getFloatingIPResponse is returned by getFloatingIP on success.
 type getFloatingIPResponse struct {
-	GetFloatingIP getFloatingIPGetFloatingIPFloatingIPResponse `json:"getFloatingIP"`
+	GetFloatingIP *getFloatingIPGetFloatingIPFloatingIPResponse `json:"getFloatingIP"`
 }
 
 // GetGetFloatingIP returns getFloatingIPResponse.GetFloatingIP, and is useful for accessing the field via an interface.
-func (v *getFloatingIPResponse) GetGetFloatingIP() getFloatingIPGetFloatingIPFloatingIPResponse {
+func (v *getFloatingIPResponse) GetGetFloatingIP() *getFloatingIPGetFloatingIPFloatingIPResponse {
 	return v.GetFloatingIP
 }
 
@@ -1488,19 +1541,19 @@ type getImageListGetImageListW1ImageListResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg []getImageListGetImageListW1ImageListResponseMsgW1Image `json:"msg"`
+	Msg []*getImageListGetImageListW1ImageListResponseMsgW1Image `json:"msg"`
 }
 
 // GetCode returns getImageListGetImageListW1ImageListResponse.Code, and is useful for accessing the field via an interface.
 func (v *getImageListGetImageListW1ImageListResponse) GetCode() int { return v.Code }
 
 // GetErr returns getImageListGetImageListW1ImageListResponse.Err, and is useful for accessing the field via an interface.
-func (v *getImageListGetImageListW1ImageListResponse) GetErr() string { return v.Err }
+func (v *getImageListGetImageListW1ImageListResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns getImageListGetImageListW1ImageListResponse.Msg, and is useful for accessing the field via an interface.
-func (v *getImageListGetImageListW1ImageListResponse) GetMsg() []getImageListGetImageListW1ImageListResponseMsgW1Image {
+func (v *getImageListGetImageListW1ImageListResponse) GetMsg() []*getImageListGetImageListW1ImageListResponseMsgW1Image {
 	return v.Msg
 }
 
@@ -1512,23 +1565,23 @@ type getImageListGetImageListW1ImageListResponseMsgW1Image struct {
 	// ID
 	Id string `json:"id"`
 	// Name
-	Name string `json:"name"`
+	Name *string `json:"name"`
 }
 
 // GetId returns getImageListGetImageListW1ImageListResponseMsgW1Image.Id, and is useful for accessing the field via an interface.
 func (v *getImageListGetImageListW1ImageListResponseMsgW1Image) GetId() string { return v.Id }
 
 // GetName returns getImageListGetImageListW1ImageListResponseMsgW1Image.Name, and is useful for accessing the field via an interface.
-func (v *getImageListGetImageListW1ImageListResponseMsgW1Image) GetName() string { return v.Name }
+func (v *getImageListGetImageListW1ImageListResponseMsgW1Image) GetName() *string { return v.Name }
 
 // getImageListResponse is returned by getImageList on success.
 type getImageListResponse struct {
 	// Get Image List
-	GetImageList getImageListGetImageListW1ImageListResponse `json:"getImageList"`
+	GetImageList *getImageListGetImageListW1ImageListResponse `json:"getImageList"`
 }
 
 // GetGetImageList returns getImageListResponse.GetImageList, and is useful for accessing the field via an interface.
-func (v *getImageListResponse) GetGetImageList() getImageListGetImageListW1ImageListResponse {
+func (v *getImageListResponse) GetGetImageList() *getImageListGetImageListW1ImageListResponse {
 	return v.GetImageList
 }
 
@@ -1540,19 +1593,19 @@ type getInstanceGetInstanceW1InstanceResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg getInstanceGetInstanceW1InstanceResponseMsgW1Instance `json:"msg"`
+	Msg *getInstanceGetInstanceW1InstanceResponseMsgW1Instance `json:"msg"`
 }
 
 // GetCode returns getInstanceGetInstanceW1InstanceResponse.Code, and is useful for accessing the field via an interface.
 func (v *getInstanceGetInstanceW1InstanceResponse) GetCode() int { return v.Code }
 
 // GetErr returns getInstanceGetInstanceW1InstanceResponse.Err, and is useful for accessing the field via an interface.
-func (v *getInstanceGetInstanceW1InstanceResponse) GetErr() string { return v.Err }
+func (v *getInstanceGetInstanceW1InstanceResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns getInstanceGetInstanceW1InstanceResponse.Msg, and is useful for accessing the field via an interface.
-func (v *getInstanceGetInstanceW1InstanceResponse) GetMsg() getInstanceGetInstanceW1InstanceResponseMsgW1Instance {
+func (v *getInstanceGetInstanceW1InstanceResponse) GetMsg() *getInstanceGetInstanceW1InstanceResponseMsgW1Instance {
 	return v.Msg
 }
 
@@ -1568,9 +1621,9 @@ type getInstanceGetInstanceW1InstanceResponseMsgW1Instance struct {
 	// Status of Instance
 	Status InstanceStatus `json:"status"`
 	// Availability Zone
-	AvailabilityZone AvailabilityZone `json:"availabilityZone"`
+	AvailabilityZone *AvailabilityZone `json:"availabilityZone"`
 	// ID of flavor
-	FlavorId string `json:"flavorId"`
+	FlavorId *string `json:"flavorId"`
 }
 
 // GetId returns getInstanceGetInstanceW1InstanceResponseMsgW1Instance.Id, and is useful for accessing the field via an interface.
@@ -1585,23 +1638,23 @@ func (v *getInstanceGetInstanceW1InstanceResponseMsgW1Instance) GetStatus() Inst
 }
 
 // GetAvailabilityZone returns getInstanceGetInstanceW1InstanceResponseMsgW1Instance.AvailabilityZone, and is useful for accessing the field via an interface.
-func (v *getInstanceGetInstanceW1InstanceResponseMsgW1Instance) GetAvailabilityZone() AvailabilityZone {
+func (v *getInstanceGetInstanceW1InstanceResponseMsgW1Instance) GetAvailabilityZone() *AvailabilityZone {
 	return v.AvailabilityZone
 }
 
 // GetFlavorId returns getInstanceGetInstanceW1InstanceResponseMsgW1Instance.FlavorId, and is useful for accessing the field via an interface.
-func (v *getInstanceGetInstanceW1InstanceResponseMsgW1Instance) GetFlavorId() string {
+func (v *getInstanceGetInstanceW1InstanceResponseMsgW1Instance) GetFlavorId() *string {
 	return v.FlavorId
 }
 
 // getInstanceResponse is returned by getInstance on success.
 type getInstanceResponse struct {
 	// Get Instance
-	GetInstance getInstanceGetInstanceW1InstanceResponse `json:"getInstance"`
+	GetInstance *getInstanceGetInstanceW1InstanceResponse `json:"getInstance"`
 }
 
 // GetGetInstance returns getInstanceResponse.GetInstance, and is useful for accessing the field via an interface.
-func (v *getInstanceResponse) GetGetInstance() getInstanceGetInstanceW1InstanceResponse {
+func (v *getInstanceResponse) GetGetInstance() *getInstanceGetInstanceW1InstanceResponse {
 	return v.GetInstance
 }
 
@@ -1613,19 +1666,19 @@ type getKeyGetKeyW1KeyResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg getKeyGetKeyW1KeyResponseMsgW1Key `json:"msg"`
+	Msg *getKeyGetKeyW1KeyResponseMsgW1Key `json:"msg"`
 }
 
 // GetCode returns getKeyGetKeyW1KeyResponse.Code, and is useful for accessing the field via an interface.
 func (v *getKeyGetKeyW1KeyResponse) GetCode() int { return v.Code }
 
 // GetErr returns getKeyGetKeyW1KeyResponse.Err, and is useful for accessing the field via an interface.
-func (v *getKeyGetKeyW1KeyResponse) GetErr() string { return v.Err }
+func (v *getKeyGetKeyW1KeyResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns getKeyGetKeyW1KeyResponse.Msg, and is useful for accessing the field via an interface.
-func (v *getKeyGetKeyW1KeyResponse) GetMsg() getKeyGetKeyW1KeyResponseMsgW1Key { return v.Msg }
+func (v *getKeyGetKeyW1KeyResponse) GetMsg() *getKeyGetKeyW1KeyResponseMsgW1Key { return v.Msg }
 
 // getKeyGetKeyW1KeyResponseMsgW1Key includes the requested fields of the GraphQL type W1Key.
 // The GraphQL type's documentation follows.
@@ -1657,11 +1710,11 @@ func (v *getKeyGetKeyW1KeyResponseMsgW1Key) GetProjectWide() bool { return v.Pro
 // getKeyResponse is returned by getKey on success.
 type getKeyResponse struct {
 	// Get Key
-	GetKey getKeyGetKeyW1KeyResponse `json:"getKey"`
+	GetKey *getKeyGetKeyW1KeyResponse `json:"getKey"`
 }
 
 // GetGetKey returns getKeyResponse.GetKey, and is useful for accessing the field via an interface.
-func (v *getKeyResponse) GetGetKey() getKeyGetKeyW1KeyResponse { return v.GetKey }
+func (v *getKeyResponse) GetGetKey() *getKeyGetKeyW1KeyResponse { return v.GetKey }
 
 // getNetworkGetNetworkW1NetworkResponse includes the requested fields of the GraphQL type W1NetworkResponse.
 // The GraphQL type's documentation follows.
@@ -1671,19 +1724,19 @@ type getNetworkGetNetworkW1NetworkResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg getNetworkGetNetworkW1NetworkResponseMsgW1Network `json:"msg"`
+	Msg *getNetworkGetNetworkW1NetworkResponseMsgW1Network `json:"msg"`
 }
 
 // GetCode returns getNetworkGetNetworkW1NetworkResponse.Code, and is useful for accessing the field via an interface.
 func (v *getNetworkGetNetworkW1NetworkResponse) GetCode() int { return v.Code }
 
 // GetErr returns getNetworkGetNetworkW1NetworkResponse.Err, and is useful for accessing the field via an interface.
-func (v *getNetworkGetNetworkW1NetworkResponse) GetErr() string { return v.Err }
+func (v *getNetworkGetNetworkW1NetworkResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns getNetworkGetNetworkW1NetworkResponse.Msg, and is useful for accessing the field via an interface.
-func (v *getNetworkGetNetworkW1NetworkResponse) GetMsg() getNetworkGetNetworkW1NetworkResponseMsgW1Network {
+func (v *getNetworkGetNetworkW1NetworkResponse) GetMsg() *getNetworkGetNetworkW1NetworkResponseMsgW1Network {
 	return v.Msg
 }
 
@@ -1697,9 +1750,9 @@ type getNetworkGetNetworkW1NetworkResponseMsgW1Network struct {
 	// Name
 	Name string `json:"name"`
 	// Availability Zone
-	AvailabilityZone AvailabilityZone `json:"availabilityZone"`
+	AvailabilityZone *AvailabilityZone `json:"availabilityZone"`
 	// Subnets
-	Subnets []getNetworkGetNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet `json:"subnets"`
+	Subnets []*getNetworkGetNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet `json:"subnets"`
 }
 
 // GetId returns getNetworkGetNetworkW1NetworkResponseMsgW1Network.Id, and is useful for accessing the field via an interface.
@@ -1709,12 +1762,12 @@ func (v *getNetworkGetNetworkW1NetworkResponseMsgW1Network) GetId() string { ret
 func (v *getNetworkGetNetworkW1NetworkResponseMsgW1Network) GetName() string { return v.Name }
 
 // GetAvailabilityZone returns getNetworkGetNetworkW1NetworkResponseMsgW1Network.AvailabilityZone, and is useful for accessing the field via an interface.
-func (v *getNetworkGetNetworkW1NetworkResponseMsgW1Network) GetAvailabilityZone() AvailabilityZone {
+func (v *getNetworkGetNetworkW1NetworkResponseMsgW1Network) GetAvailabilityZone() *AvailabilityZone {
 	return v.AvailabilityZone
 }
 
 // GetSubnets returns getNetworkGetNetworkW1NetworkResponseMsgW1Network.Subnets, and is useful for accessing the field via an interface.
-func (v *getNetworkGetNetworkW1NetworkResponseMsgW1Network) GetSubnets() []getNetworkGetNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet {
+func (v *getNetworkGetNetworkW1NetworkResponseMsgW1Network) GetSubnets() []*getNetworkGetNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet {
 	return v.Subnets
 }
 
@@ -1728,7 +1781,7 @@ type getNetworkGetNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet struct {
 	// Name
 	Name string `json:"name"`
 	// IP Version
-	IpVersion string `json:"ipVersion"`
+	IpVersion *string `json:"ipVersion"`
 	// CIDR
 	Cidr string `json:"cidr"`
 }
@@ -1742,7 +1795,7 @@ func (v *getNetworkGetNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet) GetName
 }
 
 // GetIpVersion returns getNetworkGetNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet.IpVersion, and is useful for accessing the field via an interface.
-func (v *getNetworkGetNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet) GetIpVersion() string {
+func (v *getNetworkGetNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet) GetIpVersion() *string {
 	return v.IpVersion
 }
 
@@ -1754,11 +1807,11 @@ func (v *getNetworkGetNetworkW1NetworkResponseMsgW1NetworkSubnetsSubnet) GetCidr
 // getNetworkResponse is returned by getNetwork on success.
 type getNetworkResponse struct {
 	// Get Network
-	GetNetwork getNetworkGetNetworkW1NetworkResponse `json:"getNetwork"`
+	GetNetwork *getNetworkGetNetworkW1NetworkResponse `json:"getNetwork"`
 }
 
 // GetGetNetwork returns getNetworkResponse.GetNetwork, and is useful for accessing the field via an interface.
-func (v *getNetworkResponse) GetGetNetwork() getNetworkGetNetworkW1NetworkResponse {
+func (v *getNetworkResponse) GetGetNetwork() *getNetworkGetNetworkW1NetworkResponse {
 	return v.GetNetwork
 }
 
@@ -1772,7 +1825,7 @@ type meMeUser struct {
 	// Name
 	Username string `json:"username"`
 	// Role
-	Role int `json:"role"`
+	Role *int `json:"role"`
 }
 
 // GetId returns meMeUser.Id, and is useful for accessing the field via an interface.
@@ -1782,25 +1835,25 @@ func (v *meMeUser) GetId() string { return v.Id }
 func (v *meMeUser) GetUsername() string { return v.Username }
 
 // GetRole returns meMeUser.Role, and is useful for accessing the field via an interface.
-func (v *meMeUser) GetRole() int { return v.Role }
+func (v *meMeUser) GetRole() *int { return v.Role }
 
 // meResponse is returned by me on success.
 type meResponse struct {
 	// Get information about me
-	Me meMeUser `json:"me"`
+	Me *meMeUser `json:"me"`
 }
 
 // GetMe returns meResponse.Me, and is useful for accessing the field via an interface.
-func (v *meResponse) GetMe() meMeUser { return v.Me }
+func (v *meResponse) GetMe() *meMeUser { return v.Me }
 
 // setSecurityGroupResponse is returned by setSecurityGroup on success.
 type setSecurityGroupResponse struct {
 	// Update a Security Group
-	SetSecurityGroup setSecurityGroupSetSecurityGroupW1SecurityGroupResponse `json:"setSecurityGroup"`
+	SetSecurityGroup *setSecurityGroupSetSecurityGroupW1SecurityGroupResponse `json:"setSecurityGroup"`
 }
 
 // GetSetSecurityGroup returns setSecurityGroupResponse.SetSecurityGroup, and is useful for accessing the field via an interface.
-func (v *setSecurityGroupResponse) GetSetSecurityGroup() setSecurityGroupSetSecurityGroupW1SecurityGroupResponse {
+func (v *setSecurityGroupResponse) GetSetSecurityGroup() *setSecurityGroupSetSecurityGroupW1SecurityGroupResponse {
 	return v.SetSecurityGroup
 }
 
@@ -1812,19 +1865,19 @@ type setSecurityGroupSetSecurityGroupW1SecurityGroupResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup `json:"msg"`
+	Msg *setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup `json:"msg"`
 }
 
 // GetCode returns setSecurityGroupSetSecurityGroupW1SecurityGroupResponse.Code, and is useful for accessing the field via an interface.
 func (v *setSecurityGroupSetSecurityGroupW1SecurityGroupResponse) GetCode() int { return v.Code }
 
 // GetErr returns setSecurityGroupSetSecurityGroupW1SecurityGroupResponse.Err, and is useful for accessing the field via an interface.
-func (v *setSecurityGroupSetSecurityGroupW1SecurityGroupResponse) GetErr() string { return v.Err }
+func (v *setSecurityGroupSetSecurityGroupW1SecurityGroupResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns setSecurityGroupSetSecurityGroupW1SecurityGroupResponse.Msg, and is useful for accessing the field via an interface.
-func (v *setSecurityGroupSetSecurityGroupW1SecurityGroupResponse) GetMsg() setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup {
+func (v *setSecurityGroupSetSecurityGroupW1SecurityGroupResponse) GetMsg() *setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup {
 	return v.Msg
 }
 
@@ -1852,11 +1905,11 @@ func (v *setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGro
 // updateKeyResponse is returned by updateKey on success.
 type updateKeyResponse struct {
 	// Update Key
-	UpdateKey updateKeyUpdateKeyW1KeyResponse `json:"updateKey"`
+	UpdateKey *updateKeyUpdateKeyW1KeyResponse `json:"updateKey"`
 }
 
 // GetUpdateKey returns updateKeyResponse.UpdateKey, and is useful for accessing the field via an interface.
-func (v *updateKeyResponse) GetUpdateKey() updateKeyUpdateKeyW1KeyResponse { return v.UpdateKey }
+func (v *updateKeyResponse) GetUpdateKey() *updateKeyUpdateKeyW1KeyResponse { return v.UpdateKey }
 
 // updateKeyUpdateKeyW1KeyResponse includes the requested fields of the GraphQL type W1KeyResponse.
 // The GraphQL type's documentation follows.
@@ -1866,19 +1919,19 @@ type updateKeyUpdateKeyW1KeyResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg updateKeyUpdateKeyW1KeyResponseMsgW1Key `json:"msg"`
+	Msg *updateKeyUpdateKeyW1KeyResponseMsgW1Key `json:"msg"`
 }
 
 // GetCode returns updateKeyUpdateKeyW1KeyResponse.Code, and is useful for accessing the field via an interface.
 func (v *updateKeyUpdateKeyW1KeyResponse) GetCode() int { return v.Code }
 
 // GetErr returns updateKeyUpdateKeyW1KeyResponse.Err, and is useful for accessing the field via an interface.
-func (v *updateKeyUpdateKeyW1KeyResponse) GetErr() string { return v.Err }
+func (v *updateKeyUpdateKeyW1KeyResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns updateKeyUpdateKeyW1KeyResponse.Msg, and is useful for accessing the field via an interface.
-func (v *updateKeyUpdateKeyW1KeyResponse) GetMsg() updateKeyUpdateKeyW1KeyResponseMsgW1Key {
+func (v *updateKeyUpdateKeyW1KeyResponse) GetMsg() *updateKeyUpdateKeyW1KeyResponseMsgW1Key {
 	return v.Msg
 }
 
@@ -1897,11 +1950,11 @@ func (v *updateKeyUpdateKeyW1KeyResponseMsgW1Key) GetId() string { return v.Id }
 // updateNetworkResponse is returned by updateNetwork on success.
 type updateNetworkResponse struct {
 	// Update Network
-	UpdateNetwork updateNetworkUpdateNetworkW1NetworkResponse `json:"updateNetwork"`
+	UpdateNetwork *updateNetworkUpdateNetworkW1NetworkResponse `json:"updateNetwork"`
 }
 
 // GetUpdateNetwork returns updateNetworkResponse.UpdateNetwork, and is useful for accessing the field via an interface.
-func (v *updateNetworkResponse) GetUpdateNetwork() updateNetworkUpdateNetworkW1NetworkResponse {
+func (v *updateNetworkResponse) GetUpdateNetwork() *updateNetworkUpdateNetworkW1NetworkResponse {
 	return v.UpdateNetwork
 }
 
@@ -1913,19 +1966,19 @@ type updateNetworkUpdateNetworkW1NetworkResponse struct {
 	// Return Code
 	Code int `json:"code"`
 	// Error Message
-	Err string `json:"err"`
+	Err *string `json:"err"`
 	// Success Message
-	Msg updateNetworkUpdateNetworkW1NetworkResponseMsgW1Network `json:"msg"`
+	Msg *updateNetworkUpdateNetworkW1NetworkResponseMsgW1Network `json:"msg"`
 }
 
 // GetCode returns updateNetworkUpdateNetworkW1NetworkResponse.Code, and is useful for accessing the field via an interface.
 func (v *updateNetworkUpdateNetworkW1NetworkResponse) GetCode() int { return v.Code }
 
 // GetErr returns updateNetworkUpdateNetworkW1NetworkResponse.Err, and is useful for accessing the field via an interface.
-func (v *updateNetworkUpdateNetworkW1NetworkResponse) GetErr() string { return v.Err }
+func (v *updateNetworkUpdateNetworkW1NetworkResponse) GetErr() *string { return v.Err }
 
 // GetMsg returns updateNetworkUpdateNetworkW1NetworkResponse.Msg, and is useful for accessing the field via an interface.
-func (v *updateNetworkUpdateNetworkW1NetworkResponse) GetMsg() updateNetworkUpdateNetworkW1NetworkResponseMsgW1Network {
+func (v *updateNetworkUpdateNetworkW1NetworkResponse) GetMsg() *updateNetworkUpdateNetworkW1NetworkResponseMsgW1Network {
 	return v.Msg
 }
 
@@ -1941,7 +1994,7 @@ type updateNetworkUpdateNetworkW1NetworkResponseMsgW1Network struct {
 // GetId returns updateNetworkUpdateNetworkW1NetworkResponseMsgW1Network.Id, and is useful for accessing the field via an interface.
 func (v *updateNetworkUpdateNetworkW1NetworkResponseMsgW1Network) GetId() string { return v.Id }
 
-// The query or mutation executed by createFloatingGroup.
+// The mutation executed by createFloatingGroup.
 const createFloatingGroup_Operation = `
 mutation createFloatingGroup ($id: UUID!, $projectId: UUID!, $vms: [FloatingGroupVmInput], $natToVmsPrivateIp: Boolean) {
 	createFloatingGroup(id: $id, projectId: $projectId, vms: $vms, natToVmsPrivateIp: $natToVmsPrivateIp) {
@@ -1960,9 +2013,9 @@ func createFloatingGroup(
 	client_ graphql.Client,
 	id string,
 	projectId string,
-	vms []FloatingGroupVmInput,
-	natToVmsPrivateIp bool,
-) (*createFloatingGroupResponse, error) {
+	vms []*FloatingGroupVmInput,
+	natToVmsPrivateIp *bool,
+) (data_ *createFloatingGroupResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "createFloatingGroup",
 		Query:  createFloatingGroup_Operation,
@@ -1973,10 +2026,9 @@ func createFloatingGroup(
 			NatToVmsPrivateIp: natToVmsPrivateIp,
 		},
 	}
-	var err_ error
 
-	var data_ createFloatingGroupResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &createFloatingGroupResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -1984,10 +2036,10 @@ func createFloatingGroup(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by createFloatingIP.
+// The mutation executed by createFloatingIP.
 const createFloatingIP_Operation = `
 mutation createFloatingIP ($projectId: UUID!) {
 	createFloatingIP(projectId: $projectId) {
@@ -2005,7 +2057,7 @@ func createFloatingIP(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	projectId string,
-) (*createFloatingIPResponse, error) {
+) (data_ *createFloatingIPResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "createFloatingIP",
 		Query:  createFloatingIP_Operation,
@@ -2013,10 +2065,9 @@ func createFloatingIP(
 			ProjectId: projectId,
 		},
 	}
-	var err_ error
 
-	var data_ createFloatingIPResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &createFloatingIPResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2024,10 +2075,10 @@ func createFloatingIP(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by createInstance.
+// The mutation executed by createInstance.
 const createInstance_Operation = `
 mutation createInstance ($networkId: UUID!, $flavorId: UUID!, $imageId: UUID!, $projectId: UUID!, $name: String!, $sshKeys: [UUID!]!, $zone: AvailabilityZone!, $managed: Boolean!, $additional: InstanceAdditionalInput) {
 	createInstance(flavor: $flavorId, image: $imageId, name: $name, networks: [$networkId], sshKeys: $sshKeys, projectId: $projectId, zone: $zone, managed: $managed, additional: $additional) {
@@ -2052,8 +2103,8 @@ func createInstance(
 	sshKeys []string,
 	zone AvailabilityZone,
 	managed bool,
-	additional InstanceAdditionalInput,
-) (*createInstanceResponse, error) {
+	additional *InstanceAdditionalInput,
+) (data_ *createInstanceResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "createInstance",
 		Query:  createInstance_Operation,
@@ -2069,10 +2120,9 @@ func createInstance(
 			Additional: additional,
 		},
 	}
-	var err_ error
 
-	var data_ createInstanceResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &createInstanceResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2080,10 +2130,10 @@ func createInstance(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by createKey.
+// The mutation executed by createKey.
 const createKey_Operation = `
 mutation createKey ($name: String!, $publicKey: String!, $projectId: UUID, $projectWide: Boolean) {
 	createKey(name: $name, publicKey: $publicKey, projectId: $projectId, projectWide: $projectWide) {
@@ -2101,9 +2151,9 @@ func createKey(
 	client_ graphql.Client,
 	name string,
 	publicKey string,
-	projectId string,
-	projectWide bool,
-) (*createKeyResponse, error) {
+	projectId *string,
+	projectWide *bool,
+) (data_ *createKeyResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "createKey",
 		Query:  createKey_Operation,
@@ -2114,10 +2164,9 @@ func createKey(
 			ProjectWide: projectWide,
 		},
 	}
-	var err_ error
 
-	var data_ createKeyResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &createKeyResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2125,10 +2174,10 @@ func createKey(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by createNetwork.
+// The mutation executed by createNetwork.
 const createNetwork_Operation = `
 mutation createNetwork ($name: String!, $availabilityZone: AvailabilityZone, $projectId: UUID, $subnets: [SubnetInput]!) {
 	createNetwork(projectId: $projectId, name: $name, availabilityZone: $availabilityZone, subnets: $subnets) {
@@ -2151,10 +2200,10 @@ func createNetwork(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	name string,
-	availabilityZone AvailabilityZone,
-	projectId string,
-	subnets []SubnetInput,
-) (*createNetworkResponse, error) {
+	availabilityZone *AvailabilityZone,
+	projectId *string,
+	subnets []*SubnetInput,
+) (data_ *createNetworkResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "createNetwork",
 		Query:  createNetwork_Operation,
@@ -2165,10 +2214,9 @@ func createNetwork(
 			Subnets:          subnets,
 		},
 	}
-	var err_ error
 
-	var data_ createNetworkResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &createNetworkResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2176,10 +2224,10 @@ func createNetwork(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by createSecurityGroup.
+// The mutation executed by createSecurityGroup.
 const createSecurityGroup_Operation = `
 mutation createSecurityGroup ($name: String!, $projectId: UUID!, $description: String, $rules: [W1SecurityGroupRuleInput]) {
 	createSecurityGroup(name: $name, description: $description, rules: $rules, projectId: $projectId) {
@@ -2198,9 +2246,9 @@ func createSecurityGroup(
 	client_ graphql.Client,
 	name string,
 	projectId string,
-	description string,
-	rules []W1SecurityGroupRuleInput,
-) (*createSecurityGroupResponse, error) {
+	description *string,
+	rules []*W1SecurityGroupRuleInput,
+) (data_ *createSecurityGroupResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "createSecurityGroup",
 		Query:  createSecurityGroup_Operation,
@@ -2211,10 +2259,9 @@ func createSecurityGroup(
 			Rules:       rules,
 		},
 	}
-	var err_ error
 
-	var data_ createSecurityGroupResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &createSecurityGroupResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2222,10 +2269,10 @@ func createSecurityGroup(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by deleteFloatingGroupByFloatingIpIdAndInstanceId.
+// The mutation executed by deleteFloatingGroupByFloatingIpIdAndInstanceId.
 const deleteFloatingGroupByFloatingIpIdAndInstanceId_Operation = `
 mutation deleteFloatingGroupByFloatingIpIdAndInstanceId ($projectId: UUID!, $floatingIPId: UUID!, $instanceId: UUID!) {
 	deleteFloatingGroupByFloatingIpIdAndInstanceId(projectId: $projectId, floatingIpId: $floatingIPId, instanceId: $instanceId) {
@@ -2242,7 +2289,7 @@ func deleteFloatingGroupByFloatingIpIdAndInstanceId(
 	projectId string,
 	floatingIPId string,
 	instanceId string,
-) (*deleteFloatingGroupByFloatingIpIdAndInstanceIdResponse, error) {
+) (data_ *deleteFloatingGroupByFloatingIpIdAndInstanceIdResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "deleteFloatingGroupByFloatingIpIdAndInstanceId",
 		Query:  deleteFloatingGroupByFloatingIpIdAndInstanceId_Operation,
@@ -2252,10 +2299,9 @@ func deleteFloatingGroupByFloatingIpIdAndInstanceId(
 			InstanceId:   instanceId,
 		},
 	}
-	var err_ error
 
-	var data_ deleteFloatingGroupByFloatingIpIdAndInstanceIdResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &deleteFloatingGroupByFloatingIpIdAndInstanceIdResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2263,10 +2309,10 @@ func deleteFloatingGroupByFloatingIpIdAndInstanceId(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by deleteFloatingIP.
+// The mutation executed by deleteFloatingIP.
 const deleteFloatingIP_Operation = `
 mutation deleteFloatingIP ($id: UUID!, $projectId: UUID!) {
 	deleteFloatingIP(id: $id, projectId: $projectId) {
@@ -2282,7 +2328,7 @@ func deleteFloatingIP(
 	client_ graphql.Client,
 	id string,
 	projectId string,
-) (*deleteFloatingIPResponse, error) {
+) (data_ *deleteFloatingIPResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "deleteFloatingIP",
 		Query:  deleteFloatingIP_Operation,
@@ -2291,10 +2337,9 @@ func deleteFloatingIP(
 			ProjectId: projectId,
 		},
 	}
-	var err_ error
 
-	var data_ deleteFloatingIPResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &deleteFloatingIPResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2302,10 +2347,10 @@ func deleteFloatingIP(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by deleteInstance.
+// The mutation executed by deleteInstance.
 const deleteInstance_Operation = `
 mutation deleteInstance ($id: UUID!, $projectId: UUID!) {
 	deleteInstance(id: $id, projectId: $projectId) {
@@ -2321,7 +2366,7 @@ func deleteInstance(
 	client_ graphql.Client,
 	id string,
 	projectId string,
-) (*deleteInstanceResponse, error) {
+) (data_ *deleteInstanceResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "deleteInstance",
 		Query:  deleteInstance_Operation,
@@ -2330,10 +2375,9 @@ func deleteInstance(
 			ProjectId: projectId,
 		},
 	}
-	var err_ error
 
-	var data_ deleteInstanceResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &deleteInstanceResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2341,10 +2385,10 @@ func deleteInstance(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by deleteKey.
+// The mutation executed by deleteKey.
 const deleteKey_Operation = `
 mutation deleteKey ($id: UUID!, $projectId: UUID) {
 	deleteKey(id: $id, projectId: $projectId) {
@@ -2359,8 +2403,8 @@ func deleteKey(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	id string,
-	projectId string,
-) (*deleteKeyResponse, error) {
+	projectId *string,
+) (data_ *deleteKeyResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "deleteKey",
 		Query:  deleteKey_Operation,
@@ -2369,10 +2413,9 @@ func deleteKey(
 			ProjectId: projectId,
 		},
 	}
-	var err_ error
 
-	var data_ deleteKeyResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &deleteKeyResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2380,10 +2423,10 @@ func deleteKey(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by deleteNetwork.
+// The mutation executed by deleteNetwork.
 const deleteNetwork_Operation = `
 mutation deleteNetwork ($id: UUID!, $projectId: UUID!) {
 	deleteNetwork(id: $id, projectId: $projectId) {
@@ -2399,7 +2442,7 @@ func deleteNetwork(
 	client_ graphql.Client,
 	id string,
 	projectId string,
-) (*deleteNetworkResponse, error) {
+) (data_ *deleteNetworkResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "deleteNetwork",
 		Query:  deleteNetwork_Operation,
@@ -2408,10 +2451,9 @@ func deleteNetwork(
 			ProjectId: projectId,
 		},
 	}
-	var err_ error
 
-	var data_ deleteNetworkResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &deleteNetworkResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2419,10 +2461,10 @@ func deleteNetwork(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by getDefaultProject.
+// The query executed by getDefaultProject.
 const getDefaultProject_Operation = `
 query getDefaultProject {
 	getDefaultProject {
@@ -2439,15 +2481,14 @@ query getDefaultProject {
 func getDefaultProject(
 	ctx_ context.Context,
 	client_ graphql.Client,
-) (*getDefaultProjectResponse, error) {
+) (data_ *getDefaultProjectResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "getDefaultProject",
 		Query:  getDefaultProject_Operation,
 	}
-	var err_ error
 
-	var data_ getDefaultProjectResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &getDefaultProjectResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2455,10 +2496,10 @@ func getDefaultProject(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by getFlavorByName.
+// The query executed by getFlavorByName.
 const getFlavorByName_Operation = `
 query getFlavorByName ($name: String!) {
 	getFlavorByName(name: $name) {
@@ -2475,7 +2516,7 @@ func getFlavorByName(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	name string,
-) (*getFlavorByNameResponse, error) {
+) (data_ *getFlavorByNameResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "getFlavorByName",
 		Query:  getFlavorByName_Operation,
@@ -2483,10 +2524,9 @@ func getFlavorByName(
 			Name: name,
 		},
 	}
-	var err_ error
 
-	var data_ getFlavorByNameResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &getFlavorByNameResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2494,10 +2534,10 @@ func getFlavorByName(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by getFloatingIP.
+// The query executed by getFloatingIP.
 const getFloatingIP_Operation = `
 query getFloatingIP ($id: UUID!, $projectId: UUID!) {
 	getFloatingIP(id: $id, projectId: $projectId) {
@@ -2515,7 +2555,7 @@ func getFloatingIP(
 	client_ graphql.Client,
 	id string,
 	projectId string,
-) (*getFloatingIPResponse, error) {
+) (data_ *getFloatingIPResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "getFloatingIP",
 		Query:  getFloatingIP_Operation,
@@ -2524,10 +2564,9 @@ func getFloatingIP(
 			ProjectId: projectId,
 		},
 	}
-	var err_ error
 
-	var data_ getFloatingIPResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &getFloatingIPResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2535,10 +2574,10 @@ func getFloatingIP(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by getFloatingIPAttachment.
+// The query executed by getFloatingIPAttachment.
 const getFloatingIPAttachment_Operation = `
 query getFloatingIPAttachment ($id: UUID!, $projectId: UUID!) {
 	getFloatingIPAttachment(id: $id, projectId: $projectId) {
@@ -2564,7 +2603,7 @@ func getFloatingIPAttachment(
 	client_ graphql.Client,
 	id string,
 	projectId string,
-) (*getFloatingIPAttachmentResponse, error) {
+) (data_ *getFloatingIPAttachmentResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "getFloatingIPAttachment",
 		Query:  getFloatingIPAttachment_Operation,
@@ -2573,10 +2612,9 @@ func getFloatingIPAttachment(
 			ProjectId: projectId,
 		},
 	}
-	var err_ error
 
-	var data_ getFloatingIPAttachmentResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &getFloatingIPAttachmentResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2584,10 +2622,10 @@ func getFloatingIPAttachment(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by getImageList.
+// The query executed by getImageList.
 const getImageList_Operation = `
 query getImageList ($projectId: UUID!) {
 	getImageList(projectId: $projectId) {
@@ -2605,7 +2643,7 @@ func getImageList(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	projectId string,
-) (*getImageListResponse, error) {
+) (data_ *getImageListResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "getImageList",
 		Query:  getImageList_Operation,
@@ -2613,10 +2651,9 @@ func getImageList(
 			ProjectId: projectId,
 		},
 	}
-	var err_ error
 
-	var data_ getImageListResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &getImageListResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2624,10 +2661,10 @@ func getImageList(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by getInstance.
+// The query executed by getInstance.
 const getInstance_Operation = `
 query getInstance ($id: UUID!, $projectId: UUID!) {
 	getInstance(id: $id, projectId: $projectId) {
@@ -2649,7 +2686,7 @@ func getInstance(
 	client_ graphql.Client,
 	id string,
 	projectId string,
-) (*getInstanceResponse, error) {
+) (data_ *getInstanceResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "getInstance",
 		Query:  getInstance_Operation,
@@ -2658,10 +2695,9 @@ func getInstance(
 			ProjectId: projectId,
 		},
 	}
-	var err_ error
 
-	var data_ getInstanceResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &getInstanceResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2669,10 +2705,10 @@ func getInstance(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by getKey.
+// The query executed by getKey.
 const getKey_Operation = `
 query getKey ($id: UUID, $name: String, $projectId: UUID, $projectWide: Boolean) {
 	getKey(id: $id, name: $name, projectId: $projectId, projectWide: $projectWide) {
@@ -2691,11 +2727,11 @@ query getKey ($id: UUID, $name: String, $projectId: UUID, $projectWide: Boolean)
 func getKey(
 	ctx_ context.Context,
 	client_ graphql.Client,
-	id string,
-	name string,
-	projectId string,
+	id *string,
+	name *string,
+	projectId *string,
 	projectWide *bool,
-) (*getKeyResponse, error) {
+) (data_ *getKeyResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "getKey",
 		Query:  getKey_Operation,
@@ -2706,10 +2742,9 @@ func getKey(
 			ProjectWide: projectWide,
 		},
 	}
-	var err_ error
 
-	var data_ getKeyResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &getKeyResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2717,10 +2752,10 @@ func getKey(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by getNetwork.
+// The query executed by getNetwork.
 const getNetwork_Operation = `
 query getNetwork ($id: UUID!, $projectId: UUID!) {
 	getNetwork(id: $id, projectId: $projectId) {
@@ -2746,7 +2781,7 @@ func getNetwork(
 	client_ graphql.Client,
 	id string,
 	projectId string,
-) (*getNetworkResponse, error) {
+) (data_ *getNetworkResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "getNetwork",
 		Query:  getNetwork_Operation,
@@ -2755,10 +2790,9 @@ func getNetwork(
 			ProjectId: projectId,
 		},
 	}
-	var err_ error
 
-	var data_ getNetworkResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &getNetworkResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2766,10 +2800,10 @@ func getNetwork(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by me.
+// The query executed by me.
 const me_Operation = `
 query me {
 	me {
@@ -2783,15 +2817,14 @@ query me {
 func me(
 	ctx_ context.Context,
 	client_ graphql.Client,
-) (*meResponse, error) {
+) (data_ *meResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "me",
 		Query:  me_Operation,
 	}
-	var err_ error
 
-	var data_ meResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &meResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2799,10 +2832,10 @@ func me(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by setSecurityGroup.
+// The mutation executed by setSecurityGroup.
 const setSecurityGroup_Operation = `
 mutation setSecurityGroup ($id: UUID!, $name: String!, $projectId: UUID!, $description: String, $rules: [W1SecurityGroupRuleInput]) {
 	setSecurityGroup(id: $id, name: $name, description: $description, rules: $rules, projectId: $projectId) {
@@ -2822,9 +2855,9 @@ func setSecurityGroup(
 	id string,
 	name string,
 	projectId string,
-	description string,
-	rules []W1SecurityGroupRuleInput,
-) (*setSecurityGroupResponse, error) {
+	description *string,
+	rules []*W1SecurityGroupRuleInput,
+) (data_ *setSecurityGroupResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "setSecurityGroup",
 		Query:  setSecurityGroup_Operation,
@@ -2836,10 +2869,9 @@ func setSecurityGroup(
 			Rules:       rules,
 		},
 	}
-	var err_ error
 
-	var data_ setSecurityGroupResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &setSecurityGroupResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2847,10 +2879,10 @@ func setSecurityGroup(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by updateKey.
+// The mutation executed by updateKey.
 const updateKey_Operation = `
 mutation updateKey ($id: UUID!, $projectId: UUID, $name: String!) {
 	updateKey(id: $id, name: $name, projectId: $projectId) {
@@ -2867,9 +2899,9 @@ func updateKey(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	id string,
-	projectId string,
+	projectId *string,
 	name string,
-) (*updateKeyResponse, error) {
+) (data_ *updateKeyResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "updateKey",
 		Query:  updateKey_Operation,
@@ -2879,10 +2911,9 @@ func updateKey(
 			Name:      name,
 		},
 	}
-	var err_ error
 
-	var data_ updateKeyResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &updateKeyResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2890,10 +2921,10 @@ func updateKey(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by updateNetwork.
+// The mutation executed by updateNetwork.
 const updateNetwork_Operation = `
 mutation updateNetwork ($id: UUID!, $projectId: UUID, $name: String!) {
 	updateNetwork(id: $id, name: $name, projectId: $projectId) {
@@ -2910,9 +2941,9 @@ func updateNetwork(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	id string,
-	projectId string,
+	projectId *string,
 	name string,
-) (*updateNetworkResponse, error) {
+) (data_ *updateNetworkResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "updateNetwork",
 		Query:  updateNetwork_Operation,
@@ -2922,10 +2953,9 @@ func updateNetwork(
 			Name:      name,
 		},
 	}
-	var err_ error
 
-	var data_ updateNetworkResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &updateNetworkResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -2933,5 +2963,5 @@ func updateNetwork(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }

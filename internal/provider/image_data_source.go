@@ -103,7 +103,7 @@ func (d *imageDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 
 	imageFound := false
 	for _, image := range imageList.GetImageList.Msg {
-		if image.Name == data.Name.ValueString() {
+		if *image.Name == data.Name.ValueString() {
 			imageFound = true
 			data.ID = types.StringValue(image.Id)
 		}

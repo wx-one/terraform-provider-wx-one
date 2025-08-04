@@ -155,16 +155,16 @@ func (r *floatingIPGroupResource) Create(ctx context.Context, req resource.Creat
 		return
 	}
 
-	vmInput := make([]FloatingGroupVmInput, len(plan.VMs))
+	vmInput := make([]*FloatingGroupVmInput, len(plan.VMs))
 	for i, item := range plan.VMs {
-		vmInput[i] = FloatingGroupVmInput{
+		vmInput[i] = &FloatingGroupVmInput{
 			Priority: int(item.Priority.ValueInt32()),
 			Vm:       item.VMID.ValueString(),
 		}
 	}
 
 	// Create new floatingIPGroup
-	floatingIPGroup, err := createFloatingGroup(ctx, r.wxOneClients.graphqlClient, plan.FloatingIPID.ValueString(), plan.ProjectID.ValueString(), vmInput, plan.Nat.ValueBool())
+	floatingIPGroup, err := createFloatingGroup(ctx, r.wxOneClients.graphqlClient, plan.FloatingIPID.ValueString(), plan.ProjectID.ValueString(), vmInput, plan.Nat.ValueBoolPointer())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating floatingIPGroup",
@@ -217,17 +217,22 @@ func (r *floatingIPGroupResource) Read(ctx context.Context, req resource.ReadReq
 		return
 	}
 
-	if floatingIPAttachment.GetFloatingIPAttachment.Msg.GetTypename() != "FloatingIPInstanceAttachment" {
+	if *(*floatingIPAttachment.GetFloatingIPAttachment.Msg).GetTypename() != "FloatingIPInstanceAttachment" {
 		resp.Diagnostics.AddError(
 			"Error IP manipulated outside of terraform",
-			"Type is not FloatingIPInstanceAttachment, but "+floatingIPAttachment.GetFloatingIPAttachment.Msg.GetTypename()+": "+err.Error(),
+			"Type is not FloatingIPInstanceAttachment, but "+*(*floatingIPAttachment.GetFloatingIPAttachment.Msg).GetTypename()+": "+err.Error(),
 		)
 		return
 	}
 
 	// refresh the vms in the asset
-	attachments := floatingIPAttachment.GetFloatingIPAttachment.Msg.(*getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPInstanceAttachment)
-	state.Nat = types.BoolValue(attachments.NatToVmsPrivateIp)
+	attachments := (*floatingIPAttachment.GetFloatingIPAttachment.Msg).(*getFloatingIPAttachmentGetFloatingIPAttachmentFloatingIPAttachmentResponseMsgFloatingIPInstanceAttachment)
+	if attachments.NatToVmsPrivateIp != nil {
+		state.Nat = types.BoolValue(*attachments.NatToVmsPrivateIp)
+	} else {
+		state.Nat = types.BoolNull()
+	}
+
 	if len(attachments.Vms) > 0 {
 		state.VMs = make([]vmModel, len(attachments.Vms))
 		for i, item := range attachments.Vms {
