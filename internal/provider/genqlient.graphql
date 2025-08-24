@@ -332,6 +332,9 @@ mutation setSecurityGroup(
     msg {
       id
       name
+      rules {
+        id
+      }
     }
   }
 }
@@ -353,6 +356,9 @@ mutation createSecurityGroup(
     msg {
       id
       name
+      rules {
+        id
+      }
     }
   }
 }

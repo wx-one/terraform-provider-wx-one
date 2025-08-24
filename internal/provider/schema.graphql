@@ -236,6 +236,8 @@ enum FlavorType {
   "TBD"
   dd1
   "TBD"
+  dd2
+  "TBD"
   ha1
   "Unknown flavor type"
   UNKNOWN
@@ -319,8 +321,8 @@ type Quota {
   count: Int!
   "Availability Zone"
   availabilityZone: AvailabilityZone
-  "Flavor ID"
-  flavorId: UUID
+  "Flavor Type"
+  flavorType: FlavorType
   "volumeType"
   volumeType: W1VolumeType
 }
@@ -358,16 +360,12 @@ input SevOptionsInput {
 "Instance Additional Options"
 input InstanceAdditionalInput {
   "provision VM with vTPM, ignored if not supported by VM type"
-  # @genqlient(omitempty: true, pointer: true)
   vTPM: Boolean
   "use uefi bios, ignored if not supported by VM type"
-  # @genqlient(omitempty: true, pointer: true)
   uefi: Boolean
   "specify the SEV type, ignored if not supported by VM type"
-  # @genqlient(omitempty: true, pointer: true)
   sevType: W1SevType
   "sevOptions"
-  # @genqlient(omitempty: true, pointer: true)
   sevOptions: SevOptionsInput
 }
 
@@ -381,8 +379,8 @@ input QuotaInput {
   count: Int!
   "Availability Zone"
   availabilityZone: AvailabilityZone
-  "Flavor ID"
-  flavorId: UUID
+  "Flavor Type"
+  flavorType: FlavorType
   "volumeType"
   volumeType: W1VolumeType
 }
@@ -1037,6 +1035,16 @@ enum SecurityGroupRuleDirection {
   egress
 }
 
+"Security Group Rule Action"
+enum SecurityGroupRuleAction {
+  "accept"
+  accept
+  "drop"
+  drop
+  "reject"
+  reject
+}
+
 "Ethernet Type"
 enum EtherType {
   "IP version 4"
@@ -1055,6 +1063,8 @@ enum Protocol {
   icmp
   "use protocol int"
   int
+  "any"
+  any
 }
 
 "Health Check Protocol"
@@ -1099,8 +1109,12 @@ type W1SecurityGroupRule {
   ports: String!
   "Protocol"
   protocol: Protocol!
+  "protocol Integer alternative"
+  protocolInt: Int
   "IP/CIDR"
   cidr: String!
+  "action"
+  action: SecurityGroupRuleAction
 }
 
 "Security Group Association"
@@ -1133,6 +1147,8 @@ input W1SecurityGroupRuleInput {
   protocolInt: Int
   "IP/CIDR"
   cidr: String!
+  "action"
+  action: SecurityGroupRuleAction
 }
 
 "Security Group Response"

@@ -26,7 +26,7 @@ var (
 )
 
 // NewsecurityGroupResource is a helper function to simplify the provider implementation.
-func NewsecurityGroupResource() resource.Resource {
+func NewSecurityGroupResource() resource.Resource {
 	return &securityGroupResource{}
 }
 
@@ -56,15 +56,9 @@ func (r *securityGroupResource) Schema(_ context.Context, _ resource.SchemaReque
 				Description: "Name of the securityGroup.",
 				Required:    true,
 			},
-			"availability_zone": schema.StringAttribute{
-				Description: "Availability zone of the securityGroup.",
-				Required:    true,
-				Validators: []validator.String{
-					stringvalidator.OneOf("wx_dus_1"),
-				},
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
+			"description": schema.StringAttribute{
+				Description: "Description of the securityGroup.",
+				Optional:    true,
 			},
 			"project_id": schema.StringAttribute{
 				Description: "Project id of the securityGroup.",
@@ -73,7 +67,7 @@ func (r *securityGroupResource) Schema(_ context.Context, _ resource.SchemaReque
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
-			"subnets": schema.ListNestedAttribute{
+			"rules": schema.ListNestedAttribute{
 				Required: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -85,27 +79,52 @@ func (r *securityGroupResource) Schema(_ context.Context, _ resource.SchemaReque
 							},
 						},
 						"name": schema.StringAttribute{
-							Description: "Name of the subnet.",
+							Description: "Name of the rule.",
 							Required:    true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.RequiresReplace(),
-							},
 						},
-						"ip_version": schema.StringAttribute{
-							Description: "IP Version of the subnet.",
+						"description": schema.StringAttribute{
+							Description: "Description of the rule.",
+							Required:    true,
+						},
+						"direction": schema.StringAttribute{
+							Description: "Direciton of the rule.",
 							Required:    true,
 							Validators: []validator.String{
-								stringvalidator.OneOf("IPv4"),
-							},
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.RequiresReplace(),
+								stringvalidator.OneOf("ingress", "egress"),
 							},
 						},
-						"cidr": schema.StringAttribute{
-							Description: "CIDR of the subnet.",
+						"ether_type": schema.StringAttribute{
+							Description: "IP Version of the rule.",
 							Required:    true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.RequiresReplace(),
+							Validators: []validator.String{
+								stringvalidator.OneOf("IPv4", "IPv6"),
+							},
+						},
+						"priority": schema.Int32Attribute{
+							Description: "Priority of the rule.",
+							Required:    true,
+						},
+						"ports": schema.StringAttribute{
+							Description: "Port List, either single, all, comma separated or a range 1:256 of the rule.",
+							Required:    true,
+						},
+						"protocol": schema.StringAttribute{
+							Description: "Protocol of the rule.",
+							Required:    true,
+						},
+						"protocol_int": schema.Int32Attribute{
+							Description: "Protocol Number of the rule if protocol is set to int.",
+							Optional:    true,
+						},
+						"cidr": schema.StringAttribute{
+							Description: "CIDR of the rule.",
+							Required:    true,
+						},
+						"action": schema.StringAttribute{
+							Description: "Action of the rule.",
+							Required:    true,
+							Validators: []validator.String{
+								stringvalidator.OneOf("accept", "drop", "reject"),
 							},
 						},
 					},
@@ -134,6 +153,7 @@ type securityGroupRuleModel struct {
 	EtherType   types.String `tfsdk:"ether_type"`
 	Ports       types.String `tfsdk:"ports"`
 	Cidr        types.String `tfsdk:"cidr"`
+	Action      types.String `tfsdk:"action"`
 }
 
 // Configure adds the provider configured client to the resource.
@@ -170,6 +190,8 @@ func (r *securityGroupResource) Create(ctx context.Context, req resource.CreateR
 	ruleInput := make([]*W1SecurityGroupRuleInput, len(plan.Rules))
 	for i, item := range plan.Rules {
 		protocolInt := int(item.ProtocolInt.ValueInt32())
+		action := SecurityGroupRuleAction(item.Action.ValueString())
+
 		ruleInput[i] = &W1SecurityGroupRuleInput{
 			Name:        item.Name.ValueString(),
 			Description: item.Description.ValueString(),
@@ -179,6 +201,7 @@ func (r *securityGroupResource) Create(ctx context.Context, req resource.CreateR
 			EtherType:   EtherType(item.EtherType.ValueString()),
 			Protocol:    Protocol(item.Protocol.ValueString()),
 			ProtocolInt: &protocolInt,
+			Action:      &action,
 		}
 	}
 
@@ -195,9 +218,9 @@ func (r *securityGroupResource) Create(ctx context.Context, req resource.CreateR
 	// Map response body to schema and populate Computed attribute values
 	plan.ID = types.StringValue(securityGroup.CreateSecurityGroup.Msg.Id)
 
-	// for i, item := range securityGroup.CreateSecurityGroup.Msg.Subnets {
-	// 	plan.Subnets[i].ID = types.StringValue(item.Id)
-	// }
+	for i, item := range securityGroup.CreateSecurityGroup.Msg.Rules {
+		plan.Rules[i].ID = types.StringValue(item.Id)
+	}
 
 	// Set state to fully populated data
 	diags = resp.State.Set(ctx, plan)
@@ -266,6 +289,8 @@ func (r *securityGroupResource) Update(ctx context.Context, req resource.UpdateR
 	ruleInput := make([]*W1SecurityGroupRuleInput, len(plan.Rules))
 	for i, item := range plan.Rules {
 		protocolInt := int(item.ProtocolInt.ValueInt32())
+		action := SecurityGroupRuleAction(item.Action.ValueString())
+
 		ruleInput[i] = &W1SecurityGroupRuleInput{
 			Name:        item.Name.ValueString(),
 			Description: item.Description.ValueString(),
@@ -275,6 +300,7 @@ func (r *securityGroupResource) Update(ctx context.Context, req resource.UpdateR
 			EtherType:   EtherType(item.EtherType.ValueString()),
 			Protocol:    Protocol(item.Protocol.ValueString()),
 			ProtocolInt: &protocolInt,
+			Action:      &action,
 		}
 	}
 

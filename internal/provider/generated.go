@@ -141,6 +141,8 @@ const (
 	ProtocolIcmp Protocol = "icmp"
 	// use protocol int
 	ProtocolInt Protocol = "int"
+	// any
+	ProtocolAny Protocol = "any"
 )
 
 var AllProtocol = []Protocol{
@@ -148,6 +150,25 @@ var AllProtocol = []Protocol{
 	ProtocolUdp,
 	ProtocolIcmp,
 	ProtocolInt,
+	ProtocolAny,
+}
+
+// Security Group Rule Action
+type SecurityGroupRuleAction string
+
+const (
+	// accept
+	SecurityGroupRuleActionAccept SecurityGroupRuleAction = "accept"
+	// drop
+	SecurityGroupRuleActionDrop SecurityGroupRuleAction = "drop"
+	// reject
+	SecurityGroupRuleActionReject SecurityGroupRuleAction = "reject"
+)
+
+var AllSecurityGroupRuleAction = []SecurityGroupRuleAction{
+	SecurityGroupRuleActionAccept,
+	SecurityGroupRuleActionDrop,
+	SecurityGroupRuleActionReject,
 }
 
 // Security Group Rule Direction
@@ -223,6 +244,8 @@ type W1SecurityGroupRuleInput struct {
 	ProtocolInt *int `json:"protocolInt,omitempty"`
 	// IP/CIDR
 	Cidr string `json:"cidr"`
+	// action
+	Action *SecurityGroupRuleAction `json:"action,omitempty"`
 }
 
 // GetName returns W1SecurityGroupRuleInput.Name, and is useful for accessing the field via an interface.
@@ -251,6 +274,9 @@ func (v *W1SecurityGroupRuleInput) GetProtocolInt() *int { return v.ProtocolInt 
 
 // GetCidr returns W1SecurityGroupRuleInput.Cidr, and is useful for accessing the field via an interface.
 func (v *W1SecurityGroupRuleInput) GetCidr() string { return v.Cidr }
+
+// GetAction returns W1SecurityGroupRuleInput.Action, and is useful for accessing the field via an interface.
+func (v *W1SecurityGroupRuleInput) GetAction() *SecurityGroupRuleAction { return v.Action }
 
 // Volume Type
 type W1SevType string
@@ -944,6 +970,8 @@ type createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityG
 	Id string `json:"id"`
 	// Name
 	Name string `json:"name"`
+	// Rules for Security Group
+	Rules []*createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroupRulesW1SecurityGroupRule `json:"rules"`
 }
 
 // GetId returns createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup.Id, and is useful for accessing the field via an interface.
@@ -954,6 +982,25 @@ func (v *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1Secur
 // GetName returns createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup.Name, and is useful for accessing the field via an interface.
 func (v *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup) GetName() string {
 	return v.Name
+}
+
+// GetRules returns createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup.Rules, and is useful for accessing the field via an interface.
+func (v *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup) GetRules() []*createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroupRulesW1SecurityGroupRule {
+	return v.Rules
+}
+
+// createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroupRulesW1SecurityGroupRule includes the requested fields of the GraphQL type W1SecurityGroupRule.
+// The GraphQL type's documentation follows.
+//
+// Security Group Rule
+type createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroupRulesW1SecurityGroupRule struct {
+	// ID
+	Id string `json:"id"`
+}
+
+// GetId returns createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroupRulesW1SecurityGroupRule.Id, and is useful for accessing the field via an interface.
+func (v *createSecurityGroupCreateSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroupRulesW1SecurityGroupRule) GetId() string {
+	return v.Id
 }
 
 // createSecurityGroupResponse is returned by createSecurityGroup on success.
@@ -1890,6 +1937,8 @@ type setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup s
 	Id string `json:"id"`
 	// Name
 	Name string `json:"name"`
+	// Rules for Security Group
+	Rules []*setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroupRulesW1SecurityGroupRule `json:"rules"`
 }
 
 // GetId returns setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup.Id, and is useful for accessing the field via an interface.
@@ -1900,6 +1949,25 @@ func (v *setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGro
 // GetName returns setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup.Name, and is useful for accessing the field via an interface.
 func (v *setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup) GetName() string {
 	return v.Name
+}
+
+// GetRules returns setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup.Rules, and is useful for accessing the field via an interface.
+func (v *setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroup) GetRules() []*setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroupRulesW1SecurityGroupRule {
+	return v.Rules
+}
+
+// setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroupRulesW1SecurityGroupRule includes the requested fields of the GraphQL type W1SecurityGroupRule.
+// The GraphQL type's documentation follows.
+//
+// Security Group Rule
+type setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroupRulesW1SecurityGroupRule struct {
+	// ID
+	Id string `json:"id"`
+}
+
+// GetId returns setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroupRulesW1SecurityGroupRule.Id, and is useful for accessing the field via an interface.
+func (v *setSecurityGroupSetSecurityGroupW1SecurityGroupResponseMsgW1SecurityGroupRulesW1SecurityGroupRule) GetId() string {
+	return v.Id
 }
 
 // updateKeyResponse is returned by updateKey on success.
@@ -2236,6 +2304,9 @@ mutation createSecurityGroup ($name: String!, $projectId: UUID!, $description: S
 		msg {
 			id
 			name
+			rules {
+				id
+			}
 		}
 	}
 }
@@ -2844,6 +2915,9 @@ mutation setSecurityGroup ($id: UUID!, $name: String!, $projectId: UUID!, $descr
 		msg {
 			id
 			name
+			rules {
+				id
+			}
 		}
 	}
 }

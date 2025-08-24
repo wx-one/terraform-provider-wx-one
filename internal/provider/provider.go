@@ -325,6 +325,7 @@ func (p *wxOneProvider) Resources(_ context.Context) []func() resource.Resource 
 	return []func() resource.Resource{
 		NewKeyResource,
 		NewNetworkResource,
+		NewSecurityGroupResource,
 		NewInstanceResource,
 		NewFloatingIPResource,
 		NewFloatingIPGroupResource,
