@@ -362,3 +362,30 @@ mutation createSecurityGroup(
     }
   }
 }
+
+mutation assignSecurityGroup(
+  $securityGroupId: UUID!
+  $projectId: UUID!
+  $vmId: UUID
+  $subnetId: UUID
+) {
+  createSecurityGroupAssociation(
+    securityGroupId: $securityGroupId
+    vmId: $vmId
+    subnetId: $subnetId
+    projectId: $projectId
+  ) {
+    code
+    err
+    msg {
+      id
+    }
+  }
+}
+
+mutation detachSecurityGroup($id: UUID!, $projectId: UUID!) {
+  deleteSecurityGroupAssociation(id: $id, projectId: $projectId) {
+    code
+    err
+  }
+}

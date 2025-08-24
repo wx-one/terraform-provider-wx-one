@@ -299,6 +299,26 @@ var AllW1SevType = []W1SevType{
 	W1SevTypeSevSnpVtpm,
 }
 
+// __assignSecurityGroupInput is used internally by genqlient
+type __assignSecurityGroupInput struct {
+	SecurityGroupId string  `json:"securityGroupId"`
+	ProjectId       string  `json:"projectId"`
+	VmId            *string `json:"vmId,omitempty"`
+	SubnetId        *string `json:"subnetId,omitempty"`
+}
+
+// GetSecurityGroupId returns __assignSecurityGroupInput.SecurityGroupId, and is useful for accessing the field via an interface.
+func (v *__assignSecurityGroupInput) GetSecurityGroupId() string { return v.SecurityGroupId }
+
+// GetProjectId returns __assignSecurityGroupInput.ProjectId, and is useful for accessing the field via an interface.
+func (v *__assignSecurityGroupInput) GetProjectId() string { return v.ProjectId }
+
+// GetVmId returns __assignSecurityGroupInput.VmId, and is useful for accessing the field via an interface.
+func (v *__assignSecurityGroupInput) GetVmId() *string { return v.VmId }
+
+// GetSubnetId returns __assignSecurityGroupInput.SubnetId, and is useful for accessing the field via an interface.
+func (v *__assignSecurityGroupInput) GetSubnetId() *string { return v.SubnetId }
+
 // __createFloatingGroupInput is used internally by genqlient
 type __createFloatingGroupInput struct {
 	Id                string                  `json:"id"`
@@ -497,6 +517,18 @@ func (v *__deleteNetworkInput) GetId() string { return v.Id }
 // GetProjectId returns __deleteNetworkInput.ProjectId, and is useful for accessing the field via an interface.
 func (v *__deleteNetworkInput) GetProjectId() string { return v.ProjectId }
 
+// __detachSecurityGroupInput is used internally by genqlient
+type __detachSecurityGroupInput struct {
+	Id        string `json:"id"`
+	ProjectId string `json:"projectId"`
+}
+
+// GetId returns __detachSecurityGroupInput.Id, and is useful for accessing the field via an interface.
+func (v *__detachSecurityGroupInput) GetId() string { return v.Id }
+
+// GetProjectId returns __detachSecurityGroupInput.ProjectId, and is useful for accessing the field via an interface.
+func (v *__detachSecurityGroupInput) GetProjectId() string { return v.ProjectId }
+
 // __getFlavorByNameInput is used internally by genqlient
 type __getFlavorByNameInput struct {
 	Name string `json:"name"`
@@ -636,6 +668,59 @@ func (v *__updateNetworkInput) GetProjectId() *string { return v.ProjectId }
 
 // GetName returns __updateNetworkInput.Name, and is useful for accessing the field via an interface.
 func (v *__updateNetworkInput) GetName() string { return v.Name }
+
+// assignSecurityGroupCreateSecurityGroupAssociationW1SecurityGroupAssociationResponse includes the requested fields of the GraphQL type W1SecurityGroupAssociationResponse.
+// The GraphQL type's documentation follows.
+//
+// Security Group Association Response
+type assignSecurityGroupCreateSecurityGroupAssociationW1SecurityGroupAssociationResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err *string `json:"err"`
+	// Success Message
+	Msg *assignSecurityGroupCreateSecurityGroupAssociationW1SecurityGroupAssociationResponseMsgW1SecurityGroupAssociation `json:"msg"`
+}
+
+// GetCode returns assignSecurityGroupCreateSecurityGroupAssociationW1SecurityGroupAssociationResponse.Code, and is useful for accessing the field via an interface.
+func (v *assignSecurityGroupCreateSecurityGroupAssociationW1SecurityGroupAssociationResponse) GetCode() int {
+	return v.Code
+}
+
+// GetErr returns assignSecurityGroupCreateSecurityGroupAssociationW1SecurityGroupAssociationResponse.Err, and is useful for accessing the field via an interface.
+func (v *assignSecurityGroupCreateSecurityGroupAssociationW1SecurityGroupAssociationResponse) GetErr() *string {
+	return v.Err
+}
+
+// GetMsg returns assignSecurityGroupCreateSecurityGroupAssociationW1SecurityGroupAssociationResponse.Msg, and is useful for accessing the field via an interface.
+func (v *assignSecurityGroupCreateSecurityGroupAssociationW1SecurityGroupAssociationResponse) GetMsg() *assignSecurityGroupCreateSecurityGroupAssociationW1SecurityGroupAssociationResponseMsgW1SecurityGroupAssociation {
+	return v.Msg
+}
+
+// assignSecurityGroupCreateSecurityGroupAssociationW1SecurityGroupAssociationResponseMsgW1SecurityGroupAssociation includes the requested fields of the GraphQL type W1SecurityGroupAssociation.
+// The GraphQL type's documentation follows.
+//
+// Security Group Association
+type assignSecurityGroupCreateSecurityGroupAssociationW1SecurityGroupAssociationResponseMsgW1SecurityGroupAssociation struct {
+	// ID
+	Id string `json:"id"`
+}
+
+// GetId returns assignSecurityGroupCreateSecurityGroupAssociationW1SecurityGroupAssociationResponseMsgW1SecurityGroupAssociation.Id, and is useful for accessing the field via an interface.
+func (v *assignSecurityGroupCreateSecurityGroupAssociationW1SecurityGroupAssociationResponseMsgW1SecurityGroupAssociation) GetId() string {
+	return v.Id
+}
+
+// assignSecurityGroupResponse is returned by assignSecurityGroup on success.
+type assignSecurityGroupResponse struct {
+	// Create Security Group Association
+	CreateSecurityGroupAssociation *assignSecurityGroupCreateSecurityGroupAssociationW1SecurityGroupAssociationResponse `json:"createSecurityGroupAssociation"`
+}
+
+// GetCreateSecurityGroupAssociation returns assignSecurityGroupResponse.CreateSecurityGroupAssociation, and is useful for accessing the field via an interface.
+func (v *assignSecurityGroupResponse) GetCreateSecurityGroupAssociation() *assignSecurityGroupCreateSecurityGroupAssociationW1SecurityGroupAssociationResponse {
+	return v.CreateSecurityGroupAssociation
+}
 
 // createFloatingGroupCreateFloatingGroupFloatingGroupResponse includes the requested fields of the GraphQL type FloatingGroupResponse.
 // The GraphQL type's documentation follows.
@@ -1181,6 +1266,34 @@ type deleteNetworkResponse struct {
 // GetDeleteNetwork returns deleteNetworkResponse.DeleteNetwork, and is useful for accessing the field via an interface.
 func (v *deleteNetworkResponse) GetDeleteNetwork() *deleteNetworkDeleteNetworkResponse {
 	return v.DeleteNetwork
+}
+
+// detachSecurityGroupDeleteSecurityGroupAssociationResponse includes the requested fields of the GraphQL type Response.
+// The GraphQL type's documentation follows.
+//
+// Response
+type detachSecurityGroupDeleteSecurityGroupAssociationResponse struct {
+	// Return Code
+	Code int `json:"code"`
+	// Error Message
+	Err *string `json:"err"`
+}
+
+// GetCode returns detachSecurityGroupDeleteSecurityGroupAssociationResponse.Code, and is useful for accessing the field via an interface.
+func (v *detachSecurityGroupDeleteSecurityGroupAssociationResponse) GetCode() int { return v.Code }
+
+// GetErr returns detachSecurityGroupDeleteSecurityGroupAssociationResponse.Err, and is useful for accessing the field via an interface.
+func (v *detachSecurityGroupDeleteSecurityGroupAssociationResponse) GetErr() *string { return v.Err }
+
+// detachSecurityGroupResponse is returned by detachSecurityGroup on success.
+type detachSecurityGroupResponse struct {
+	// Delete Security Group Association
+	DeleteSecurityGroupAssociation *detachSecurityGroupDeleteSecurityGroupAssociationResponse `json:"deleteSecurityGroupAssociation"`
+}
+
+// GetDeleteSecurityGroupAssociation returns detachSecurityGroupResponse.DeleteSecurityGroupAssociation, and is useful for accessing the field via an interface.
+func (v *detachSecurityGroupResponse) GetDeleteSecurityGroupAssociation() *detachSecurityGroupDeleteSecurityGroupAssociationResponse {
+	return v.DeleteSecurityGroupAssociation
 }
 
 // getDefaultProjectGetDefaultProjectProjectResponse includes the requested fields of the GraphQL type ProjectResponse.
@@ -2062,6 +2175,50 @@ type updateNetworkUpdateNetworkW1NetworkResponseMsgW1Network struct {
 // GetId returns updateNetworkUpdateNetworkW1NetworkResponseMsgW1Network.Id, and is useful for accessing the field via an interface.
 func (v *updateNetworkUpdateNetworkW1NetworkResponseMsgW1Network) GetId() string { return v.Id }
 
+// The mutation executed by assignSecurityGroup.
+const assignSecurityGroup_Operation = `
+mutation assignSecurityGroup ($securityGroupId: UUID!, $projectId: UUID!, $vmId: UUID, $subnetId: UUID) {
+	createSecurityGroupAssociation(securityGroupId: $securityGroupId, vmId: $vmId, subnetId: $subnetId, projectId: $projectId) {
+		code
+		err
+		msg {
+			id
+		}
+	}
+}
+`
+
+func assignSecurityGroup(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	securityGroupId string,
+	projectId string,
+	vmId *string,
+	subnetId *string,
+) (data_ *assignSecurityGroupResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "assignSecurityGroup",
+		Query:  assignSecurityGroup_Operation,
+		Variables: &__assignSecurityGroupInput{
+			SecurityGroupId: securityGroupId,
+			ProjectId:       projectId,
+			VmId:            vmId,
+			SubnetId:        subnetId,
+		},
+	}
+
+	data_ = &assignSecurityGroupResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The mutation executed by createFloatingGroup.
 const createFloatingGroup_Operation = `
 mutation createFloatingGroup ($id: UUID!, $projectId: UUID!, $vms: [FloatingGroupVmInput], $natToVmsPrivateIp: Boolean) {
@@ -2524,6 +2681,43 @@ func deleteNetwork(
 	}
 
 	data_ = &deleteNetworkResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by detachSecurityGroup.
+const detachSecurityGroup_Operation = `
+mutation detachSecurityGroup ($id: UUID!, $projectId: UUID!) {
+	deleteSecurityGroupAssociation(id: $id, projectId: $projectId) {
+		code
+		err
+	}
+}
+`
+
+func detachSecurityGroup(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	projectId string,
+) (data_ *detachSecurityGroupResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "detachSecurityGroup",
+		Query:  detachSecurityGroup_Operation,
+		Variables: &__detachSecurityGroupInput{
+			Id:        id,
+			ProjectId: projectId,
+		},
+	}
+
+	data_ = &detachSecurityGroupResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
