@@ -83,11 +83,11 @@ func (r *securityGroupAssociationResource) Schema(_ context.Context, _ resource.
 }
 
 type securityGroupAssociationResourceModel struct {
-	ID              types.String  `tfsdk:"id"`
-	SecurityGroupID types.String  `tfsdk:"security_group_id"`
-	ProjectID       types.String  `tfsdk:"project_id"`
-	VmID            *types.String `tfsdk:"vm_id"`
-	SubnetID        *types.String `tfsdk:"subnet_id"`
+	ID              types.String `tfsdk:"id"`
+	SecurityGroupID types.String `tfsdk:"security_group_id"`
+	ProjectID       types.String `tfsdk:"project_id"`
+	VmID            types.String `tfsdk:"vm_id"`
+	SubnetID        types.String `tfsdk:"subnet_id"`
 }
 
 // Configure adds the provider configured client to the resource.
