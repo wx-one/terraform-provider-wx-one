@@ -171,6 +171,10 @@ func (r *keyResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 
 	var projectID *string
 
+	if state.ProjectWide.ValueBool() == true {
+		projectID = state.ProjectID.ValueStringPointer()
+	}
+
 	key, err := getKey(ctx, r.wxOneClients.graphqlClient, state.ID.ValueStringPointer(), &emptyStr, projectID, (*bool)(nil))
 	if err != nil {
 		if isNotFoundError(err) {
