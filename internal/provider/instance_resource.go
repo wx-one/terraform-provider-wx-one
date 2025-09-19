@@ -333,6 +333,7 @@ func (r *instanceResource) Read(ctx context.Context, req resource.ReadRequest, r
 
 	state.Name = types.StringValue(instance.GetInstance.Msg.Name)
 	state.AvailabilityZone = types.StringValue((string(*instance.GetInstance.Msg.AvailabilityZone)))
+	state.Status = types.StringValue(string(instance.GetInstance.Msg.Status))
 
 	// Set refreshed state
 	diags = resp.State.Set(ctx, state)
