@@ -136,6 +136,22 @@ func (r *instanceResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 							},
 						},
 					},
+					"user_data": schema.SingleNestedAttribute{
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"content": schema.StringAttribute{
+								Description: "content",
+								Required:    true,
+							},
+							"mode": schema.StringAttribute{
+								Description: "mode",
+								Optional:    true,
+								Validators: []validator.String{
+									stringvalidator.OneOf("deepmerge", "override"),
+								},
+							},
+						},
+					},
 				},
 			},
 			// "floating_ips": schema.ListNestedAttribute{
@@ -161,6 +177,11 @@ func (r *instanceResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 	}
 }
 
+type userDataModel struct {
+	Content types.String  `tfsdk:"content"`
+	Mode    *types.String `tfsdk:"mode"`
+}
+
 type sevOptionModel struct {
 	DhCert       types.String `tfsdk:"dhCert"`
 	Session      types.String `tfsdk:"session"`
@@ -172,6 +193,7 @@ type additionalModel struct {
 	Uefi       types.Bool      `tfsdk:"uefi"`
 	SevType    types.String    `tfsdk:"sev_type"`
 	SevOptions *sevOptionModel `tfsdk:"sev_options"`
+	UserData   *userDataModel  `tfsdk:"user_data"`
 }
 
 type instanceResourceModel struct {
@@ -232,6 +254,7 @@ func (r *instanceResource) Create(ctx context.Context, req resource.CreateReques
 
 	var additional *InstanceAdditionalInput
 	var sevOptions *SevOptionsInput
+	var userData *UserDataInput
 
 	if plan.Additional != nil {
 
@@ -242,6 +265,15 @@ func (r *instanceResource) Create(ctx context.Context, req resource.CreateReques
 			sevOptions.KernelHashes = plan.Additional.SevOptions.KernelHashes.ValueStringPointer()
 		}
 
+		if plan.Additional.UserData != nil {
+			userData = &UserDataInput{}
+			userData.Content = plan.Additional.UserData.Content.ValueString()
+
+			if plan.Additional.UserData.Mode != nil {
+				userData.Mode = (*W1UserDataMode)(plan.Additional.UserData.Mode.ValueStringPointer())
+			}
+		}
+
 		sevType := W1SevType(plan.Additional.SevType.ValueString())
 		additional = &InstanceAdditionalInput{}
 		additional.SevType = &sevType
@@ -249,6 +281,7 @@ func (r *instanceResource) Create(ctx context.Context, req resource.CreateReques
 		additional.Uefi = plan.Additional.Uefi.ValueBoolPointer()
 
 		additional.SevOptions = sevOptions
+		additional.UserData = userData
 	}
 
 	// Create new instance

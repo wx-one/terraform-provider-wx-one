@@ -10,6 +10,8 @@ operations:
   - genqlient.graphql
 generated: generated.go
 bindings:
+  JSON:
+    type: string
   UUID:
     type: string
   Email:

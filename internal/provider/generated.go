@@ -73,6 +73,8 @@ type InstanceAdditionalInput struct {
 	SevType *W1SevType `json:"sevType,omitempty"`
 	// sevOptions
 	SevOptions *SevOptionsInput `json:"sevOptions,omitempty"`
+	// userData
+	UserData *UserDataInput `json:"userData,omitempty"`
 }
 
 // GetVTPM returns InstanceAdditionalInput.VTPM, and is useful for accessing the field via an interface.
@@ -86,6 +88,9 @@ func (v *InstanceAdditionalInput) GetSevType() *W1SevType { return v.SevType }
 
 // GetSevOptions returns InstanceAdditionalInput.SevOptions, and is useful for accessing the field via an interface.
 func (v *InstanceAdditionalInput) GetSevOptions() *SevOptionsInput { return v.SevOptions }
+
+// GetUserData returns InstanceAdditionalInput.UserData, and is useful for accessing the field via an interface.
+func (v *InstanceAdditionalInput) GetUserData() *UserDataInput { return v.UserData }
 
 // Status of an instance
 type InstanceStatus string
@@ -224,6 +229,20 @@ func (v *SubnetInput) GetIpVersion() string { return v.IpVersion }
 // GetCidr returns SubnetInput.Cidr, and is useful for accessing the field via an interface.
 func (v *SubnetInput) GetCidr() *string { return v.Cidr }
 
+// UserDataInput
+type UserDataInput struct {
+	// content
+	Content string `json:"content"`
+	// mode, either deepmerge (default) or override
+	Mode *W1UserDataMode `json:"mode,omitempty"`
+}
+
+// GetContent returns UserDataInput.Content, and is useful for accessing the field via an interface.
+func (v *UserDataInput) GetContent() string { return v.Content }
+
+// GetMode returns UserDataInput.Mode, and is useful for accessing the field via an interface.
+func (v *UserDataInput) GetMode() *W1UserDataMode { return v.Mode }
+
 // Security Group Input
 type W1SecurityGroupRuleInput struct {
 	// Name
@@ -297,6 +316,21 @@ var AllW1SevType = []W1SevType{
 	W1SevTypeSevEs,
 	W1SevTypeSevSnp,
 	W1SevTypeSevSnpVtpm,
+}
+
+// UserDataMode
+type W1UserDataMode string
+
+const (
+	// deepmerge
+	W1UserDataModeDeepmerge W1UserDataMode = "deepmerge"
+	// override
+	W1UserDataModeOverride W1UserDataMode = "override"
+)
+
+var AllW1UserDataMode = []W1UserDataMode{
+	W1UserDataModeDeepmerge,
+	W1UserDataModeOverride,
 }
 
 // __assignSecurityGroupInput is used internally by genqlient

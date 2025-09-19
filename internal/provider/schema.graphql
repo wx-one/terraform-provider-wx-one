@@ -357,6 +357,14 @@ input SevOptionsInput {
   kernelHashes: String
 }
 
+"UserDataInput"
+input UserDataInput {
+  "content"
+  content: JSON!
+  "mode, either deepmerge (default) or override"
+  mode: W1UserDataMode
+}
+
 "Instance Additional Options"
 input InstanceAdditionalInput {
   "provision VM with vTPM, ignored if not supported by VM type"
@@ -367,6 +375,8 @@ input InstanceAdditionalInput {
   sevType: W1SevType
   "sevOptions"
   sevOptions: SevOptionsInput
+  "userData"
+  userData: UserDataInput
 }
 
 "Quota Input"
@@ -415,6 +425,14 @@ type QuotaResponse {
   err: String
   "Success Message"
   msg: Quota
+}
+
+"UserDataMode"
+enum W1UserDataMode {
+  "deepmerge"
+  deepmerge
+  "override"
+  override
 }
 
 "Volume Type"
@@ -713,6 +731,24 @@ type ApiKeyResponse {
   msg: ApiKey
 }
 
+"Sev Options"
+type SevOptions {
+  "dhCert must be set together with session"
+  dhCert: String
+  "session"
+  session: String
+  "kernelHashes"
+  kernelHashes: String
+}
+
+"UserData"
+type UserData {
+  "content"
+  content: JSON!
+  "mode, either deepmerge (default) or override"
+  mode: W1UserDataMode
+}
+
 "Instance Additional Options"
 type InstanceAdditional {
   "provision VM with vTPM, ignored if not supported by VM type"
@@ -721,6 +757,10 @@ type InstanceAdditional {
   uefi: Boolean
   "specify the SEV type, ignored if not supported by VM type"
   sevType: W1SevType
+  "sevOptions"
+  sevOptions: SevOptions
+  "userData"
+  userData: UserData
 }
 
 "Instance"
@@ -819,6 +859,8 @@ type W1VolumeListResponse {
   err: String
   "Success Message"
   msg: [W1Volume]
+  "Pagination Info"
+  pagination: PaginationInfo
 }
 
 "Volume Attachment Response"
@@ -1553,8 +1595,32 @@ type OrganizationResponse {
 
 "Project Access"
 type ProjectAccess {
-  "Role"
-  role: Int
+  canCreateApiKeys: Boolean
+  canDeleteAPIKeys: Boolean
+  canCreateFloatingIPs: Boolean
+  canAttachFloatingIPs: Boolean
+  canDetachFloatingIPs: Boolean
+  canDeleteFloatingIPs: Boolean
+  canDeleteCustomImages: Boolean
+  canConnectToVNC: Boolean
+  canCreateInstances: Boolean
+  canStartInstance: Boolean
+  canRebootInstance: Boolean
+  canStopInstance: Boolean
+  canAttachVolumes: Boolean
+  canDetachVolumes: Boolean
+  canDeleteVolumes: Boolean
+  canHardRebootInstance: Boolean
+  canForceShutdownInstance: Boolean
+  canDeleteInstance: Boolean
+  canCreateNetworks: Boolean
+  canDeleteNetworks: Boolean
+  canInstallSoftware: Boolean
+  canEditInstalledSoftware: Boolean
+  canUninstallSoftware: Boolean
+  canCreateImages: Boolean
+  canAddVolumes: Boolean
+  canInviteUsers: Boolean
 }
 
 "Project Access Response"
@@ -1564,7 +1630,7 @@ type ProjectAccessResponse {
   "Error Message"
   err: String
   "Success Message"
-  msg: ProjectAccess
+  msg: JSON
 }
 
 "Organization Access"
@@ -1580,7 +1646,7 @@ type OrganizationAccessResponse {
   "Error Message"
   err: String
   "Success Message"
-  msg: OrganizationAccess
+  msg: JSON
 }
 
 "Pricing List Response"
@@ -1591,6 +1657,24 @@ type PricingListResponse {
   err: String
   "Success Message"
   msg: JSON
+}
+
+enum PolicyEffect {
+  ALLOW
+  DENY
+}
+
+"Policy Document Input"
+input PolicyDocumentInput {
+  name: String!
+  description: String
+  effect: PolicyEffect!
+  actions: [String!]!
+  notActions: [String!] = []
+  resources: [String!]!
+  notResources: [String!] = []
+  conditions: JSON = {}
+  principals: [String!]!
 }
 
 type Query {
@@ -1655,6 +1739,8 @@ type Query {
     projectId: UUID!
     "If true or false filter only for attached or non attached Volumes"
     attached: Boolean
+    "Pagination"
+    pagination: PaginationInput
   ): W1VolumeListResponse
   "Get Volume Attachment"
   getVolumeAttachment(
@@ -1746,7 +1832,12 @@ type Query {
     pagination: PaginationInput
   ): QuotaListResponse
   "Get Quota"
-  getQuota("ID of Quota" id: UUID!): QuotaResponse
+  getQuota(
+    "ID of Quota"
+    id: UUID!
+    "Project ID"
+    projectId: UUID!
+  ): QuotaResponse
   "Get Forecast Billing"
   getForecastBilling(
     "projectId"
@@ -2317,6 +2408,27 @@ type Mutation {
   prepareRevolutCustomerCardSetup: RevolutOrderResponse
   "Delete revolut customer card"
   deleteRevolutCustomerCard: Response
+  "Request Quota"
+  requestQuota(
+    "ID of Quota"
+    id: UUID!
+    "Project ID"
+    projectId: UUID!
+    "Count"
+    count: Int!
+  ): Response
+  "Create Policy"
+  createPolicy(
+    "Name"
+    name: String
+    "Description"
+    description: String
+    policy: PolicyDocumentInput!
+  ): Response
+  "Create Policies"
+  createPolicies(policies: [PolicyDocumentInput!]!): Response
+  "Delete Policy"
+  deletePolicy("id" id: UUID!): Response
 }
 
 schema {

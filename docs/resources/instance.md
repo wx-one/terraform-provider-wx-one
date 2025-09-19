@@ -42,6 +42,7 @@ Optional:
 - `sev_options` (Attributes) (see [below for nested schema](#nestedatt--additional--sev_options))
 - `sev_type` (String) Select SEV Type if supported
 - `uefi` (Boolean) Use an UEFI Bios if supported
+- `user_data` (Attributes) (see [below for nested schema](#nestedatt--additional--user_data))
 - `vtpm` (Boolean) Attach a vTPM to the VM if supported
 
 <a id="nestedatt--additional--sev_options"></a>
@@ -52,3 +53,15 @@ Optional:
 - `dh_cert` (String) dhcert
 - `kernel_hashes` (String) kernel hashes
 - `session` (String) session
+
+
+<a id="nestedatt--additional--user_data"></a>
+### Nested Schema for `additional.user_data`
+
+Required:
+
+- `content` (String) content
+
+Optional:
+
+- `mode` (String) mode
