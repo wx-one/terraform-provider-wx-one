@@ -178,8 +178,8 @@ func (r *instanceResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 }
 
 type userDataModel struct {
-	Content types.String  `tfsdk:"content"`
-	Mode    *types.String `tfsdk:"mode"`
+	Content types.String `tfsdk:"content"`
+	Mode    types.String `tfsdk:"mode"`
 }
 
 type sevOptionModel struct {
@@ -269,7 +269,7 @@ func (r *instanceResource) Create(ctx context.Context, req resource.CreateReques
 			userData = &UserDataInput{}
 			userData.Content = plan.Additional.UserData.Content.ValueString()
 
-			if plan.Additional.UserData.Mode != nil {
+			if !plan.Additional.UserData.Mode.IsNull() && !plan.Additional.UserData.Mode.IsUnknown() {
 				userData.Mode = (*W1UserDataMode)(plan.Additional.UserData.Mode.ValueStringPointer())
 			}
 		}
