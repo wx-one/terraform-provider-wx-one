@@ -11,7 +11,7 @@ operations:
 generated: generated.go
 bindings:
   JSON:
-    type: string
+    type: encoding/json.RawMessage
   UUID:
     type: string
   Email:

@@ -232,13 +232,13 @@ func (v *SubnetInput) GetCidr() *string { return v.Cidr }
 // UserDataInput
 type UserDataInput struct {
 	// content
-	Content string `json:"content"`
+	Content json.RawMessage `json:"content"`
 	// mode, either deepmerge (default) or override
 	Mode *W1UserDataMode `json:"mode,omitempty"`
 }
 
 // GetContent returns UserDataInput.Content, and is useful for accessing the field via an interface.
-func (v *UserDataInput) GetContent() string { return v.Content }
+func (v *UserDataInput) GetContent() json.RawMessage { return v.Content }
 
 // GetMode returns UserDataInput.Mode, and is useful for accessing the field via an interface.
 func (v *UserDataInput) GetMode() *W1UserDataMode { return v.Mode }

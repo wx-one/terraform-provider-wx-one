@@ -5,6 +5,7 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -267,7 +268,8 @@ func (r *instanceResource) Create(ctx context.Context, req resource.CreateReques
 
 		if plan.Additional.UserData != nil {
 			userData = &UserDataInput{}
-			userData.Content = plan.Additional.UserData.Content.ValueString()
+			raw := json.RawMessage([]byte(plan.Additional.UserData.Content.ValueString()))
+			userData.Content = raw
 
 			if !plan.Additional.UserData.Mode.IsNull() && !plan.Additional.UserData.Mode.IsUnknown() {
 				userData.Mode = (*W1UserDataMode)(plan.Additional.UserData.Mode.ValueStringPointer())
