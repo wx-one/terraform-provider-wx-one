@@ -276,9 +276,14 @@ func (r *instanceResource) Create(ctx context.Context, req resource.CreateReques
 			}
 		}
 
-		sevType := W1SevType(plan.Additional.SevType.ValueString())
 		additional = &InstanceAdditionalInput{}
-		additional.SevType = &sevType
+		// Only forward sev_type when the user explicitly set it. Sending an
+		// empty string trips the W1SevType enum validation backend-side and
+		// the createInstance call returns with a generic 500.
+		if !plan.Additional.SevType.IsNull() && !plan.Additional.SevType.IsUnknown() {
+			sevType := W1SevType(plan.Additional.SevType.ValueString())
+			additional.SevType = &sevType
+		}
 		additional.VTPM = plan.Additional.VTPM.ValueBoolPointer()
 		additional.Uefi = plan.Additional.Uefi.ValueBoolPointer()
 
