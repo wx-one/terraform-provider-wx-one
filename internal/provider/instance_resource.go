@@ -65,6 +65,14 @@ func (r *instanceResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 				Description: "Status of the instance.",
 				Computed:    true,
 			},
+			"wait_for_running": schema.BoolAttribute{
+				Description: "If true, the resource Create() blocks until the instance leaves BUILD state. " +
+					"Useful when downstream resources (securityGroupAssociation, floatingIPGroup) " +
+					"depend on the VM being fully provisioned -- attaching to a still-BUILDING VM " +
+					"can race the backend and return a 500. Defaults to false to preserve " +
+					"existing behaviour.",
+				Optional: true,
+			},
 			"flavor_id": schema.StringAttribute{
 				Description: "Flavor of the instance.",
 				Required:    true,
@@ -206,6 +214,7 @@ type instanceResourceModel struct {
 	ImageID          types.String `tfsdk:"image_id"`
 	Status           types.String `tfsdk:"status"`
 	ProjectID        types.String `tfsdk:"project_id"`
+	WaitForRunning   types.Bool   `tfsdk:"wait_for_running"`
 	// FloatingIPs      []floatingIPModel `tfsdk:"floating_ips"`
 	SSHKeys    []types.String   `tfsdk:"ssh_keys"`
 	Additional *additionalModel `tfsdk:"additional"`
@@ -299,6 +308,39 @@ func (r *instanceResource) Create(ctx context.Context, req resource.CreateReques
 	// Map response body to schema and populate Computed attribute values
 	plan.ID = types.StringValue(instance.CreateInstance.Msg.Id)
 	plan.Status = types.StringValue(string(instance.CreateInstance.Msg.Status))
+
+	// Optional: wait for the VM to leave BUILD before returning. The
+	// createInstance mutation returns BUILD immediately and follow-on
+	// resources (securityGroupAssociation, floatingIPGroup attach) can
+	// race a still-building VM and 500. Off by default to preserve
+	// existing behaviour; set `wait_for_running = true` on the resource
+	// to opt in. 15 min cap covers slow-but-not-wedged hypervisor placements.
+	if !plan.WaitForRunning.IsNull() && plan.WaitForRunning.ValueBool() {
+		finalStatus := plan.Status.ValueString()
+		if finalStatus == string(InstanceStatusBuild) {
+			deadline := time.Now().Add(15 * time.Minute)
+			for time.Now().Before(deadline) {
+				time.Sleep(5 * time.Second)
+				latest, err := getInstance(ctx, r.wxOneClients.graphqlClient, plan.ID.ValueString(), plan.ProjectID.ValueString())
+				if err != nil {
+					continue // transient API errors retry
+				}
+				s := string(latest.GetInstance.Msg.Status)
+				if s != string(InstanceStatusBuild) {
+					finalStatus = s
+					break
+				}
+			}
+			if finalStatus == string(InstanceStatusBuild) {
+				resp.Diagnostics.AddError(
+					"Instance stuck in BUILD",
+					fmt.Sprintf("Instance %s did not leave BUILD within 15m; the backend has likely failed to place this VM.", plan.ID.ValueString()),
+				)
+				return
+			}
+			plan.Status = types.StringValue(finalStatus)
+		}
+	}
 
 	// Set state to fully populated data
 	diags = resp.State.Set(ctx, plan)
